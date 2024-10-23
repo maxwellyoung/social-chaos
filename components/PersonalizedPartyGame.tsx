@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   TextInput,
@@ -16,6 +16,11 @@ import { Select } from "./Select";
 import { SlideDownPanel } from "./SlideDownPanel";
 import { Ionicons } from "@expo/vector-icons";
 
+// Import prompts
+import drinkingPrompts from "../assets/prompts/drinking.json";
+import chillPrompts from "../assets/prompts/chill.json";
+import sexyPrompts from "../assets/prompts/sexy.json";
+
 type Player = {
   name: string;
   avatar: string;
@@ -23,76 +28,14 @@ type Player = {
 
 type ThemePack = "drinking" | "chill" | "sexy";
 
-const initialPrompts = {
-  drinking: [
-    "Take a sip if you've ever ghosted someone!",
-    "Drink for each time you've been in love.",
-    "The person with the most exes drinks twice.",
-    "Waterfall! Start with the oldest player and end with the youngest.",
-    "Categories: Name types of alcohol. Loser drinks!",
-    "Never have I ever... (take turns, drinkers take a sip)",
-    "Truth or dare? Refuse and take two shots.",
-    "The tallest person assigns 3 sips.",
-    "Drink if you've ever skinny dipped.",
-    "Last person to touch their nose drinks.",
-    "Drink for each tattoo you have.",
-    "Anyone wearing red drinks.",
-    "If you've ever been in a fist fight, take 2 sips.",
-    "Drink if you've ever lied to get out of work.",
-    "Everyone vote on who's most likely to become famous. They drink!",
-    "Drink if you've ever been on TV.",
-    "The person with the longest hair assigns 4 sips.",
-    "Drink for each sibling you have.",
-    "If you've ever broken a bone, take a shot.",
-    "Drink if you've ever been in handcuffs (any reason!).",
-    // Add more drinking prompts here...
-  ],
-  chill: [
-    "Share your most embarrassing childhood memory.",
-    "If you could have dinner with any historical figure, who and why?",
-    "What's the best piece of advice you've ever received?",
-    "Describe your perfect day from start to finish.",
-    "If you could instantly master one skill, what would it be?",
-    "What's your biggest irrational fear?",
-    "Share a moment when you were proudest of yourself.",
-    "If you could live in any fictional world, which one and why?",
-    "What's the most spontaneous thing you've ever done?",
-    "Describe your ideal superpower and how you'd use it.",
-    "What's a small act of kindness you'll never forget?",
-    "If you could relive one day of your life, which would it be?",
-    "What's the strangest dream you've ever had?",
-    "Share a life goal you haven't told many people about.",
-    "If you could change one thing about the world, what would it be?",
-    "What's the most valuable life lesson you've learned so far?",
-    "Describe your first crush and what attracted you to them.",
-    "If you could have a conversation with your future self, what would you ask?",
-    "What's a book or movie that changed your perspective on life?",
-    "Share a tradition from your family or culture that's important to you.",
-    // Add more chill prompts here...
-  ],
-  sexy: [
-    "What's your biggest turn-on?",
-    "Describe your wildest fantasy.",
-    "What's the most daring place you've hooked up?",
-    "Share your sexiest non-physical trait in a partner.",
-    "What's your favorite foreplay activity?",
-    "Demonstrate your best seductive dance move.",
-    "What's the most unusual place you'd like to have sex?",
-    "Share a sexy secret you've never told anyone.",
-    "What's your favorite body part on yourself? On a partner?",
-    "Describe your perfect romantic evening.",
-    "What's the sexiest outfit you own?",
-    "Share your favorite position and why you love it.",
-    "What's the hottest thing someone's ever said to you?",
-    "If you could have a celebrity join you in bed, who would it be?",
-    "What's your biggest sexual regret?",
-    "Describe the perfect kiss in detail.",
-    "What's your opinion on friends with benefits?",
-    "Share a sexual bucket list item.",
-    "What's the most embarrassing thing that's happened to you during sex?",
-    "If you had to use a food item during foreplay, what would it be?",
-    // Add more sexy prompts here...
-  ],
+type Prompts = {
+  playerSpecific: string[];
+};
+
+const allPrompts: Record<ThemePack, Prompts> = {
+  drinking: drinkingPrompts,
+  chill: chillPrompts,
+  sexy: sexyPrompts,
 };
 
 export function PersonalizedPartyGame() {
@@ -102,16 +45,23 @@ export function PersonalizedPartyGame() {
   const [currentPrompt, setCurrentPrompt] = useState("");
   const [themePack, setThemePack] = useState<ThemePack>("drinking");
   const [customPrompt, setCustomPrompt] = useState("");
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [prompts, setPrompts] = useState(initialPrompts);
   const [isAddPlayerVisible, setIsAddPlayerVisible] = useState(false);
   const colorScheme = useColorScheme();
+  const [prompts, setPrompts] = useState<string[]>([]);
+  const shouldUpdatePromptRef = useRef(true);
+
+  // Combine player-specific prompts
+  const getAllPrompts = (): string[] => {
+    const { playerSpecific } = allPrompts[themePack];
+    // Shuffle all player-specific prompts
+    return shuffleArray([...playerSpecific]);
+  };
 
   useEffect(() => {
-    if (gameState === "playing") {
-      nextPrompt();
-    }
-  }, [gameState]);
+    // Load prompts when theme changes or game resets
+    const loadedPrompts = getAllPrompts();
+    setPrompts(loadedPrompts);
+  }, [themePack, gameState]);
 
   const addPlayer = () => {
     if (newPlayerName.trim()) {
@@ -139,42 +89,79 @@ export function PersonalizedPartyGame() {
     setGameState("playing");
   };
 
-  const getRandomPlayer = (excludePlayer?: string) => {
+  // Function to get a random player, optionally excluding one player
+  const getRandomPlayer = (excludePlayer?: string): string => {
     const availablePlayers = players.filter((p) => p.name !== excludePlayer);
+    if (availablePlayers.length === 0) return "another player";
     return availablePlayers[Math.floor(Math.random() * availablePlayers.length)]
       .name;
   };
 
-  const nextPrompt = () => {
-    const currentPrompts = prompts[themePack];
-    const randomIndex = Math.floor(Math.random() * currentPrompts.length);
-    let prompt = currentPrompts[randomIndex];
+  // Function to replace placeholders with random players
+  const replacePlaceholders = (prompt: string): string => {
+    let modifiedPrompt = prompt;
 
-    const currentPlayer = players[currentPlayerIndex].name;
-    prompt = prompt.replace("{player1}", currentPlayer);
-    prompt = prompt.replace("{player2}", getRandomPlayer(currentPlayer));
+    // Randomly select player1
+    const player1 = players[Math.floor(Math.random() * players.length)].name;
+    modifiedPrompt = modifiedPrompt.replace("{player1}", player1);
 
-    setCurrentPrompt(prompt);
-    setCurrentPlayerIndex((prevIndex) => (prevIndex + 1) % players.length);
+    // Randomly select player2, excluding player1
+    const player2 = getRandomPlayer(player1);
+    modifiedPrompt = modifiedPrompt.replace("{player2}", player2);
+
+    return modifiedPrompt;
   };
+
+  const selectNextPrompt = useCallback(() => {
+    if (prompts.length === 0) {
+      return "No prompts available.";
+    }
+    const randomIndex = Math.floor(Math.random() * prompts.length);
+    const prompt = prompts[randomIndex];
+    const replacedPrompt = replacePlaceholders(prompt);
+
+    setPrompts((prevPrompts) => {
+      const newPrompts = [...prevPrompts];
+      newPrompts.splice(randomIndex, 1);
+      return newPrompts;
+    });
+
+    return replacedPrompt;
+  }, [prompts, players]);
+
+  useEffect(() => {
+    if (shouldUpdatePromptRef.current && gameState === "playing") {
+      const newPrompt = selectNextPrompt();
+      setCurrentPrompt(newPrompt);
+      shouldUpdatePromptRef.current = false;
+    }
+  }, [gameState, selectNextPrompt]);
+
+  const nextPrompt = useCallback(() => {
+    shouldUpdatePromptRef.current = true;
+    const newPrompt = selectNextPrompt();
+    setCurrentPrompt(newPrompt);
+  }, [selectNextPrompt]);
 
   const addCustomPrompt = () => {
     if (customPrompt.trim()) {
-      setPrompts((prevPrompts) => ({
-        ...prevPrompts,
-        [themePack]: [...prevPrompts[themePack], customPrompt.trim()],
-      }));
+      const newPrompt = customPrompt.trim();
+      setPrompts((prevPrompts) => shuffleArray([...prevPrompts, newPrompt]));
       setCustomPrompt("");
     }
   };
 
+  const shuffleArray = (array: string[]) =>
+    array.sort(() => Math.random() - 0.5);
+
   const exitGame = () => {
     setGameState("setup");
     setCurrentPrompt("");
-    setCurrentPlayerIndex(0);
+    // Reload prompts to reset
+    setPrompts(getAllPrompts());
   };
 
-  const getThemeEmoji = (theme: ThemePack) => {
+  const getThemeEmoji = (theme: ThemePack): string => {
     switch (theme) {
       case "drinking":
         return "🥂";
@@ -182,12 +169,19 @@ export function PersonalizedPartyGame() {
         return "😎";
       case "sexy":
         return "💋";
+      default:
+        return "";
     }
   };
 
   const renderSetupContent = () => (
     <View style={styles.setupContainer}>
-      <ThemedText type="title" style={styles.title}>
+      <ThemedText
+        type="title"
+        style={styles.title}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
         SOCIAL CHAOS
       </ThemedText>
       <View style={styles.setupControls}>
@@ -211,6 +205,20 @@ export function PersonalizedPartyGame() {
         />
         <Button title="Start Game" onPress={startGame} variant="accent" />
       </View>
+      <FlatList
+        data={players}
+        renderItem={({ item, index }) => (
+          <View style={styles.playerItem}>
+            <ThemedText style={styles.playerName}>{item.name}</ThemedText>
+            <TouchableOpacity onPress={() => removePlayer(index)}>
+              <Ionicons name="close-circle-outline" size={24} color="#FF3B30" />
+            </TouchableOpacity>
+          </View>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+        ListFooterComponent={<View style={{ height: 20 }} />}
+        contentContainerStyle={styles.playerList}
+      />
     </View>
   );
 
@@ -254,29 +262,7 @@ export function PersonalizedPartyGame() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ThemedView style={styles.container}>
-        {gameState === "setup" ? (
-          <FlatList
-            ListHeaderComponent={renderSetupContent}
-            data={players}
-            renderItem={({ item, index }) => (
-              <View style={styles.playerItem}>
-                <ThemedText style={styles.playerName}>{item.name}</ThemedText>
-                <TouchableOpacity onPress={() => removePlayer(index)}>
-                  <Ionicons
-                    name="close-circle-outline"
-                    size={24}
-                    color="#FF3B30"
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-            ListFooterComponent={<View style={{ height: 20 }} />}
-            contentContainerStyle={styles.playerList}
-          />
-        ) : (
-          renderPlayingContent()
-        )}
+        {gameState === "setup" ? renderSetupContent() : renderPlayingContent()}
       </ThemedView>
       <SlideDownPanel
         isVisible={isAddPlayerVisible}
@@ -320,10 +306,14 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   title: {
+    // Removed fontFamily since AuthenticSans60 is no longer used
     fontSize: 48,
     fontWeight: "700",
+    marginTop: 48,
     marginBottom: 48,
     textAlign: "center",
+    lineHeight: 52,
+    color: "#000000", // Ensure text color is set appropriately
   },
   setupControls: {
     width: "100%",
@@ -339,6 +329,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 24,
     textAlign: "center",
+    color: "#000000", // Ensure text color is set appropriately
   },
   input: {
     flex: 1,
@@ -348,6 +339,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginRight: 12,
     fontSize: 18,
+    color: "#000000",
   },
   playerItem: {
     flexDirection: "row",
@@ -359,6 +351,7 @@ const styles = StyleSheet.create({
   },
   playerName: {
     fontSize: 20,
+    color: "#000000",
   },
   playingContainer: {
     flex: 1,
@@ -379,6 +372,7 @@ const styles = StyleSheet.create({
   gameMode: {
     fontSize: 28,
     fontWeight: "600",
+    color: "#000000",
   },
   promptContainer: {
     flex: 1,
@@ -387,14 +381,17 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     marginBottom: 40,
+    backgroundColor: "#F5F5F5",
   },
   prompt: {
-    fontSize: 32,
+    fontSize: 24,
     textAlign: "center",
+    color: "#333333",
   },
   customPromptContainer: {
     flexDirection: "row",
     marginBottom: 24,
+    alignItems: "center",
   },
   addPlayerForm: {
     flexDirection: "row",
