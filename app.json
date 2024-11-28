@@ -2,7 +2,7 @@
   "expo": {
     "name": "Social Chaos",
     "slug": "social-chaos",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "socialchaos",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.maxwellyoung.socialchaos",
-      "buildNumber": "2",
+      "buildNumber": "1.0.1",
       "usesAppleSignIn": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
