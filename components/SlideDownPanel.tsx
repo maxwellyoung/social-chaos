@@ -54,9 +54,11 @@ export function SlideDownPanel({
           },
         ]}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ThemedView style={styles.content}>{children}</ThemedView>
-        </TouchableWithoutFeedback>
+        <BlurView intensity={80} tint="light" style={styles.blurContainer}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <ThemedView style={styles.content}>{children}</ThemedView>
+          </TouchableWithoutFeedback>
+        </BlurView>
       </Animated.View>
     </>
   );
@@ -71,7 +73,6 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     shadowColor: "#000",
@@ -83,9 +84,15 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 5,
   },
+  blurContainer: {
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    overflow: "hidden",
+  },
   content: {
     padding: 24,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
   },
 });

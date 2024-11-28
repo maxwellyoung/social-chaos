@@ -1,0 +1,71 @@
+{
+  "normal": [
+    {
+      "text": "{player1}, start a story with one sentence. Going clockwise, everyone adds a sentence. First to hesitate drinks!",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "{player1} and {player2}, thumb war! Loser drinks.",
+      "type": "action",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, give your phone to {player2}. They can send ONE text to anyone in your contacts!",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Everyone vote on who's most likely to become a millionaire. {player1}, distribute drinks equal to your votes!",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, do your best impression of {player2}. If the group approves, {player2} drinks!",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Categories! {player1} picks a topic, then everyone names something that fits. Last person standing gives out 3 drinks!",
+      "type": "call-response",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, you're now a lie detector! Ask {player2} any question - if the group thinks they're lying, they drink!",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Quick! {player1} name three things about {player2}. Drink for each wrong answer!",
+      "type": "call-response",
+      "category": "social"
+    }
+  ],
+  "sexy": [
+    {
+      "text": "{player1}, demonstrate your best flirting technique on {player2}. Group rates it out of 10 - drink the difference!",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Truth time! {player1}, what's your biggest dating red flag? Group votes if you're self-aware!",
+      "type": "social",
+      "category": "social"
+    },
+    {
+      "text": "{player1} and {player2}, staring contest! First to break eye contact has to share their most awkward date story!",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, recreate your ideal romantic scene with {player2}. Others guess which movie it's from!",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Everyone writes their best pickup line. {player1} judges - worst one drinks!",
+      "type": "group",
+      "category": "social"
+    }
+  ]
+}

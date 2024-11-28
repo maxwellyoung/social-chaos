@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Modal,
   FlatList,
+  ViewStyle,
 } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
@@ -19,8 +20,9 @@ interface SelectOption<T extends string> {
 interface SelectProps<T extends string> {
   options: SelectOption<T>[];
   onValueChange: (value: T) => void;
-  placeholder: string;
-  value: T | null;
+  placeholder?: string;
+  value: T;
+  containerStyle?: ViewStyle;
 }
 
 export function Select<T extends string>({
@@ -28,6 +30,7 @@ export function Select<T extends string>({
   onValueChange,
   placeholder,
   value,
+  containerStyle,
 }: SelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -37,7 +40,7 @@ export function Select<T extends string>({
   };
 
   return (
-    <View>
+    <View style={containerStyle}>
       <TouchableOpacity style={styles.select} onPress={() => setIsOpen(true)}>
         <ThemedText style={styles.selectText}>
           {value

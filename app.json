@@ -21,9 +21,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleURLTypes": [
           {
-            "CFBundleURLSchemes": [
-              "socialchaos"
-            ]
+            "CFBundleURLSchemes": ["socialchaos"]
           }
         ]
       },
@@ -44,10 +42,7 @@
               "scheme": "socialchaos"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },
@@ -56,11 +51,7 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      "expo-router",
-      "expo-apple-authentication",
-      "expo-font"
-    ],
+    "plugins": ["expo-router", "expo-apple-authentication"],
     "experiments": {
       "typedRoutes": true
     },
@@ -68,6 +59,12 @@
       "eas": {
         "projectId": "e6174ea5-eeff-4f99-8854-c98cffaf4d89"
       }
-    }
+    },
+    "fonts": [
+      {
+        "asset": "assets/fonts/authentic-sans-60.woff2"
+      }
+    ],
+    "assetBundlePatterns": ["**/*", "assets/images/socialchaos-bg.png"]
   }
 }

@@ -6,7 +6,8 @@ import { LinearGradient, LinearGradientProps } from "expo-linear-gradient";
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: "default" | "ghost" | "accent";
+  variant: "accent" | "default";
+  style?: ViewStyle;
 }
 
 type GradientWrapperProps = Omit<LinearGradientProps, "children"> & {
@@ -27,11 +28,16 @@ const ViewWrapper: React.FC<ViewWrapperProps> = ({ children, style }) => (
   <View style={style}>{children}</View>
 );
 
-export function Button({ title, onPress, variant = "default" }: ButtonProps) {
+export function Button({
+  title,
+  onPress,
+  variant = "default",
+  style,
+}: ButtonProps) {
   const wrapperProps =
     variant === "default"
       ? {
-          colors: ["#F2F2F7", "#E5E5EA"],
+          colors: ["#E5E5EA", "#D1D1D6"],
           start: { x: 0, y: 0 },
           end: { x: 1, y: 1 },
           style: styles.buttonContent,
@@ -40,18 +46,14 @@ export function Button({ title, onPress, variant = "default" }: ButtonProps) {
           style: styles.buttonContent,
         };
 
-  const textStyle = [
-    styles.text,
-    variant === "ghost" && styles.ghostText,
-    variant === "accent" && styles.accentText,
-  ];
+  const textStyle = [styles.text, variant === "accent" && styles.accentText];
 
   return (
     <TouchableOpacity
       style={[
         styles.button,
-        variant === "ghost" && styles.ghostButton,
         variant === "accent" && styles.accentButton,
+        style,
       ]}
       onPress={onPress}
     >
@@ -83,10 +85,6 @@ const styles = StyleSheet.create({
     alignItems: "center" as const,
     justifyContent: "center" as const,
   },
-  ghostButton: {
-    backgroundColor: "transparent",
-    shadowColor: "transparent",
-  },
   accentButton: {
     backgroundColor: "#FF2D55",
   },
@@ -94,9 +92,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     color: "#000000",
-  },
-  ghostText: {
-    color: "#8E8E93",
   },
   accentText: {
     color: "#FFFFFF",
