@@ -15,6 +15,8 @@ import {
   useColorScheme,
   Dimensions,
   Text,
+  Platform,
+  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "./ThemedText";
@@ -32,6 +34,7 @@ import Animated, {
   useSharedValue,
   runOnJS,
   Extrapolate,
+  interpolateColor,
 } from "react-native-reanimated";
 import {
   Gesture,
@@ -40,6 +43,8 @@ import {
 } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
+import Slider from "@react-native-community/slider";
+import * as Haptics from "expo-haptics";
 
 // Import prompts
 import prompts from "../assets/prompts/prompts.json";
@@ -51,10 +56,21 @@ type Player = {
 
 type GameMode = "normal" | "sexy";
 
+interface PromptTemplate {
+  text: string;
+  minChaos: number;
+  maxChaos: number;
+  category: "social" | "drinking" | "action" | "dare" | "sexy";
+  weight: number;
+  sexyModeOnly?: boolean;
+}
+
 interface GameSettings {
   isSexyMode: boolean;
   usedPrompts: Set<string>;
   playerPromptHistory: Map<string, Set<string>>;
+  chaosLevel: number;
+  lastPrompts: string[]; // Track recent prompts to avoid repetition
 }
 
 // Add new types for enhanced prompts
@@ -76,6 +92,9 @@ const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
+const MAX_WIDTH_WEB = 720;
+const MAX_WIDTH_PROMPT_WEB = 560;
+
 export function PersonalizedPartyGame() {
   // State Variables
   const [players, setPlayers] = useState<Player[]>([]);
@@ -87,6 +106,8 @@ export function PersonalizedPartyGame() {
     isSexyMode: false,
     usedPrompts: new Set(),
     playerPromptHistory: new Map(),
+    chaosLevel: 0.5,
+    lastPrompts: [],
   });
   const [isAddPlayerVisible, setIsAddPlayerVisible] = useState(false);
 
@@ -190,62 +211,205 @@ export function PersonalizedPartyGame() {
     [players]
   );
 
-  // Then the selectNextPrompt function
-  const selectNextPrompt = useCallback((): string => {
-    const currentPrompts = gameSettings.isSexyMode
-      ? allPrompts.sexy
-      : allPrompts.normal;
+  // Add the new prompt generation system
+  const generateDynamicPrompt = useCallback(() => {
+    const { chaosLevel, isSexyMode, lastPrompts } = gameSettings;
 
-    // Filter prompts that haven't been used with any mentioned players
-    const availablePrompts = currentPrompts.filter((prompt) => {
-      // Check if prompt has been used globally
-      if (gameSettings.usedPrompts.has(prompt.text)) return false;
+    const templates: PromptTemplate[] = [
+      // SOCIAL ICEBREAKERS (0-0.3)
+      {
+        text: "Everyone point to who's most likely to {action}",
+        minChaos: 0,
+        maxChaos: 0.3,
+        category: "social",
+        weight: 1,
+      },
+      {
+        text: "{player1}, what's your first impression of {player2}?",
+        minChaos: 0,
+        maxChaos: 0.3,
+        category: "social",
+        weight: 1,
+      },
+      {
+        text: "{player1}, give your best impression of {player2}",
+        minChaos: 0.1,
+        maxChaos: 0.4,
+        category: "social",
+        weight: 1,
+      },
 
-      // Check if prompt has been used with specific players
-      const promptText = prompt.text;
-      if (
-        promptText.includes("{player1}") ||
-        promptText.includes("{player2}")
-      ) {
-        // Check each player's history
-        for (const player of players) {
-          const playerHistory = gameSettings.playerPromptHistory.get(
-            player.name
-          );
-          if (playerHistory?.has(promptText)) return false;
-        }
+      // LIGHT DRINKING/ACTION (0.2-0.5)
+      {
+        text: "Take a sip if you've ever {action}",
+        minChaos: 0.2,
+        maxChaos: 0.5,
+        category: "drinking",
+        weight: 1,
+      },
+      {
+        text: "{player1}, demonstrate your best {action} or drink twice",
+        minChaos: 0.2,
+        maxChaos: 0.5,
+        category: "action",
+        weight: 1,
+      },
+
+      // MEDIUM CHAOS (0.4-0.7)
+      {
+        text: "{player1}, choose your victim. They must {action} or drink 3 times",
+        minChaos: 0.4,
+        maxChaos: 0.7,
+        category: "dare",
+        weight: 1.2,
+      },
+      {
+        text: "Last person to {action} takes three drinks",
+        minChaos: 0.4,
+        maxChaos: 0.7,
+        category: "action",
+        weight: 1.2,
+      },
+
+      // HIGH CHAOS (0.6-1.0)
+      {
+        text: "Group decides: {player1} must either {action} or finish their drink",
+        minChaos: 0.6,
+        maxChaos: 1,
+        category: "dare",
+        weight: 1.5,
+      },
+      {
+        text: "{player1} and {player2}, swap phones for 2 minutes or take 5 drinks each",
+        minChaos: 0.7,
+        maxChaos: 1,
+        category: "dare",
+        weight: 1.5,
+      },
+
+      // SEXY MODE TEMPLATES
+      {
+        text: "{player1}, rate everyone's flirting skills",
+        minChaos: 0,
+        maxChaos: 0.3,
+        category: "sexy",
+        weight: 1,
+        sexyModeOnly: true,
+      },
+      {
+        text: "Take a sip if you've ever had a crush on someone here",
+        minChaos: 0.2,
+        maxChaos: 0.5,
+        category: "sexy",
+        weight: 1,
+        sexyModeOnly: true,
+      },
+    ];
+
+    const actions = {
+      social: {
+        mild: [
+          "become a CEO",
+          "start a podcast",
+          "become Instagram famous",
+          "write a book",
+          "win a reality show",
+        ],
+        medium: [
+          "quit their job dramatically",
+          "go viral on TikTok",
+          "start a flash mob",
+          "become a street performer",
+        ],
+        wild: [
+          "become a dictator",
+          "fake their own disappearance",
+          "start a cult",
+          "become a professional prankster",
+        ],
+      },
+      dares: {
+        mild: [
+          "do 10 pushups",
+          "sing a nursery rhyme",
+          "tell a dad joke",
+          "do your best dance move",
+        ],
+        medium: [
+          "prank call someone",
+          "speak in an accent for 3 minutes",
+          "let someone post on your social media",
+        ],
+        wild: [
+          "let the group give you a makeover",
+          "eat a spoonful of hot sauce",
+          "let someone draw on your face",
+        ],
+      },
+    };
+
+    // Filter eligible templates
+    const eligibleTemplates = templates.filter(
+      (template) =>
+        chaosLevel >= template.minChaos &&
+        chaosLevel <= template.maxChaos &&
+        (!template.sexyModeOnly || isSexyMode) &&
+        !lastPrompts.includes(template.text)
+    );
+
+    // Weighted random selection
+    const totalWeight = eligibleTemplates.reduce(
+      (sum, template) => sum + template.weight,
+      0
+    );
+    let random = Math.random() * totalWeight;
+
+    let selectedTemplate = eligibleTemplates[0];
+    for (const template of eligibleTemplates) {
+      random -= template.weight;
+      if (random <= 0) {
+        selectedTemplate = template;
+        break;
       }
-      return true;
-    });
-
-    // If no available prompts, reset histories
-    if (availablePrompts.length === 0) {
-      gameSettings.usedPrompts.clear();
-      gameSettings.playerPromptHistory.clear();
-      return selectNextPrompt();
     }
 
-    const selectedPrompt =
-      availablePrompts[Math.floor(Math.random() * availablePrompts.length)];
+    let prompt = selectedTemplate.text;
 
-    // Mark prompt as used globally
-    gameSettings.usedPrompts.add(selectedPrompt.text);
+    // Replace action placeholder
+    if (prompt.includes("{action}")) {
+      const actionCategory =
+        selectedTemplate.category === "dare" ? "dares" : "social";
+      const actionList =
+        chaosLevel < 0.3
+          ? actions[actionCategory].mild
+          : chaosLevel < 0.7
+          ? actions[actionCategory].medium
+          : actions[actionCategory].wild;
 
-    // Format prompt and track per player
-    const formattedPrompt = formatPromptWithPlayers(selectedPrompt.text);
+      prompt = prompt.replace(
+        "{action}",
+        actionList[Math.floor(Math.random() * actionList.length)]
+      );
+    }
 
-    // Update player histories
-    players.forEach((player) => {
-      if (formattedPrompt.includes(player.name)) {
-        const playerHistory =
-          gameSettings.playerPromptHistory.get(player.name) || new Set();
-        playerHistory.add(selectedPrompt.text);
-        gameSettings.playerPromptHistory.set(player.name, playerHistory);
-      }
-    });
+    return prompt;
+  }, [gameSettings]);
 
-    return formattedPrompt;
-  }, [gameSettings, players, formatPromptWithPlayers]);
+  // Fix the infinite loop by memoizing selectNextPrompt dependencies
+  const selectNextPrompt = useCallback((): string => {
+    const newPrompt = generateDynamicPrompt();
+    return formatPromptWithPlayers(newPrompt);
+  }, [generateDynamicPrompt, formatPromptWithPlayers]);
+
+  // Update the useEffect to properly handle prompt updates
+  useEffect(() => {
+    if (gameState === "playing") {
+      const firstPrompt = selectNextPrompt();
+      const secondPrompt = selectNextPrompt();
+      setCurrentPrompt(firstPrompt);
+      setNextPrompt(secondPrompt);
+    }
+  }, [gameState, selectNextPrompt]);
 
   // Initialize prompts when theme changes or game starts
   useEffect(() => {
@@ -284,17 +448,29 @@ export function PersonalizedPartyGame() {
 
   // Handle swiping to next prompt
   const handleSwipeSuccess = useCallback(() => {
-    // Update prompts first
+    // Only trigger haptics on native platforms
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+
     const newNextPrompt = selectNextPrompt();
     setCurrentPrompt(nextPrompt);
     setNextPrompt(newNextPrompt);
 
-    // Reset positions immediately
-    translateX.value = 0;
-    translateY.value = 0;
-    cardRotation.value = 0;
-    cardScale.value = 1;
-    cardOpacity.value = 1;
+    // Reset positions with a slight delay
+    setTimeout(() => {
+      translateX.value = 0;
+      translateY.value = 0;
+      cardRotation.value = 0;
+      cardScale.value = withSpring(1, {
+        damping: 15,
+        stiffness: 100,
+      });
+      cardOpacity.value = withSpring(1, {
+        damping: 15,
+        stiffness: 100,
+      });
+    }, 50);
   }, [nextPrompt, selectNextPrompt]);
 
   // Add a new player
@@ -360,14 +536,35 @@ export function PersonalizedPartyGame() {
     }
   }, []);
 
+  // Add new animation value for error shake
+  const errorShakeX = useSharedValue(0);
+
   // Start the game
   const startGame = () => {
     if (players.length < 2) {
-      Alert.alert("Error", "Please add at least 2 players to start the game.");
+      // Error animation
+      errorShakeX.value = withSequence(
+        withSpring(-10, { stiffness: 500, damping: 10 }),
+        withSpring(10, { stiffness: 500, damping: 10 }),
+        withSpring(-10, { stiffness: 500, damping: 10 }),
+        withSpring(10, { stiffness: 500, damping: 10 }),
+        withSpring(0, { stiffness: 500, damping: 10 })
+      );
+
+      // Haptic feedback
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+
+      Alert.alert(
+        "Not Enough Players",
+        "Add at least 2 players to start the game.",
+        [{ text: "OK", onPress: () => setIsAddPlayerVisible(true) }]
+      );
       return;
     }
     animateGameStateTransition(true);
-    setTimeout(() => setGameState("playing"), 200); // Increased delay
+    setTimeout(() => setGameState("playing"), 200);
   };
 
   // Exit the game and return to setup
@@ -388,11 +585,18 @@ export function PersonalizedPartyGame() {
     }
   };
 
+  // Add error animation style
+  const errorAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: errorShakeX.value }],
+    };
+  });
+
   // Render Setup Screen Content
   const renderSetupContent = () => (
     <View style={styles.setupContainer}>
       <LinearGradient
-        colors={["#FF3B30", "#FF2D55"]}
+        colors={["#0A0A0A", "#141414"]}
         style={styles.gradientBackground}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -404,7 +608,7 @@ export function PersonalizedPartyGame() {
           numberOfLines={2}
           adjustsFontSizeToFit
         >
-          SOCIAL CHAOS
+          GAMBIT
         </ThemedText>
         <View style={styles.setupControls}>
           <View style={styles.setupButton}>
@@ -419,20 +623,31 @@ export function PersonalizedPartyGame() {
               styles.modeToggle,
               gameSettings.isSexyMode && styles.modeToggleActive,
             ]}
-            onPress={() =>
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               setGameSettings((prev) => ({
                 ...prev,
                 isSexyMode: !prev.isSexyMode,
-              }))
-            }
+              }));
+            }}
           >
             <ThemedText style={styles.modeToggleText}>
               {gameSettings.isSexyMode ? "💋 Sexy Mode" : "🥂 Normal Mode"}
             </ThemedText>
           </TouchableOpacity>
-          <View style={styles.setupButton}>
-            <Button title="Start Game" onPress={startGame} variant="accent" />
-          </View>
+          <Animated.View style={[styles.setupButton, errorAnimatedStyle]}>
+            <Button
+              title={
+                players.length < 2
+                  ? `Add ${2 - players.length} More Player${
+                      players.length === 1 ? "" : "s"
+                    }`
+                  : "Start Game"
+              }
+              onPress={startGame}
+              variant="accent"
+            />
+          </Animated.View>
         </View>
         <FlatList
           data={players}
@@ -457,6 +672,31 @@ export function PersonalizedPartyGame() {
           contentContainerStyle={styles.playerList}
           showsVerticalScrollIndicator={false}
         />
+        <View style={styles.chaosSliderContainer}>
+          <ThemedText style={styles.chaosLabel}>
+            🎲 Chaos Level: {Math.round(gameSettings.chaosLevel * 100)}%
+          </ThemedText>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={1}
+            value={gameSettings.chaosLevel}
+            onValueChange={(value) =>
+              setGameSettings((prev) => ({ ...prev, chaosLevel: value }))
+            }
+            minimumTrackTintColor="#818CF8"
+            maximumTrackTintColor="rgba(255, 255, 255, 0.1)"
+            thumbTintColor={interpolateColor(
+              gameSettings.chaosLevel,
+              [0, 1],
+              ["#818CF8", "#6366F1"]
+            )}
+          />
+          <View style={styles.chaosLevelLabels}>
+            <ThemedText style={[styles.chaosLevelText]}>Mild</ThemedText>
+            <ThemedText style={[styles.chaosLevelText]}>Wild</ThemedText>
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -464,313 +704,402 @@ export function PersonalizedPartyGame() {
   const isDark = colorScheme === "dark";
 
   // Styles
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          flex: 1,
-        },
-        safeArea: {
-          flex: 1,
-        },
-        setupContainer: {
-          flex: 1,
-          position: "relative",
-          width: "100%",
-        },
-        title: {
-          fontSize: 56,
-          fontWeight: "800",
-          textAlign: "center",
-          lineHeight: 60,
-          color: "#fff",
-          textTransform: "uppercase",
-          letterSpacing: 2,
-          marginBottom: 20,
-          textShadowColor: "rgba(0, 0, 0, 0.15)",
-          textShadowOffset: { width: 0, height: 1 },
-          textShadowRadius: 1,
-        },
-        setupControls: {
-          width: "100%",
-          gap: 16,
-          alignSelf: "center",
-          marginBottom: 20,
-        },
-        playerList: {
-          width: "100%",
-          flexGrow: 1,
-          marginTop: 20,
-        },
-        dialogTitle: {
-          fontSize: 28,
-          marginTop: 48,
-          fontWeight: "600",
-          marginBottom: 32,
-          textAlign: "center",
-          color: isDark ? "#fff" : "#000",
-        },
-        playerItem: {
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingVertical: 12,
-          paddingHorizontal: 16,
-          marginBottom: 8,
-          backgroundColor: "rgba(0, 0, 0, 0.2)",
-          borderRadius: 12,
-          borderWidth: 1,
-          borderColor: "rgba(255, 255, 255, 0.1)",
-          overflow: "hidden",
-        },
-        playerName: {
-          fontSize: 18,
-          color: "#fff",
-          fontWeight: "600",
-        },
-        playingContainer: {
-          flex: 1,
-          paddingVertical: 16,
-          justifyContent: "space-between",
-          backgroundColor: isDark ? "#000" : "#fff",
-        },
-        cardWrapper: {
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 20,
-          backgroundColor: isDark ? "#1c1c1e" : "#fff",
-          borderRadius: 15,
-          margin: 10,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.1,
-          shadowRadius: 3.84,
-          elevation: 5,
-        },
-        promptText: {
-          fontSize: 24,
-          textAlign: "center",
-          marginBottom: 20,
-          color: isDark ? "#fff" : "#000",
-        },
-        promptContainer: {
-          width: SCREEN_WIDTH - 40,
-          minHeight: 200,
-          backgroundColor: isDark
-            ? "rgba(28, 28, 30, 0.8)"
-            : "rgba(255, 255, 255, 0.8)",
-          borderRadius: 20,
-          padding: 20,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.25,
-          shadowRadius: 12,
-          elevation: 5,
-          justifyContent: "center",
-          alignItems: "center",
-          borderWidth: 1,
-          borderColor: isDark
-            ? "rgba(255, 255, 255, 0.1)"
-            : "rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-        },
-        prompt: {
-          fontSize: 32,
-          fontWeight: "700",
-          textAlign: "center",
-          color: isDark ? "#fff" : "#000",
-          textShadowColor: "rgba(0, 0, 0, 0.1)",
-          textShadowOffset: { width: 1, height: 1 },
-          textShadowRadius: 2,
-        },
-        gradientBackground: {
-          position: "absolute",
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-          width: "100%",
-          opacity: 0.9,
-        },
-        button: {
-          backgroundColor: "rgba(255, 255, 255, 0.25)",
-          paddingHorizontal: 24,
-          paddingVertical: 16,
-          borderRadius: 16,
-          alignItems: "center",
-          justifyContent: "center",
-          marginVertical: 8,
-          marginHorizontal: 16,
-          borderWidth: 1,
-          borderColor: "rgba(255, 255, 255, 0.4)",
-        },
-        input: {
-          flex: 1,
-          height: 48,
-          borderWidth: 1,
-          borderColor: "rgba(255, 255, 255, 0.2)",
-          borderRadius: 12,
-          paddingHorizontal: 16,
-          color: isDark ? "#fff" : "#000",
-          backgroundColor: isDark
-            ? "rgba(255, 255, 255, 0.1)"
-            : "rgba(0, 0, 0, 0.1)",
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-        },
-        header: {
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: 16,
-        },
-        exitButton: {
-          padding: 8,
-        },
-        gameMode: {
-          flex: 1,
-          textAlign: "center",
-          marginRight: 40,
-          fontSize: 32,
-          color: isDark ? "#fff" : "#000",
-        },
-        setupContentContainer: {
-          flex: 1,
-          paddingHorizontal: 24,
-          justifyContent: "space-between",
-          paddingTop: 40,
-          paddingBottom: 20,
-          width: "100%",
-        },
-        setupButton: {
-          overflow: "hidden",
-          borderRadius: 16,
-          backgroundColor: "rgba(255, 255, 255, 0.25)",
-        },
-        setupButtonGradient: {
-          paddingHorizontal: 2,
-          paddingVertical: 2,
-          borderRadius: 16,
-          backgroundColor: "rgba(255, 255, 255, 0.25)",
-        },
-        setupSelect: {
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-          borderWidth: 1,
-          borderColor: "rgba(255, 255, 255, 0.2)",
-          borderRadius: 16,
-          overflow: "hidden",
-        },
-        buttonText: {
-          color: "#fff",
-          fontSize: 18,
-          fontWeight: "600",
-          textShadowColor: "rgba(0, 0, 0, 0.15)",
-          textShadowOffset: { width: 0, height: 1 },
-          textShadowRadius: 1,
-        },
-        addButton: {
-          backgroundColor: "rgba(255, 255, 255, 0.15)",
-          paddingHorizontal: 20,
-          paddingVertical: 12,
-          borderRadius: 12,
-          borderWidth: 1,
-          borderColor: "rgba(255, 255, 255, 0.3)",
-        },
-        nextButtonContainer: {
-          marginHorizontal: 16,
-          marginBottom: 16,
-          borderRadius: 16,
-          overflow: "hidden",
-        },
-        nextButton: {
-          backgroundColor: isDark
-            ? "rgba(255, 255, 255, 0.1)"
-            : "rgba(0, 0, 0, 0.1)",
-          paddingVertical: 16,
-          borderRadius: 16,
-          alignItems: "center",
-          justifyContent: "center",
-          borderWidth: 1,
-          borderColor: isDark
-            ? "rgba(255, 255, 255, 0.2)"
-            : "rgba(0, 0, 0, 0.1)",
-        },
-        nextButtonText: {
-          fontSize: 18,
-          fontWeight: "600",
-          color: isDark ? "#FFFFFF" : "#000000",
-        },
-        cardsContainer: {
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "transparent",
-          position: "relative",
-          marginBottom: 16,
-          paddingHorizontal: 20,
-        },
-        currentCard: {
-          zIndex: 2,
-          width: "100%",
-          position: "absolute",
-        },
-        nextCard: {
-          zIndex: 1,
-          width: "100%",
-          position: "absolute",
-          transform: [{ scale: 0.95 }, { translateY: 10 }],
-          opacity: 0.8,
-        },
-        addPlayerForm: {
-          flexDirection: "row",
-          alignItems: "center",
-          marginBottom: 24,
-          gap: 12,
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-          padding: 8,
-          borderRadius: 16,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-          borderWidth: 1,
-          borderColor: "rgba(255, 255, 255, 0.2)",
-        },
-        modeToggle: {
-          paddingHorizontal: 12,
-          paddingVertical: 8,
-          borderRadius: 16,
-          borderWidth: 1,
-          borderColor: "rgba(255, 255, 255, 0.2)",
-        },
-        modeToggleActive: {
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-        },
-        modeToggleText: {
-          fontSize: 18,
-          fontWeight: "600",
-          color: "#fff",
-        },
+  const styles = StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: "#141414",
+    },
+    container: {
+      flex: 1,
+      alignItems: "center",
+      backgroundColor: "#141414",
+    },
+    contentContainer: {
+      flex: 1,
+      width: "100%",
+      maxWidth: Platform.OS === "web" ? MAX_WIDTH_WEB : "100%",
+      alignSelf: "center",
+    },
+    setupContainer: {
+      flex: 1,
+      width: "100%",
+      padding: Platform.OS === "web" ? 40 : 20,
+    },
+    playingContainer: {
+      flex: 1,
+      width: "100%",
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+    },
+    cardsContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "transparent",
+      position: "relative",
+      marginBottom: 16,
+      paddingHorizontal: 20,
+    },
+    promptContainer: {
+      width: "100%",
+      maxWidth: Platform.OS === "web" ? MAX_WIDTH_PROMPT_WEB : "100%",
+      aspectRatio: Platform.OS === "web" ? 1.8 : 1.4,
+      borderRadius: 24,
+      padding: 32,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      backgroundColor: "#111111",
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.1)",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 20 },
+      shadowOpacity: 0.3,
+      shadowRadius: 30,
+      elevation: 20,
+    },
+    prompt: {
+      textAlign: "center",
+      fontSize: Platform.OS === "web" ? 32 : 28,
+      lineHeight: Platform.OS === "web" ? 44 : 36,
+      fontFamily: Platform.select({
+        ios: "Inter-Bold",
+        android: "Inter-Bold",
+        default:
+          "Inter-Bold, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
       }),
-    [isDark, colorScheme, gameSettings.isSexyMode]
-  );
+      color: "#FFFFFF",
+      letterSpacing: -0.2,
+    },
+    title: {
+      fontSize: Platform.OS === "web" ? 96 : 72,
+      fontFamily: Platform.select({
+        ios: "Inter-Light",
+        android: "Inter-Light",
+        default:
+          "Inter-Light, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+      }),
+      textAlign: "center",
+      lineHeight: Platform.OS === "web" ? 100 : 80,
+      color: "#FFFFFF",
+      textTransform: "uppercase",
+      letterSpacing: Platform.OS === "web" ? -2 : -1,
+      marginBottom: 60,
+    },
+    setupControls: {
+      width: "100%",
+      gap: 16,
+      alignSelf: "center",
+      marginBottom: 32,
+    },
+    playerList: {
+      width: "100%",
+      flexGrow: 1,
+      marginTop: 20,
+    },
+    dialogTitle: {
+      fontSize: 24,
+      fontFamily: Platform.select({
+        ios: "Inter-Bold",
+        android: "Inter-Bold",
+        default:
+          "Inter-Bold, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+      }),
+      marginBottom: 32,
+      textAlign: "center",
+      color: "#000000",
+      letterSpacing: -0.2,
+    },
+    playerItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+      marginBottom: 12,
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.1)",
+    },
+    playerName: {
+      fontSize: 16,
+      fontFamily: Platform.select({
+        ios: "Inter-Medium",
+        android: "Inter-Medium",
+        default:
+          "Inter-Medium, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+      }),
+      color: "#FFFFFF",
+      letterSpacing: 0.2,
+    },
+    gradientBackground: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      opacity: 0.2, // More subtle gradient
+    },
+    button: {
+      backgroundColor: "rgba(32, 32, 32, 0.8)",
+      paddingHorizontal: 24,
+      paddingVertical: 16,
+      borderRadius: 12,
+      alignItems: "center",
+      justifyContent: "center",
+      marginVertical: 8,
+      marginHorizontal: 16,
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.08)",
+    },
+    input: Platform.select({
+      web: {
+        flex: 1,
+        height: 56,
+        borderRadius: 16,
+        paddingHorizontal: 20,
+        backgroundColor: "rgba(0, 0, 0, 0.05)",
+        color: "#000000",
+        fontSize: 16,
+        fontFamily:
+          "Inter-Regular, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+        letterSpacing: 0.2,
+        outlineWidth: 0,
+        outlineStyle: "none",
+        borderWidth: 1,
+        borderColor: "rgba(0, 0, 0, 0.1)",
+        userSelect: "text" as const,
+        WebkitUserSelect: "text",
+        cursor: "text" as const,
+        caretColor: "#000000",
+      },
+      default: {
+        flex: 1,
+        height: 56,
+        borderRadius: 16,
+        paddingHorizontal: 20,
+        backgroundColor: "rgba(0, 0, 0, 0.05)",
+        color: "#000000",
+        fontSize: 16,
+        fontFamily: Platform.select({
+          ios: "Inter-Regular",
+          android: "Inter-Regular",
+          default: "Inter-Regular",
+        }),
+        letterSpacing: 0.2,
+      },
+    }) as any,
+    exitButton: {
+      padding: 8,
+    },
+    gameMode: {
+      marginLeft: 8,
+    },
+    setupContentContainer: {
+      flex: 1,
+      paddingHorizontal: 24,
+      justifyContent: "space-between",
+      paddingTop: 40,
+      paddingBottom: 20,
+      width: "100%",
+    },
+    setupButton: {
+      overflow: "hidden",
+      borderRadius: 16,
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.1)",
+    },
+    setupButtonGradient: {
+      paddingHorizontal: 2,
+      paddingVertical: 2,
+      borderRadius: 16,
+      backgroundColor: "rgba(255, 255, 255, 0.25)",
+    },
+    setupSelect: {
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.2)",
+      borderRadius: 16,
+      overflow: "hidden",
+    },
+    buttonText: {
+      color: "#FFFFFF",
+      fontSize: 16,
+      fontFamily: Platform.select({
+        ios: "Inter-Medium",
+        android: "Inter-Medium",
+        default:
+          "Inter-Medium, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+      }),
+      textAlign: "center",
+      letterSpacing: 0.2,
+    },
+    addButton: {
+      backgroundColor: "rgba(255, 255, 255, 0.15)",
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.3)",
+    },
+    nextButtonContainer: {
+      position: "absolute",
+      bottom: Platform.OS === "web" ? 40 : 20,
+      left: Platform.OS === "web" ? 40 : 20,
+      right: Platform.OS === "web" ? 40 : 20,
+      borderRadius: 20,
+      overflow: "hidden",
+    },
+    nextButton: {
+      paddingVertical: 20,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+    },
+    nextButtonText: {
+      fontSize: 16,
+      fontFamily: Platform.select({
+        ios: "Inter-Medium",
+        android: "Inter-Medium",
+        default:
+          "Inter-Medium, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+      }),
+      color: "#FFFFFF",
+      letterSpacing: 0.2,
+    },
+    currentCard: {
+      zIndex: 2,
+      width: "100%",
+      position: "absolute",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+    nextCard: {
+      zIndex: 1,
+      width: "100%",
+      position: "absolute",
+      transform: [{ scale: 0.9 }],
+      opacity: 0.5,
+    },
+    addPlayerForm: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 24,
+      gap: 12,
+      backgroundColor: "rgba(0, 0, 0, 0.05)",
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: "rgba(0, 0, 0, 0.1)",
+    },
+    modeToggle: {
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.1)",
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+    },
+    modeToggleActive: {
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      borderColor: "rgba(255, 255, 255, 0.15)",
+    },
+    modeToggleText: {
+      fontSize: 16,
+      fontFamily: Platform.select({
+        ios: "Inter-Medium",
+        android: "Inter-Medium",
+        default:
+          "Inter-Medium, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+      }),
+      color: "#FFFFFF",
+      textAlign: "center",
+      letterSpacing: 0.3,
+    },
+    chaosSliderContainer: {
+      width: "100%",
+      marginBottom: 32,
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      padding: 24,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.1)",
+    },
+    chaosLabel: {
+      fontSize: 16,
+      fontFamily: Platform.select({
+        ios: "Inter-Medium",
+        android: "Inter-Medium",
+        default:
+          "Inter-Medium, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+      }),
+      color: "#FFFFFF",
+      marginBottom: 16,
+      textAlign: "center",
+      letterSpacing: 0.2,
+    },
+    slider: {
+      width: "100%",
+      height: 40,
+    },
+    chaosLevelLabels: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      width: "100%",
+      paddingHorizontal: 8,
+      marginTop: 8,
+    },
+    chaosLevelText: {
+      fontSize: 14,
+      fontFamily: Platform.select({
+        ios: "Inter-Regular",
+        android: "Inter-Regular",
+        default:
+          "Inter-Regular, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+      }),
+      color: "#FFFFFF",
+      letterSpacing: 0.2,
+      opacity: 0.6,
+    },
+  });
 
   // Gesture Handler for Swiping
   const panGesture = Gesture.Pan()
+    .onBegin(() => {
+      if (Platform.OS !== "web") {
+        runOnJS(Haptics.selectionAsync)();
+      }
+    })
     .onUpdate((event) => {
       "worklet";
       translateX.value = event.translationX;
-      translateY.value = event.translationY;
-      cardRotation.value = (event.translationX / SCREEN_WIDTH) * 30;
+      translateY.value = event.translationY * 0.2; // Reduced vertical movement
+      cardRotation.value = (event.translationX / SCREEN_WIDTH) * 15; // Reduced rotation
+
+      // Scale based on movement
+      const progress = Math.abs(event.translationX) / SCREEN_WIDTH;
+      cardScale.value = interpolate(
+        progress,
+        [0, 0.5],
+        [1, 0.95],
+        Extrapolate.CLAMP
+      );
+      cardOpacity.value = interpolate(
+        Math.abs(event.translationX),
+        [0, SCREEN_WIDTH / 2],
+        [1, 0.5],
+        Extrapolate.CLAMP
+      );
     })
     .onEnd((event) => {
       "worklet";
@@ -778,46 +1107,52 @@ export function PersonalizedPartyGame() {
 
       if (shouldSwipe) {
         const direction = event.translationX > 0 ? 1 : -1;
-        // Swipe card away with animation
-        translateX.value = withSpring(
-          direction * SCREEN_WIDTH * 1.5,
-          {
-            velocity: event.velocityX,
-            stiffness: 100,
-            damping: 10,
-          },
-          (finished) => {
-            if (finished) {
-              runOnJS(handleSwipeSuccess)();
-            }
-          }
-        );
-
-        // Add vertical movement and rotation
-        translateY.value = withSpring(direction * 100, {
-          velocity: event.velocityY,
-          stiffness: 100,
-          damping: 10,
-        });
-        cardRotation.value = withSpring(direction * 45, {
-          stiffness: 100,
-          damping: 10,
-        });
-      } else {
-        // Reset position if swipe wasn't far enough
-        translateX.value = withSpring(0, {
+        translateX.value = withSpring(direction * SCREEN_WIDTH, {
           velocity: event.velocityX,
-          stiffness: 200,
+          stiffness: 100,
           damping: 15,
         });
         translateY.value = withSpring(0, {
           velocity: event.velocityY,
-          stiffness: 200,
+          stiffness: 100,
           damping: 15,
+        });
+        cardRotation.value = withSpring(direction * 30, {
+          stiffness: 100,
+          damping: 15,
+        });
+        cardScale.value = withSpring(0.8, {
+          stiffness: 100,
+          damping: 15,
+        });
+        cardOpacity.value = withTiming(0, { duration: 300 }, (finished) => {
+          if (finished) {
+            runOnJS(handleSwipeSuccess)();
+          }
+        });
+      } else {
+        // Return to center with spring animation
+        translateX.value = withSpring(0, {
+          velocity: event.velocityX,
+          stiffness: 200,
+          damping: 20,
+        });
+        translateY.value = withSpring(0, {
+          velocity: event.velocityY,
+          stiffness: 200,
+          damping: 20,
         });
         cardRotation.value = withSpring(0, {
           stiffness: 200,
-          damping: 15,
+          damping: 20,
+        });
+        cardScale.value = withSpring(1, {
+          stiffness: 200,
+          damping: 20,
+        });
+        cardOpacity.value = withSpring(1, {
+          stiffness: 200,
+          damping: 20,
         });
       }
     });
@@ -854,8 +1189,8 @@ export function PersonalizedPartyGame() {
       <View style={styles.cardsContainer}>
         {/* Next card (shown behind) */}
         <BlurView
-          intensity={20}
-          tint={isDark ? "dark" : "light"}
+          intensity={40}
+          tint="dark"
           style={[styles.promptContainer, styles.nextCard]}
         >
           <ThemedText type="title" style={styles.prompt}>
@@ -867,8 +1202,8 @@ export function PersonalizedPartyGame() {
         <GestureDetector gesture={panGesture}>
           <AnimatedBlurView
             key={currentPrompt}
-            intensity={20}
-            tint={isDark ? "dark" : "light"}
+            intensity={40}
+            tint="dark"
             style={[styles.promptContainer, styles.currentCard, cardStyle]}
           >
             <ThemedText type="title" style={styles.prompt}>
@@ -879,16 +1214,12 @@ export function PersonalizedPartyGame() {
       </View>
 
       {/* Clean next button */}
-      <BlurView
-        intensity={20}
-        tint={isDark ? "dark" : "light"}
-        style={styles.nextButtonContainer}
-      >
-        <TouchableOpacity onPress={handleSwipeSuccess}>
+      <BlurView intensity={40} tint="dark" style={styles.nextButtonContainer}>
+        <Pressable onPress={handleSwipeSuccess}>
           <Animated.View style={[styles.nextButton, buttonAnimatedStyle]}>
             <ThemedText style={styles.nextButtonText}>Next</ThemedText>
           </Animated.View>
-        </TouchableOpacity>
+        </Pressable>
       </BlurView>
     </GestureHandlerRootView>
   );
@@ -896,17 +1227,17 @@ export function PersonalizedPartyGame() {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <ThemedView style={styles.container}>
-        {gameState === "setup" ? (
-          <Animated.View style={[styles.setupContainer, styles.setupContainer]}>
-            {renderSetupContent()}
-          </Animated.View>
-        ) : (
-          <Animated.View
-            style={[styles.playingContainer, styles.playingContainer]}
-          >
-            {renderPlayingContent()}
-          </Animated.View>
-        )}
+        <View style={styles.contentContainer}>
+          {gameState === "setup" ? (
+            <Animated.View style={[styles.setupContainer]}>
+              {renderSetupContent()}
+            </Animated.View>
+          ) : (
+            <Animated.View style={[styles.playingContainer]}>
+              {renderPlayingContent()}
+            </Animated.View>
+          )}
+        </View>
       </ThemedView>
       <SlideDownPanel
         isVisible={isAddPlayerVisible}
@@ -917,13 +1248,21 @@ export function PersonalizedPartyGame() {
         </ThemedText>
         <View style={styles.addPlayerForm}>
           <TextInput
+            style={[
+              styles.input,
+              {
+                fontSize: 16,
+                fontWeight: "500",
+              },
+            ]}
             value={newPlayerName}
             onChangeText={setNewPlayerName}
             placeholder="Enter player name"
-            style={styles.input}
-            placeholderTextColor={
-              colorScheme === "dark" ? "#8E8E93" : "#8E8E93"
-            }
+            placeholderTextColor="rgba(0, 0, 0, 0.5)"
+            returnKeyType="done"
+            onSubmitEditing={addPlayer}
+            autoCorrect={false}
+            autoCapitalize="words"
           />
           <Button title="Add" onPress={addPlayer} variant="accent" />
         </View>

@@ -6,64 +6,89 @@
       "category": "social"
     },
     {
-      "text": "{player1} and {player2}, thumb war! Loser drinks.",
-      "type": "action",
-      "category": "drinking"
-    },
-    {
-      "text": "{player1}, give your phone to {player2}. They can send ONE text to anyone in your contacts!",
-      "type": "conditional",
-      "category": "social"
-    },
-    {
-      "text": "Everyone vote on who's most likely to become a millionaire. {player1}, distribute drinks equal to your votes!",
+      "text": "Everyone point to who you think would survive longest in a zombie apocalypse. {player1} gives drinks equal to their votes!",
       "type": "group",
       "category": "social"
     },
     {
-      "text": "{player1}, do your best impression of {player2}. If the group approves, {player2} drinks!",
+      "text": "{player1} and {player2}, rock paper scissors! Loser drinks, winner gives a drink.",
       "type": "action",
-      "category": "social"
-    },
-    {
-      "text": "Categories! {player1} picks a topic, then everyone names something that fits. Last person standing gives out 3 drinks!",
-      "type": "call-response",
       "category": "drinking"
     },
     {
-      "text": "{player1}, you're now a lie detector! Ask {player2} any question - if the group thinks they're lying, they drink!",
+      "text": "Categories! {player1} picks a movie genre, then everyone names a movie. First to repeat or hesitate drinks!",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, you're the judge! Everyone does their best celebrity impression, worst one drinks.",
+      "type": "group",
+      "category": "action"
+    },
+    {
+      "text": "Phone roulette! {player1} picks a number 1-10, {player2} scrolls that many photos in their camera roll. Show or drink!",
       "type": "conditional",
       "category": "social"
     },
     {
-      "text": "Quick! {player1} name three things about {player2}. Drink for each wrong answer!",
-      "type": "call-response",
+      "text": "Everyone who's ever ghosted someone drinks! {player1} decides how many sips.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, give your phone to {player2}. They can post anything to your social media or you drink 5 times!",
+      "type": "conditional",
       "category": "social"
+    },
+    {
+      "text": "Everyone votes on who's most likely to become a CEO. {player1} distributes drinks equal to their votes!",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, truth or dare? Group decides your fate - refuse and drink 3 times!",
+      "type": "conditional",
+      "category": "action"
     }
   ],
   "sexy": [
     {
-      "text": "{player1}, demonstrate your best flirting technique on {player2}. Group rates it out of 10 - drink the difference!",
+      "text": "{player1}, demonstrate your best pickup line on {player2}. Group rates it - drink the difference from 10!",
       "type": "action",
       "category": "social"
     },
     {
-      "text": "Truth time! {player1}, what's your biggest dating red flag? Group votes if you're self-aware!",
-      "type": "social",
+      "text": "Everyone writes their worst date story anonymously. {player1} reads them out - guess who's is who's!",
+      "type": "group",
       "category": "social"
     },
     {
-      "text": "{player1} and {player2}, staring contest! First to break eye contact has to share their most awkward date story!",
+      "text": "{player1} and {player2}, staring contest! First to break eye contact shares their most awkward kiss story.",
       "type": "action",
       "category": "social"
     },
     {
-      "text": "{player1}, recreate your ideal romantic scene with {player2}. Others guess which movie it's from!",
+      "text": "Everyone votes on who's most likely to get married first. {player1} gives out drinks equal to their votes!",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, you're Cupid! Match two players who'd make the best couple - they both drink!",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Everyone who's ever had a dating app installed drinks! {player1} decides how many sips.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, recreate your ideal first date scenario with {player2}. Others rate it - drink the difference from 10!",
       "type": "action",
       "category": "social"
     },
     {
-      "text": "Everyone writes their best pickup line. {player1} judges - worst one drinks!",
+      "text": "Everyone writes their best/worst pickup line. {player1} judges - worst one drinks double!",
       "type": "group",
       "category": "social"
     }
