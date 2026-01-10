@@ -1,94 +1,749 @@
 {
   "normal": [
     {
-      "text": "{player1}, start a story with one sentence. Going clockwise, everyone adds a sentence. First to hesitate drinks!",
-      "type": "call-response",
+      "text": "{player1}, show the group your screen time. Drink for every hour over 4.",
+      "type": "single-player",
       "category": "social"
     },
     {
-      "text": "Everyone point to who you think would survive longest in a zombie apocalypse. {player1} gives drinks equal to their votes!",
+      "text": "Everyone point to who has the most unread texts right now. That person drinks.",
       "type": "group",
       "category": "social"
     },
     {
-      "text": "{player1} and {player2}, rock paper scissors! Loser drinks, winner gives a drink.",
+      "text": "{player1}, open your camera roll. {player2} picks a number 1-30. Show that photo or finish your drink.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "If you've ever stalked an ex's new partner, drink. If you're lying, drink double.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, do your best impression of {player2} trying to flirt. Group rates 1-10, drink the difference from 10.",
       "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Last person to show a meme on their phone takes 3 drinks.",
+      "type": "group",
+      "category": "action"
+    },
+    {
+      "text": "{player1}, read your last sent DM out loud. If you refuse, the group picks which app you have to send 'hey' to someone from.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Everyone who's been in a situationship in the last year, drink.",
+      "type": "group",
       "category": "drinking"
     },
     {
-      "text": "Categories! {player1} picks a movie genre, then everyone names a movie. First to repeat or hesitate drinks!",
+      "text": "{player1} and {player2}, staring contest. First to laugh drinks. Loser also has to compliment the winner sincerely.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Point to who gives off the most 'main character energy'. They choose: accept the crown and give out 3 drinks, or drink 3 themselves.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, your dating app bio is now being written by {player2}. Accept it for 24hrs or drink 5.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Waterfall! {player1} starts, everyone drinks until the person before them stops.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Without naming names, {player1} describe your 'type'. Everyone guesses who in the room fits it. Each wrong guess = 1 drink for the guesser.",
       "type": "call-response",
       "category": "social"
     },
     {
-      "text": "{player1}, you're the judge! Everyone does their best celebrity impression, worst one drinks.",
-      "type": "group",
-      "category": "action"
-    },
-    {
-      "text": "Phone roulette! {player1} picks a number 1-10, {player2} scrolls that many photos in their camera roll. Show or drink!",
+      "text": "{player1}, show your Spotify most played. If it's embarrassing, you drink. Group votes.",
       "type": "conditional",
       "category": "social"
     },
     {
-      "text": "Everyone who's ever ghosted someone drinks! {player1} decides how many sips.",
+      "text": "Rock paper scissors tournament! Everyone pairs up. Losers drink, winners face off until one champion remains.",
+      "type": "group",
+      "category": "action"
+    },
+    {
+      "text": "Categories: {player1} picks a topic (e.g., red flags). Go around naming examples. First to repeat or hesitate drinks.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, your phone password is now the group's business. Share it or take 4 drinks.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Everyone with an ex's number still saved, drink. If they're saved under a fake name, drink double.",
       "type": "group",
       "category": "drinking"
     },
     {
-      "text": "{player1}, give your phone to {player2}. They can post anything to your social media or you drink 5 times!",
-      "type": "conditional",
-      "category": "social"
+      "text": "{player1}, you have 30 seconds to make {player2} laugh using only facial expressions. Fail = 3 drinks.",
+      "type": "action",
+      "category": "action"
     },
     {
-      "text": "Everyone votes on who's most likely to become a CEO. {player1} distributes drinks equal to their votes!",
+      "text": "Point to who would survive the longest without their phone. That person hands their phone to someone else for 5 minutes or drinks.",
       "type": "group",
       "category": "social"
     },
     {
-      "text": "{player1}, truth or dare? Group decides your fate - refuse and drink 3 times!",
+      "text": "{player1}, what's the most unhinged thing in your notes app? Read it or drink 5.",
       "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Everyone who's ever double-texted after being left on read, drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, rank everyone by who you'd want on your zombie apocalypse team. Last pick drinks 3.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "Thumb master! {player1} is thumb master. Whenever they put their thumb on the table, everyone must follow. Last person drinks.",
+      "type": "group",
       "category": "action"
+    },
+    {
+      "text": "{player1} and {player2}, trade phones for 2 minutes. You can look at anything. Or drink 5 each.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Point to who has the worst takes. They must defend their most controversial opinion. If the group disagrees, they drink.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, text your most recent contact 'I need to tell you something' and show the response. Chicken out = finish your drink.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Never have I ever lied in a never have I ever. Drink if you have. We all know you have.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, give {player2} your phone. They get to send one text to anyone from your contacts. You can veto for 5 drinks.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Most likely to: wake up in a different city after a night out. That person gives out 3 drinks.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, do a TikTok dance. If no one recognizes it, everyone else drinks. If they do, you drink.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Everyone who's ordered food just because delivery was free over $15, drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, hot take time. Say something controversial. If anyone agrees, they drink with you.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "Floor is lava! Last person with their feet off the ground drinks.",
+      "type": "group",
+      "category": "action"
+    },
+    {
+      "text": "{player1}, scroll your Instagram following and stop randomly. Show who it landed on and explain why you follow them.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Point to who takes the longest to text back. They drink and have to explain themselves.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, for the next 3 rounds, you can only speak in questions. Break the rule = drink.",
+      "type": "single-player",
+      "category": "action"
+    },
+    {
+      "text": "Everyone with a finsta, drink. Everyone who follows someone's finsta that doesn't follow theirs, drink again.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, roast {player2} in 15 seconds. Make it good. If it's weak, you drink.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Compliment battle! {player1} vs {player2}. Take turns complimenting each other. First to break, cringe, or repeat drinks.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Everyone Google yourself. Person with the most embarrassing result drinks.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, truth or drink: what's the pettiest thing you've done to an ex?",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Point to who would be the worst influence. They give out 4 drinks to prove it.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, your autocomplete challenge: type 'I really want' and send the first suggestion. Show us.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Drink if you've ever pretended to be busy to avoid plans.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, what's your most played song? If anyone calls it a red flag, drink.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "{player1} and {player2}, who can hold a plank longer? Loser finishes their drink.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Everyone who's ever unfollowed someone after an argument, drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, give your best celebrity impression. Everyone guesses. If no one gets it, you drink.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Point to who's most likely to accidentally go viral. They either film a TikTok right now or drink 3.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, show your search history or drink 5. Clear it first = finish your drink.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Two truths one lie about your dating life. Everyone guesses the lie. Anyone wrong drinks.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, call your mom and say 'I have news'. Screenshot her response. Worth 3 drinks if you do it.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Everyone stand up. Simon says rules. {player1} is Simon. First to mess up drinks and becomes the new Simon.",
+      "type": "group",
+      "category": "action"
+    },
+    {
+      "text": "Point to the lightweight. They can accept the title or attempt to chug and prove everyone wrong.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, DM a celebrity and show the group. If you already have a celeb in your DMs, drink 3.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Drink if you've ever unmatched someone for their music taste.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, rate everyone's vibe 1-10 and explain. Anyone who disagrees with their rating can challenge you to drink.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "Who has the most chaotic energy tonight? They control the music for 3 songs or drink.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, truth or drink: what's your actual body count? (Lying is allowed but karma will find you)",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Speed round! Go around saying a word. Theme: things you'd swipe right on. Hesitate or repeat = drink.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "Everyone who's ever been the 'crazy' ex, drink. If you don't drink, someone can call you out.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, show your battery percentage. Drink that many sips divided by 10.",
+      "type": "single-player",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who has the highest standards. They drink unless they can prove they settled.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1} vs {player2}: who can say 'unique New York' 5 times fastest? Loser drinks.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Everyone who's lied about being 'almost there' when they haven't left yet, drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, scroll to a random story on your close friends. If someone here isn't on it, explain why.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Confession circle! Everyone admits one thing they've never told the group. Weakest confession drinks.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, fake propose to {player2}. Sell it. Bad acting = both drink.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Drink if you have a notes app list of people who've wronged you.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, give your phone to {player2}. They can like any 3 posts on your behalf. Veto = drink 5.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Point to who you'd trust least with a secret. They either share a secret now or drink 3.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, accent challenge! Speak in a British accent for 2 minutes. Breaking = drink.",
+      "type": "single-player",
+      "category": "action"
+    },
+    {
+      "text": "Everyone who's ever rage-applied for jobs, drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, create a haiku about {player2} in 30 seconds. Bad haiku = drink.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Point to who would survive longest on a reality dating show. They drink and explain their strategy.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, show your calculator history. Suspicious math = drink.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Drink if you've ever 'accidentally' opened someone's snap just to see what they sent.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1} vs {player2}: freestyle rap battle about each other. 30 seconds each. Loser drinks, group decides.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Everyone with over 500 unread emails, drink. Over 1000 = finish it.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, what's your most toxic trait? If you can't name one, the group decides and you drink.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "New rule from {player1}! Create a rule that lasts 5 rounds. First person to break it drinks.",
+      "type": "single-player",
+      "category": "action"
+    },
+    {
+      "text": "Everyone who's ever posted and deleted within 10 minutes, drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, let {player2} post one story from your phone. They have full creative control. Refuse = finish drink.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Point to the group therapist. They've heard everyone's problems, now they drink 3.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, show the group chat you've muted. If someone here is in it, you both drink.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Speed dating round! {player1}, you have 20 seconds to impress {player2}. Cringe = both drink.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Drink if you've ever typed a paragraph then deleted it all and sent 'ok'.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, give your best motivational speech about {player2}. Under 20 seconds = drink.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Point to who peaked in high school. They defend themselves or drink.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, show the last TikTok you sent someone. Context matters.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Everyone playing this game sober, drink. Oh wait.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, truth or drink: who here would you hook up with? (Skip = finish your drink)",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Group vote: who's being the most chaotic tonight? They become Question Master until dethroned.",
+      "type": "group",
+      "category": "action"
+    },
+    {
+      "text": "{player1}, open your Amazon order history. Most questionable purchase = 3 drinks.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Drink if you've ever screenshotted a text to send to someone else.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1} is in the hot seat! Group asks yes/no questions. Every 'no' = 1 drink. 5 questions max.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "Point to who'd win in a fight. They arm wrestle the person who voted least for them.",
+      "type": "group",
+      "category": "action"
+    },
+    {
+      "text": "{player1}, your camera is now {player2}'s. They take 3 photos of you. Post the worst one or drink 4.",
+      "type": "conditional",
+      "category": "dare"
     }
   ],
   "sexy": [
     {
-      "text": "{player1}, demonstrate your best pickup line on {player2}. Group rates it - drink the difference from 10!",
+      "text": "{player1}, demonstrate on your hand how you'd kiss someone. Group rates it. Drink the difference from 10.",
       "type": "action",
       "category": "social"
     },
     {
-      "text": "Everyone writes their worst date story anonymously. {player1} reads them out - guess who's is who's!",
+      "text": "Point to who you think gives the best relationship advice despite being chronically single. They drink.",
       "type": "group",
       "category": "social"
     },
     {
-      "text": "{player1} and {player2}, staring contest! First to break eye contact shares their most awkward kiss story.",
+      "text": "{player1} and {player2}, whisper something to each other. The group has to guess if it was a compliment or an insult.",
       "type": "action",
       "category": "social"
     },
     {
-      "text": "Everyone votes on who's most likely to get married first. {player1} gives out drinks equal to their votes!",
-      "type": "group",
-      "category": "social"
-    },
-    {
-      "text": "{player1}, you're Cupid! Match two players who'd make the best couple - they both drink!",
-      "type": "conditional",
-      "category": "social"
-    },
-    {
-      "text": "Everyone who's ever had a dating app installed drinks! {player1} decides how many sips.",
+      "text": "Drink if you've ever texted 'wyd' after midnight with intentions.",
       "type": "group",
       "category": "drinking"
     },
     {
-      "text": "{player1}, recreate your ideal first date scenario with {player2}. Others rate it - drink the difference from 10!",
+      "text": "{player1}, give {player2} your best pickup line. If it's cringe, you drink. If it works, they drink.",
       "type": "action",
       "category": "social"
     },
     {
-      "text": "Everyone writes their best/worst pickup line. {player1} judges - worst one drinks double!",
+      "text": "Everyone point to who gives off 'good in bed' energy. That person drinks and tells us nothing.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, truth or drink: what's your body count? (Ballpark is acceptable)",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, send a flirty text to the last person you matched with. Screenshot or drink 4.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Everyone who's ever sent a 'you up?' text, drink. If it worked, drink again.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, give {player2} a compliment you'd use on a first date. Make it smooth. Cringe = both drink.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Point to who's most likely to slide into a celebrity's DMs. They show their boldest DM or drink 3.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1} and {player2}, maintain eye contact while everyone else tries to make you laugh. First to break drinks.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "Drink if you've ever stalked a hookup's Instagram before meeting.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, describe your worst kiss without naming names. If anyone guesses who, you both drink.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Everyone who's been called 'too intense' by a romantic interest, drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, pick someone to serenade. Sing at least 4 lines. Bail = drink 4.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "Point to the best flirt in the room. They have to prove it by flirting with the person to their right.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, truth or drink: what's the longest you've been in a situationship?",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Phone swap chaos! Everyone pass phones to the left. You have 30 seconds to change their wallpaper. No vetos.",
+      "type": "group",
+      "category": "dare"
+    },
+    {
+      "text": "{player1} and {player2}, leave the room for 2 minutes. Come back with a secret about each other or both drink 3.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "Drink if you've ever caught feelings for a friend with benefits.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, rank everyone by dateability. Explain your criteria. Anyone offended gets to give you a drink.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "Point to who has the highest standards. They have to share 3 dealbreakers.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, read your last 'I miss you' text out loud. Don't have one? That's also telling. Drink anyway.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Everyone who's ever stalked someone they're dating's ex, drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, bite your lip seductively while maintaining eye contact with {player2}. Both drink if anyone laughs.",
+      "type": "action",
+      "category": "action"
+    },
+    {
+      "text": "{player1} spins an imaginary bottle. Whoever it 'lands on' gets asked a spicy truth or dare.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "Drink if you've ever blamed 'being drunk' for something you meant to do sober.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, share your most embarrassing hookup story. Under 30 seconds = drink for wasting our time.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Point to who you'd set up with a friend. Explain why. If they're offended, drink.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, let {player2} go through your following list for 30 seconds. They can ask about 3 accounts.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "Everyone who's been dumped via text, drink. Bonus drink if it was on a holiday.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, play a voice memo you've saved. No context needed, just chaos.",
+      "type": "single-player",
+      "category": "dare"
+    },
+    {
+      "text": "Point to who would make the best wingman/wingwoman. They have to actually wing for someone tonight or drink.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, truth or drink: have you ever pretended to like someone's pet to get closer to them?",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Drink if you've ever used someone's Netflix login after breaking up with them.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1} and {player2}, hold hands for the next 2 rounds. Either can quit for 2 drinks.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "Everyone who's posted a thirst trap, drink. Extra drink if you deleted it.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, someone here has a crush on you (maybe). Who do you think? Wrong guess = drink.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Point to who you'd swipe right on. Honesty counts, cowardice drinks.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, show your dating app conversation that went nowhere. Roast yourself.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Drink if you've ever said 'I love you' too early.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, describe {player2} to a dating app audience in 20 seconds. Bad pitch = drink.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Point to who's caught the most feelings in this room. They drink and deny it.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, your ex walks in. Who here are you fake dating? They have 30 seconds to play along convincingly.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Everyone who's been ghosted this year, drink. Everyone who's done the ghosting, drink double.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1} and {player2}, compare dating app photos. Group votes who's catfishing harder.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Drink if you have someone's hoodie you never returned.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, give everyone a dating red or green flag. Defend your ratings.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "Point to who's the biggest romantic. They plan a dream date in 30 seconds. Boring = drink.",
       "type": "group",
       "category": "social"
     }
