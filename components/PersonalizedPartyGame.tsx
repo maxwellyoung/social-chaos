@@ -17,6 +17,7 @@ import {
   Text,
   Platform,
   Pressable,
+  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "./ThemedText";
@@ -30,11 +31,17 @@ import Animated, {
   withSpring,
   withTiming,
   withSequence,
+  withDelay,
+  withRepeat,
   interpolate,
   useSharedValue,
   runOnJS,
   Extrapolate,
   interpolateColor,
+  FadeIn,
+  FadeOut,
+  SlideInUp,
+  SlideOutDown,
 } from "react-native-reanimated";
 import {
   Gesture,
@@ -87,13 +94,34 @@ type Prompts = {
 
 const allPrompts = prompts as Prompts;
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.25;
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const MAX_WIDTH_WEB = 720;
 const MAX_WIDTH_PROMPT_WEB = 560;
+
+// Color themes for different modes
+const COLORS = {
+  normal: {
+    primary: ["#667eea", "#764ba2"] as const,
+    secondary: ["#f093fb", "#f5576c"] as const,
+    accent: "#818CF8",
+    card: ["#1a1a2e", "#16213e"] as const,
+  },
+  sexy: {
+    primary: ["#ff416c", "#ff4b2b"] as const,
+    secondary: ["#f953c6", "#b91d73"] as const,
+    accent: "#F472B6",
+    card: ["#2d1f3d", "#1a1a2e"] as const,
+  },
+};
+
+// Emoji avatars for players
+const PLAYER_EMOJIS = ["😎", "🔥", "💀", "👻", "🎃", "🦊", "🐸", "🌚", "🤠", "🥳", "😈", "🤡", "👽", "🤖", "💩"];
 
 export function PersonalizedPartyGame() {
   // State Variables
@@ -102,6 +130,7 @@ export function PersonalizedPartyGame() {
   const [gameState, setGameState] = useState<"setup" | "playing">("setup");
   const [currentPrompt, setCurrentPrompt] = useState("");
   const [nextPrompt, setNextPrompt] = useState("");
+  const [promptCount, setPromptCount] = useState(0);
   const [gameSettings, setGameSettings] = useState<GameSettings>({
     isSexyMode: false,
     usedPrompts: new Set(),
@@ -110,6 +139,7 @@ export function PersonalizedPartyGame() {
     lastPrompts: [],
   });
   const [isAddPlayerVisible, setIsAddPlayerVisible] = useState(false);
+  const [showSwipeHint, setShowSwipeHint] = useState(true);
 
   const colorScheme = useColorScheme();
   const promptsRef = useRef<EnhancedPrompt[]>([]);
@@ -122,10 +152,51 @@ export function PersonalizedPartyGame() {
   const cardRotation = useSharedValue(0);
   const cardScale = useSharedValue(1);
   const cardOpacity = useSharedValue(1);
+  const swipeHintOpacity = useSharedValue(1);
+  const nextCardScale = useSharedValue(0.92);
+  const nextCardOpacity = useSharedValue(0.4);
+  const pulseAnim = useSharedValue(1);
+
+  // Get current theme colors
+  const themeColors = gameSettings.isSexyMode ? COLORS.sexy : COLORS.normal;
+
+  // Swipe hint animation
+  useEffect(() => {
+    if (showSwipeHint && gameState === "playing") {
+      swipeHintOpacity.value = withRepeat(
+        withSequence(
+          withTiming(0.3, { duration: 1000 }),
+          withTiming(1, { duration: 1000 })
+        ),
+        -1,
+        true
+      );
+    }
+  }, [showSwipeHint, gameState]);
+
+  // Pulse animation for next button
+  useEffect(() => {
+    pulseAnim.value = withRepeat(
+      withSequence(
+        withTiming(1.02, { duration: 1500 }),
+        withTiming(1, { duration: 1500 })
+      ),
+      -1,
+      true
+    );
+  }, []);
 
   // Button Press Animation
   const buttonAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: buttonScale.value }],
+  }));
+
+  const swipeHintStyle = useAnimatedStyle(() => ({
+    opacity: swipeHintOpacity.value,
+  }));
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseAnim.value }],
   }));
 
   // Utility Functions
@@ -453,9 +524,19 @@ export function PersonalizedPartyGame() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
 
+    // Hide swipe hint after first swipe
+    if (showSwipeHint) {
+      setShowSwipeHint(false);
+    }
+
     const newNextPrompt = selectNextPrompt();
     setCurrentPrompt(nextPrompt);
     setNextPrompt(newNextPrompt);
+    setPromptCount((prev) => prev + 1);
+
+    // Animate next card coming forward
+    nextCardScale.value = withSpring(1, { damping: 20, stiffness: 300 });
+    nextCardOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
 
     // Reset positions with a slight delay
     setTimeout(() => {
@@ -470,18 +551,31 @@ export function PersonalizedPartyGame() {
         damping: 15,
         stiffness: 100,
       });
+      // Reset next card position
+      nextCardScale.value = withTiming(0.92, { duration: 200 });
+      nextCardOpacity.value = withTiming(0.4, { duration: 200 });
     }, 50);
-  }, [nextPrompt, selectNextPrompt]);
+  }, [nextPrompt, selectNextPrompt, showSwipeHint]);
 
   // Add a new player
   const addPlayer = () => {
     if (newPlayerName.trim()) {
-      const avatarSeed = Math.floor(Math.random() * 1000);
+      // Pick an emoji not already used
+      const usedEmojis = players.map((p) => p.avatar);
+      const availableEmojis = PLAYER_EMOJIS.filter((e) => !usedEmojis.includes(e));
+      const emoji = availableEmojis.length > 0
+        ? availableEmojis[Math.floor(Math.random() * availableEmojis.length)]
+        : PLAYER_EMOJIS[Math.floor(Math.random() * PLAYER_EMOJIS.length)];
+
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+
       setPlayers([
         ...players,
         {
           name: newPlayerName.trim(),
-          avatar: `https://api.dicebear.com/6.x/avataaars/svg?seed=${avatarSeed}`,
+          avatar: emoji,
         },
       ]);
       setNewPlayerName("");
@@ -563,6 +657,15 @@ export function PersonalizedPartyGame() {
       );
       return;
     }
+
+    // Reset game state
+    setPromptCount(0);
+    setShowSwipeHint(true);
+
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
+
     animateGameStateTransition(true);
     setTimeout(() => setGameState("playing"), 200);
   };
@@ -596,108 +699,205 @@ export function PersonalizedPartyGame() {
   const renderSetupContent = () => (
     <View style={styles.setupContainer}>
       <LinearGradient
-        colors={["#0A0A0A", "#141414"]}
+        colors={["#0A0A0A", "#0f0f23", "#1a1a2e"]}
         style={styles.gradientBackground}
         start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        end={{ x: 0.5, y: 1 }}
       />
-      <View style={styles.setupContentContainer}>
-        <ThemedText
-          type="title"
-          style={styles.title}
-          numberOfLines={2}
-          adjustsFontSizeToFit
-        >
-          GAMBIT
-        </ThemedText>
-        <View style={styles.setupControls}>
-          <View style={styles.setupButton}>
-            <Button
-              title="Add Players"
-              onPress={() => setIsAddPlayerVisible(true)}
-              variant="accent"
-            />
-          </View>
-          <TouchableOpacity
-            style={[
-              styles.modeToggle,
-              gameSettings.isSexyMode && styles.modeToggleActive,
-            ]}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              setGameSettings((prev) => ({
-                ...prev,
-                isSexyMode: !prev.isSexyMode,
-              }));
-            }}
+
+      <ScrollView
+        style={styles.setupScrollView}
+        contentContainerStyle={styles.setupScrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Logo Section */}
+        <View style={styles.logoSection}>
+          <LinearGradient
+            colors={themeColors.primary}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.logoGradient}
           >
-            <ThemedText style={styles.modeToggleText}>
-              {gameSettings.isSexyMode ? "💋 Sexy Mode" : "🥂 Normal Mode"}
-            </ThemedText>
-          </TouchableOpacity>
-          <Animated.View style={[styles.setupButton, errorAnimatedStyle]}>
-            <Button
-              title={
-                players.length < 2
-                  ? `Add ${2 - players.length} More Player${
-                      players.length === 1 ? "" : "s"
-                    }`
-                  : "Start Game"
-              }
-              onPress={startGame}
-              variant="accent"
-            />
-          </Animated.View>
+            <Text style={styles.logoEmoji}>
+              {gameSettings.isSexyMode ? "🔥" : "🎲"}
+            </Text>
+          </LinearGradient>
+          <Text style={styles.title}>GAMBIT</Text>
+          <Text style={styles.subtitle}>The party game that goes there</Text>
         </View>
-        <FlatList
-          data={players}
-          renderItem={({ item, index }) => (
-            <BlurView
-              intensity={20}
-              tint={colorScheme === "dark" ? "dark" : "light"}
-              style={styles.playerItem}
+
+        {/* Players Section */}
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Players</Text>
+            <TouchableOpacity
+              style={styles.addPlayerButton}
+              onPress={() => setIsAddPlayerVisible(true)}
             >
-              <ThemedText style={styles.playerName}>{item.name}</ThemedText>
-              <TouchableOpacity onPress={() => removePlayer(index)}>
-                <Ionicons
-                  name="close-circle-outline"
-                  size={24}
-                  color="rgba(255, 255, 255, 0.8)"
-                />
-              </TouchableOpacity>
-            </BlurView>
+              <LinearGradient
+                colors={themeColors.primary}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.addPlayerGradient}
+              >
+                <Ionicons name="add" size={20} color="#FFFFFF" />
+                <Text style={styles.addPlayerText}>Add</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+
+          {players.length === 0 ? (
+            <View style={styles.emptyPlayers}>
+              <Text style={styles.emptyPlayersText}>
+                Add at least 2 players to start
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.playersGrid}>
+              {players.map((player, index) => (
+                <Animated.View
+                  key={index}
+                  entering={FadeIn.delay(index * 50)}
+                  style={styles.playerChip}
+                >
+                  <Text style={styles.playerEmoji}>{player.avatar}</Text>
+                  <Text style={styles.playerChipName} numberOfLines={1}>
+                    {player.name}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (Platform.OS !== "web") {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }
+                      removePlayer(index);
+                    }}
+                    style={styles.removePlayerButton}
+                  >
+                    <Ionicons name="close" size={14} color="rgba(255,255,255,0.6)" />
+                  </TouchableOpacity>
+                </Animated.View>
+              ))}
+            </View>
           )}
-          keyExtractor={(item, index) => index.toString()}
-          ListFooterComponent={<View style={{ height: 20 }} />}
-          contentContainerStyle={styles.playerList}
-          showsVerticalScrollIndicator={false}
-        />
-        <View style={styles.chaosSliderContainer}>
-          <ThemedText style={styles.chaosLabel}>
-            🎲 Chaos Level: {Math.round(gameSettings.chaosLevel * 100)}%
-          </ThemedText>
-          <Slider
-            style={styles.slider}
-            minimumValue={0}
-            maximumValue={1}
-            value={gameSettings.chaosLevel}
-            onValueChange={(value) =>
-              setGameSettings((prev) => ({ ...prev, chaosLevel: value }))
-            }
-            minimumTrackTintColor="#818CF8"
-            maximumTrackTintColor="rgba(255, 255, 255, 0.1)"
-            thumbTintColor={interpolateColor(
-              gameSettings.chaosLevel,
-              [0, 1],
-              ["#818CF8", "#6366F1"]
-            )}
-          />
-          <View style={styles.chaosLevelLabels}>
-            <ThemedText style={[styles.chaosLevelText]}>Mild</ThemedText>
-            <ThemedText style={[styles.chaosLevelText]}>Wild</ThemedText>
+        </View>
+
+        {/* Game Mode Toggle */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Mode</Text>
+          <View style={styles.modeContainer}>
+            <TouchableOpacity
+              style={[
+                styles.modeOption,
+                !gameSettings.isSexyMode && styles.modeOptionActive,
+              ]}
+              onPress={() => {
+                if (Platform.OS !== "web") {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }
+                setGameSettings((prev) => ({ ...prev, isSexyMode: false }));
+              }}
+            >
+              {!gameSettings.isSexyMode && (
+                <LinearGradient
+                  colors={COLORS.normal.primary}
+                  style={StyleSheet.absoluteFill}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                />
+              )}
+              <Text style={styles.modeEmoji}>🥂</Text>
+              <Text style={[
+                styles.modeText,
+                !gameSettings.isSexyMode && styles.modeTextActive
+              ]}>Classic</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.modeOption,
+                gameSettings.isSexyMode && styles.modeOptionActive,
+              ]}
+              onPress={() => {
+                if (Platform.OS !== "web") {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }
+                setGameSettings((prev) => ({ ...prev, isSexyMode: true }));
+              }}
+            >
+              {gameSettings.isSexyMode && (
+                <LinearGradient
+                  colors={COLORS.sexy.primary}
+                  style={StyleSheet.absoluteFill}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                />
+              )}
+              <Text style={styles.modeEmoji}>🔥</Text>
+              <Text style={[
+                styles.modeText,
+                gameSettings.isSexyMode && styles.modeTextActive
+              ]}>Spicy</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </View>
+
+        {/* Chaos Level */}
+        <View style={styles.sectionContainer}>
+          <View style={styles.chaosHeader}>
+            <Text style={styles.sectionTitle}>Chaos Level</Text>
+            <View style={styles.chaosValueBadge}>
+              <Text style={styles.chaosValue}>
+                {Math.round(gameSettings.chaosLevel * 100)}%
+              </Text>
+            </View>
+          </View>
+          <View style={styles.sliderContainer}>
+            <Text style={styles.sliderLabel}>😇</Text>
+            <Slider
+              style={styles.slider}
+              minimumValue={0}
+              maximumValue={1}
+              value={gameSettings.chaosLevel}
+              onValueChange={(value) =>
+                setGameSettings((prev) => ({ ...prev, chaosLevel: value }))
+              }
+              minimumTrackTintColor={themeColors.accent}
+              maximumTrackTintColor="rgba(255, 255, 255, 0.1)"
+              thumbTintColor={themeColors.accent}
+            />
+            <Text style={styles.sliderLabel}>😈</Text>
+          </View>
+          <View style={styles.chaosLevelLabels}>
+            <Text style={styles.chaosLevelText}>Tame</Text>
+            <Text style={styles.chaosLevelText}>Unhinged</Text>
+          </View>
+        </View>
+
+        {/* Start Button */}
+        <Animated.View style={[styles.startButtonContainer, errorAnimatedStyle]}>
+          <TouchableOpacity
+            onPress={startGame}
+            activeOpacity={0.9}
+            disabled={players.length < 2}
+          >
+            <LinearGradient
+              colors={players.length < 2 ? ["#333", "#222"] : themeColors.primary}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[
+                styles.startButton,
+                players.length < 2 && styles.startButtonDisabled,
+              ]}
+            >
+              <Text style={styles.startButtonText}>
+                {players.length < 2
+                  ? `Need ${2 - players.length} more player${players.length === 1 ? "" : "s"}`
+                  : "Let's Go! 🚀"}
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </Animated.View>
+      </ScrollView>
     </View>
   );
 
@@ -705,14 +905,14 @@ export function PersonalizedPartyGame() {
 
   // Styles
   const styles = StyleSheet.create({
+    // Base containers
     safeArea: {
       flex: 1,
-      backgroundColor: "#141414",
+      backgroundColor: "#0A0A0A",
     },
     container: {
       flex: 1,
-      alignItems: "center",
-      backgroundColor: "#141414",
+      backgroundColor: "#0A0A0A",
     },
     contentContainer: {
       flex: 1,
@@ -720,11 +920,234 @@ export function PersonalizedPartyGame() {
       maxWidth: Platform.OS === "web" ? MAX_WIDTH_WEB : "100%",
       alignSelf: "center",
     },
+    gradientBackground: {
+      ...StyleSheet.absoluteFillObject,
+    },
+
+    // Setup Screen
     setupContainer: {
       flex: 1,
       width: "100%",
-      padding: Platform.OS === "web" ? 40 : 20,
     },
+    setupScrollView: {
+      flex: 1,
+    },
+    setupScrollContent: {
+      paddingHorizontal: 24,
+      paddingTop: Platform.OS === "web" ? 60 : 40,
+      paddingBottom: 40,
+    },
+
+    // Logo Section
+    logoSection: {
+      alignItems: "center",
+      marginBottom: 40,
+    },
+    logoGradient: {
+      width: 80,
+      height: 80,
+      borderRadius: 24,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 20,
+    },
+    logoEmoji: {
+      fontSize: 40,
+    },
+    title: {
+      fontSize: Platform.OS === "web" ? 56 : 48,
+      fontWeight: "800",
+      color: "#FFFFFF",
+      letterSpacing: -2,
+      marginBottom: 8,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: "rgba(255, 255, 255, 0.5)",
+      fontWeight: "500",
+    },
+
+    // Section styles
+    sectionContainer: {
+      marginBottom: 28,
+    },
+    sectionHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: "#FFFFFF",
+      letterSpacing: -0.3,
+    },
+
+    // Player Section
+    addPlayerButton: {
+      borderRadius: 12,
+      overflow: "hidden",
+    },
+    addPlayerGradient: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      gap: 6,
+    },
+    addPlayerText: {
+      color: "#FFFFFF",
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    emptyPlayers: {
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      borderRadius: 16,
+      padding: 32,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.08)",
+      borderStyle: "dashed",
+    },
+    emptyPlayersText: {
+      color: "rgba(255, 255, 255, 0.4)",
+      fontSize: 14,
+      fontWeight: "500",
+    },
+    playersGrid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 10,
+    },
+    playerChip: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "rgba(255, 255, 255, 0.08)",
+      borderRadius: 24,
+      paddingLeft: 6,
+      paddingRight: 10,
+      paddingVertical: 6,
+      gap: 8,
+    },
+    playerEmoji: {
+      fontSize: 24,
+      width: 32,
+      height: 32,
+      textAlign: "center",
+      lineHeight: 32,
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      borderRadius: 16,
+      overflow: "hidden",
+    },
+    playerChipName: {
+      color: "#FFFFFF",
+      fontSize: 14,
+      fontWeight: "600",
+      maxWidth: 80,
+    },
+    removePlayerButton: {
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    // Mode Toggle
+    modeContainer: {
+      flexDirection: "row",
+      gap: 12,
+    },
+    modeOption: {
+      flex: 1,
+      backgroundColor: "rgba(255, 255, 255, 0.05)",
+      borderRadius: 16,
+      padding: 20,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.08)",
+      overflow: "hidden",
+    },
+    modeOptionActive: {
+      borderColor: "transparent",
+    },
+    modeEmoji: {
+      fontSize: 32,
+      marginBottom: 8,
+    },
+    modeText: {
+      color: "rgba(255, 255, 255, 0.5)",
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    modeTextActive: {
+      color: "#FFFFFF",
+    },
+
+    // Chaos Slider
+    chaosHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    chaosValueBadge: {
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 12,
+    },
+    chaosValue: {
+      color: "#FFFFFF",
+      fontSize: 14,
+      fontWeight: "700",
+    },
+    sliderContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    sliderLabel: {
+      fontSize: 24,
+    },
+    slider: {
+      flex: 1,
+      height: 40,
+    },
+    chaosLevelLabels: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingHorizontal: 40,
+      marginTop: 4,
+    },
+    chaosLevelText: {
+      color: "rgba(255, 255, 255, 0.4)",
+      fontSize: 12,
+      fontWeight: "500",
+    },
+
+    // Start Button
+    startButtonContainer: {
+      marginTop: 12,
+    },
+    startButton: {
+      paddingVertical: 20,
+      borderRadius: 16,
+      alignItems: "center",
+    },
+    startButtonDisabled: {
+      opacity: 0.5,
+    },
+    startButtonText: {
+      color: "#FFFFFF",
+      fontSize: 18,
+      fontWeight: "700",
+      letterSpacing: -0.3,
+    },
+
+    // Playing Screen
     playingContainer: {
       flex: 1,
       width: "100%",
@@ -734,343 +1157,181 @@ export function PersonalizedPartyGame() {
       justifyContent: "space-between",
       alignItems: "center",
       paddingHorizontal: 20,
-      paddingVertical: 10,
+      paddingVertical: 16,
     },
+    exitButton: {
+      borderRadius: 20,
+      overflow: "hidden",
+    },
+    exitButtonBlur: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+    },
+    headerCenter: {
+      flex: 1,
+      alignItems: "center",
+    },
+    promptCounter: {
+      color: "rgba(255, 255, 255, 0.5)",
+      fontSize: 16,
+      fontWeight: "700",
+    },
+    headerRight: {
+      width: 40,
+      alignItems: "flex-end",
+    },
+    modeIndicator: {
+      fontSize: 24,
+    },
+
+    // Cards
     cardsContainer: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "transparent",
-      position: "relative",
-      marginBottom: 16,
       paddingHorizontal: 20,
     },
     promptContainer: {
       width: "100%",
       maxWidth: Platform.OS === "web" ? MAX_WIDTH_PROMPT_WEB : "100%",
-      aspectRatio: Platform.OS === "web" ? 1.8 : 1.4,
-      borderRadius: 24,
-      padding: 32,
+      aspectRatio: Platform.OS === "web" ? 1.6 : 1.3,
+      borderRadius: 28,
+      padding: 28,
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
-      backgroundColor: "#111111",
       borderWidth: 1,
       borderColor: "rgba(255, 255, 255, 0.1)",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 20 },
-      shadowOpacity: 0.3,
-      shadowRadius: 30,
-      elevation: 20,
+    },
+    cardGlow: {
+      ...StyleSheet.absoluteFillObject,
+      opacity: 0.15,
     },
     prompt: {
       textAlign: "center",
-      fontSize: Platform.OS === "web" ? 32 : 28,
-      lineHeight: Platform.OS === "web" ? 44 : 36,
-      fontFamily: Platform.select({
-        ios: "Inter-Bold",
-        android: "Inter-Bold",
-        default:
-          "Inter-Bold, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }),
+      fontSize: Platform.OS === "web" ? 26 : 22,
+      lineHeight: Platform.OS === "web" ? 38 : 32,
+      fontWeight: "700",
       color: "#FFFFFF",
-      letterSpacing: -0.2,
-    },
-    title: {
-      fontSize: Platform.OS === "web" ? 96 : 72,
-      fontFamily: Platform.select({
-        ios: "Inter-Light",
-        android: "Inter-Light",
-        default:
-          "Inter-Light, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }),
-      textAlign: "center",
-      lineHeight: Platform.OS === "web" ? 100 : 80,
-      color: "#FFFFFF",
-      textTransform: "uppercase",
-      letterSpacing: Platform.OS === "web" ? -2 : -1,
-      marginBottom: 60,
-    },
-    setupControls: {
-      width: "100%",
-      gap: 16,
-      alignSelf: "center",
-      marginBottom: 32,
-    },
-    playerList: {
-      width: "100%",
-      flexGrow: 1,
-      marginTop: 20,
-    },
-    dialogTitle: {
-      fontSize: 24,
-      fontFamily: Platform.select({
-        ios: "Inter-Bold",
-        android: "Inter-Bold",
-        default:
-          "Inter-Bold, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }),
-      marginBottom: 32,
-      textAlign: "center",
-      color: "#000000",
-      letterSpacing: -0.2,
-    },
-    playerItem: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      paddingVertical: 16,
-      paddingHorizontal: 20,
-      marginBottom: 12,
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-      borderRadius: 16,
-      borderWidth: 1,
-      borderColor: "rgba(255, 255, 255, 0.1)",
-    },
-    playerName: {
-      fontSize: 16,
-      fontFamily: Platform.select({
-        ios: "Inter-Medium",
-        android: "Inter-Medium",
-        default:
-          "Inter-Medium, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }),
-      color: "#FFFFFF",
-      letterSpacing: 0.2,
-    },
-    gradientBackground: {
-      position: "absolute",
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
-      opacity: 0.2, // More subtle gradient
-    },
-    button: {
-      backgroundColor: "rgba(32, 32, 32, 0.8)",
-      paddingHorizontal: 24,
-      paddingVertical: 16,
-      borderRadius: 12,
-      alignItems: "center",
-      justifyContent: "center",
-      marginVertical: 8,
-      marginHorizontal: 16,
-      borderWidth: 1,
-      borderColor: "rgba(255, 255, 255, 0.08)",
-    },
-    input: Platform.select({
-      web: {
-        flex: 1,
-        height: 56,
-        borderRadius: 16,
-        paddingHorizontal: 20,
-        backgroundColor: "rgba(0, 0, 0, 0.05)",
-        color: "#000000",
-        fontSize: 16,
-        fontFamily:
-          "Inter-Regular, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-        letterSpacing: 0.2,
-        outlineWidth: 0,
-        outlineStyle: "none",
-        borderWidth: 1,
-        borderColor: "rgba(0, 0, 0, 0.1)",
-        userSelect: "text" as const,
-        WebkitUserSelect: "text",
-        cursor: "text" as const,
-        caretColor: "#000000",
-      },
-      default: {
-        flex: 1,
-        height: 56,
-        borderRadius: 16,
-        paddingHorizontal: 20,
-        backgroundColor: "rgba(0, 0, 0, 0.05)",
-        color: "#000000",
-        fontSize: 16,
-        fontFamily: Platform.select({
-          ios: "Inter-Regular",
-          android: "Inter-Regular",
-          default: "Inter-Regular",
-        }),
-        letterSpacing: 0.2,
-      },
-    }) as any,
-    exitButton: {
-      padding: 8,
-    },
-    gameMode: {
-      marginLeft: 8,
-    },
-    setupContentContainer: {
-      flex: 1,
-      paddingHorizontal: 24,
-      justifyContent: "space-between",
-      paddingTop: 40,
-      paddingBottom: 20,
-      width: "100%",
-    },
-    setupButton: {
-      overflow: "hidden",
-      borderRadius: 16,
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-      borderWidth: 1,
-      borderColor: "rgba(255, 255, 255, 0.1)",
-    },
-    setupButtonGradient: {
-      paddingHorizontal: 2,
-      paddingVertical: 2,
-      borderRadius: 16,
-      backgroundColor: "rgba(255, 255, 255, 0.25)",
-    },
-    setupSelect: {
-      backgroundColor: "rgba(255, 255, 255, 0.1)",
-      borderWidth: 1,
-      borderColor: "rgba(255, 255, 255, 0.2)",
-      borderRadius: 16,
-      overflow: "hidden",
-    },
-    buttonText: {
-      color: "#FFFFFF",
-      fontSize: 16,
-      fontFamily: Platform.select({
-        ios: "Inter-Medium",
-        android: "Inter-Medium",
-        default:
-          "Inter-Medium, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }),
-      textAlign: "center",
-      letterSpacing: 0.2,
-    },
-    addButton: {
-      backgroundColor: "rgba(255, 255, 255, 0.15)",
-      paddingHorizontal: 20,
-      paddingVertical: 12,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: "rgba(255, 255, 255, 0.3)",
-    },
-    nextButtonContainer: {
-      position: "absolute",
-      bottom: Platform.OS === "web" ? 40 : 20,
-      left: Platform.OS === "web" ? 40 : 20,
-      right: Platform.OS === "web" ? 40 : 20,
-      borderRadius: 20,
-      overflow: "hidden",
-    },
-    nextButton: {
-      paddingVertical: 20,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: "rgba(255, 255, 255, 0.1)",
-    },
-    nextButtonText: {
-      fontSize: 16,
-      fontFamily: Platform.select({
-        ios: "Inter-Medium",
-        android: "Inter-Medium",
-        default:
-          "Inter-Medium, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }),
-      color: "#FFFFFF",
-      letterSpacing: 0.2,
+      letterSpacing: -0.3,
     },
     currentCard: {
       zIndex: 2,
       width: "100%",
       position: "absolute",
       shadowColor: "#000",
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.3,
-      shadowRadius: 12,
-      elevation: 8,
+      shadowOffset: { width: 0, height: 20 },
+      shadowOpacity: 0.4,
+      shadowRadius: 30,
+      elevation: 20,
     },
     nextCard: {
       zIndex: 1,
       width: "100%",
       position: "absolute",
-      transform: [{ scale: 0.9 }],
-      opacity: 0.5,
+    },
+
+    // Swipe Hint
+    swipeHint: {
+      position: "absolute",
+      bottom: -50,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    swipeHintText: {
+      color: "rgba(255, 255, 255, 0.5)",
+      fontSize: 14,
+      fontWeight: "500",
+    },
+
+    // Player chips in game
+    playerChipsContainer: {
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+    },
+    playingPlayerChip: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "rgba(255, 255, 255, 0.08)",
+      borderRadius: 20,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      marginRight: 8,
+      gap: 6,
+    },
+    playingPlayerEmoji: {
+      fontSize: 16,
+    },
+    playingPlayerName: {
+      color: "rgba(255, 255, 255, 0.8)",
+      fontSize: 12,
+      fontWeight: "600",
+      maxWidth: 60,
+    },
+
+    // Next Button
+    nextButtonContainer: {
+      paddingHorizontal: 20,
+      paddingBottom: Platform.OS === "web" ? 40 : 24,
+    },
+    nextButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 18,
+      borderRadius: 16,
+      gap: 8,
+    },
+    nextButtonText: {
+      color: "#FFFFFF",
+      fontSize: 17,
+      fontWeight: "700",
+    },
+
+    // Add Player Panel
+    dialogTitle: {
+      fontSize: 24,
+      fontWeight: "700",
+      color: "#000000",
+      marginBottom: 24,
+      textAlign: "center",
     },
     addPlayerForm: {
       flexDirection: "row",
       alignItems: "center",
-      marginBottom: 24,
-      gap: 12,
-      backgroundColor: "rgba(0, 0, 0, 0.05)",
-      padding: 16,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: "rgba(0, 0, 0, 0.1)",
-    },
-    modeToggle: {
-      paddingHorizontal: 20,
-      paddingVertical: 16,
-      borderRadius: 16,
-      borderWidth: 1,
-      borderColor: "rgba(255, 255, 255, 0.1)",
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-    },
-    modeToggleActive: {
-      backgroundColor: "rgba(255, 255, 255, 0.1)",
-      borderColor: "rgba(255, 255, 255, 0.15)",
-    },
-    modeToggleText: {
-      fontSize: 16,
-      fontFamily: Platform.select({
-        ios: "Inter-Medium",
-        android: "Inter-Medium",
-        default:
-          "Inter-Medium, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }),
-      color: "#FFFFFF",
-      textAlign: "center",
-      letterSpacing: 0.3,
-    },
-    chaosSliderContainer: {
-      width: "100%",
-      marginBottom: 32,
-      backgroundColor: "rgba(255, 255, 255, 0.05)",
-      padding: 24,
-      borderRadius: 20,
-      borderWidth: 1,
-      borderColor: "rgba(255, 255, 255, 0.1)",
-    },
-    chaosLabel: {
-      fontSize: 16,
-      fontFamily: Platform.select({
-        ios: "Inter-Medium",
-        android: "Inter-Medium",
-        default:
-          "Inter-Medium, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }),
-      color: "#FFFFFF",
       marginBottom: 16,
-      textAlign: "center",
-      letterSpacing: 0.2,
+      gap: 12,
     },
-    slider: {
-      width: "100%",
-      height: 40,
-    },
-    chaosLevelLabels: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      width: "100%",
-      paddingHorizontal: 8,
-      marginTop: 8,
-    },
-    chaosLevelText: {
-      fontSize: 14,
-      fontFamily: Platform.select({
-        ios: "Inter-Regular",
-        android: "Inter-Regular",
-        default:
-          "Inter-Regular, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-      }),
-      color: "#FFFFFF",
-      letterSpacing: 0.2,
-      opacity: 0.6,
-    },
+    input: Platform.select({
+      web: {
+        flex: 1,
+        height: 52,
+        borderRadius: 14,
+        paddingHorizontal: 18,
+        backgroundColor: "rgba(0, 0, 0, 0.05)",
+        color: "#000000",
+        fontSize: 16,
+        fontWeight: "500",
+        outlineWidth: 0,
+        borderWidth: 1,
+        borderColor: "rgba(0, 0, 0, 0.08)",
+      },
+      default: {
+        flex: 1,
+        height: 52,
+        borderRadius: 14,
+        paddingHorizontal: 18,
+        backgroundColor: "rgba(0, 0, 0, 0.05)",
+        color: "#000000",
+        fontSize: 16,
+        fontWeight: "500",
+      },
+    }) as any,
   });
 
   // Gesture Handler for Swiping
@@ -1170,57 +1431,114 @@ export function PersonalizedPartyGame() {
     };
   });
 
+  // Animated style for next card
+  const nextCardAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: nextCardScale.value }],
+      opacity: nextCardOpacity.value,
+    };
+  });
+
   // Render Playing Screen Content
   const renderPlayingContent = () => (
     <GestureHandlerRootView style={styles.playingContainer}>
+      <LinearGradient
+        colors={["#0A0A0A", "#0f0f23", "#1a1a2e"]}
+        style={styles.gradientBackground}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+      />
+
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={exitGame} style={styles.exitButton}>
-          <Ionicons
-            name="close"
-            size={24}
-            color={isDark ? "#FFFFFF" : "#8E8E93"}
-          />
+          <BlurView intensity={30} tint="dark" style={styles.exitButtonBlur}>
+            <Ionicons name="close" size={22} color="#FFFFFF" />
+          </BlurView>
         </TouchableOpacity>
-        <ThemedText type="subtitle" style={styles.gameMode}>
-          {getThemeEmoji(gameSettings.isSexyMode ? "sexy" : "normal")}
-        </ThemedText>
+
+        <View style={styles.headerCenter}>
+          <Text style={styles.promptCounter}>#{promptCount + 1}</Text>
+        </View>
+
+        <View style={styles.headerRight}>
+          <Text style={styles.modeIndicator}>
+            {gameSettings.isSexyMode ? "🔥" : "🥂"}
+          </Text>
+        </View>
       </View>
 
+      {/* Card Stack */}
       <View style={styles.cardsContainer}>
         {/* Next card (shown behind) */}
-        <BlurView
-          intensity={40}
-          tint="dark"
-          style={[styles.promptContainer, styles.nextCard]}
-        >
-          <ThemedText type="title" style={styles.prompt}>
-            {nextPrompt}
-          </ThemedText>
-        </BlurView>
+        <Animated.View style={[styles.nextCard, nextCardAnimatedStyle]}>
+          <LinearGradient
+            colors={themeColors.card}
+            style={styles.promptContainer}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <Text style={styles.prompt}>{nextPrompt}</Text>
+          </LinearGradient>
+        </Animated.View>
 
         {/* Current card */}
         <GestureDetector gesture={panGesture}>
-          <AnimatedBlurView
-            key={currentPrompt}
-            intensity={40}
-            tint="dark"
-            style={[styles.promptContainer, styles.currentCard, cardStyle]}
-          >
-            <ThemedText type="title" style={styles.prompt}>
-              {currentPrompt}
-            </ThemedText>
-          </AnimatedBlurView>
+          <Animated.View style={[styles.currentCard, cardStyle]}>
+            <LinearGradient
+              colors={themeColors.card}
+              style={styles.promptContainer}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <LinearGradient
+                colors={[...themeColors.primary, "transparent"]}
+                style={styles.cardGlow}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 0.3 }}
+              />
+              <Text style={styles.prompt}>{currentPrompt}</Text>
+            </LinearGradient>
+          </Animated.View>
         </GestureDetector>
+
+        {/* Swipe hint */}
+        {showSwipeHint && (
+          <Animated.View style={[styles.swipeHint, swipeHintStyle]}>
+            <Ionicons name="swap-horizontal" size={24} color="rgba(255,255,255,0.5)" />
+            <Text style={styles.swipeHintText}>Swipe for next</Text>
+          </Animated.View>
+        )}
       </View>
 
-      {/* Clean next button */}
-      <BlurView intensity={40} tint="dark" style={styles.nextButtonContainer}>
-        <Pressable onPress={handleSwipeSuccess}>
-          <Animated.View style={[styles.nextButton, buttonAnimatedStyle]}>
-            <ThemedText style={styles.nextButtonText}>Next</ThemedText>
-          </Animated.View>
-        </Pressable>
-      </BlurView>
+      {/* Player chips */}
+      <View style={styles.playerChipsContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {players.map((player, index) => (
+            <View key={index} style={styles.playingPlayerChip}>
+              <Text style={styles.playingPlayerEmoji}>{player.avatar}</Text>
+              <Text style={styles.playingPlayerName} numberOfLines={1}>
+                {player.name}
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* Next button */}
+      <Animated.View style={[styles.nextButtonContainer, pulseStyle]}>
+        <TouchableOpacity onPress={handleSwipeSuccess} activeOpacity={0.9}>
+          <LinearGradient
+            colors={themeColors.primary}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.nextButton}
+          >
+            <Text style={styles.nextButtonText}>Next</Text>
+            <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
     </GestureHandlerRootView>
   );
 
