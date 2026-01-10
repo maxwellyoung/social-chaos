@@ -192,39 +192,53 @@ fontFamily: Platform.select({
 ```typescript
 type Player = {
   name: string;
-  avatar: string;  // Emoji avatar
+  avatar: string;  // Emoji avatar (from PLAYER_EMOJIS array)
 };
+
+// Available emojis: 😎🔥💀👻🎃🦊🐸🌚🤠🥳😈🤡👽🤖💩
 ```
 
 ### Game Modes
 ```typescript
-type GameMode = "normal" | "sexy";
+type GameMode = "normal" | "sexy";  // "sexy" is displayed as "Spicy" in UI
 ```
 
-### Prompt Template
+### Color Themes
 ```typescript
-interface PromptTemplate {
-  text: string;
-  minChaos: number;
-  maxChaos: number;
-  category: "social" | "drinking" | "action" | "dare" | "sexy";
-  weight: number;
-  sexyModeOnly?: boolean;
-}
+const COLORS = {
+  normal: {
+    primary: ["#667eea", "#764ba2"],  // Purple gradient
+    accent: "#818CF8",
+    card: ["#1a1a2e", "#16213e"],
+  },
+  sexy: {
+    primary: ["#ff416c", "#ff4b2b"],  // Red gradient
+    accent: "#F472B6",
+    card: ["#2d1f3d", "#1a1a2e"],
+  },
+};
 ```
 
 ### Enhanced Prompt (JSON format)
 ```typescript
 interface EnhancedPrompt {
   text: string;
-  type: "single-player" | "call-response" | "conditional" | "group";
-  category: "drinking" | "action" | "social";
+  type: "single-player" | "call-response" | "conditional" | "group" | "action";
+  category: "drinking" | "action" | "social" | "dare";
 }
 ```
 
+### Prompt Files (~250 total prompts)
+| File | Sections | Count |
+|------|----------|-------|
+| `prompts.json` | normal, sexy | ~150 |
+| `drinking.json` | rules, challenges, neverHaveIEver, mostLikelyTo | ~47 |
+| `chill.json` | deepTalks, wouldYouRather, hotTakes, confessions, appreciation | ~37 |
+| `sexy.json` | flirty, truths, dares, groupChaos, confessions | ~46 |
+
 ### Prompt Placeholders
 - `{player1}` - First randomly selected player
-- `{player2}` - Second randomly selected player
+- `{player2}` - Second randomly selected player (guaranteed different from player1)
 
 ## Important Constants
 
