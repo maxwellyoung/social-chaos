@@ -1,18 +1,244 @@
 {
-  "playerSpecific": [
+  "rules": [
     {
-      "text": "{player1}, take a sip if you've ever ghosted someone!",
+      "text": "WATERFALL! {player1} starts drinking. Going clockwise, each person starts when the person before them starts. You can only stop when the person before you stops.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "HEAVEN! Last person to point to the ceiling drinks.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "FLOOR! Last person to touch the floor drinks.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "VIKING! {player1} puts fingers on their head like horns. Neighbors paddle. Last to react drinks.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "SOCIABLES! Everyone cheers and drinks together.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "NOSE GOES! Last person to touch their nose drinks.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "SHOTGUN! Everyone finishes their drink. Last one done drinks an extra shot.",
+      "type": "group",
+      "category": "drinking"
+    }
+  ],
+  "challenges": [
+    {
+      "text": "{player1}, pick your poison: truth or 3 drinks?",
+      "type": "conditional",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1} and {player2}: thumb war! Loser takes a shot.",
+      "type": "action",
+      "category": "drinking"
+    },
+    {
+      "text": "Rhyme time! {player1} says a word, go around rhyming. First to fail drinks.",
+      "type": "call-response",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1} makes a rule. It lasts until someone else draws this card. Breaking the rule = drink.",
       "type": "single-player",
       "category": "drinking"
     },
     {
-      "text": "{player1} and {player2}, share your most embarrassing drinking moment.",
-      "type": "call-response",
-      "category": "social"
+      "text": "STARING CONTEST! {player1} vs {player2}. First to blink finishes their drink.",
+      "type": "action",
+      "category": "drinking"
     },
     {
-      "text": "If {player1} doesn't clap when {player2} finishes their sentence, {player1} drinks",
-      "type": "conditional",
+      "text": "Categories! {player1} picks a category. Go around naming things. Repeat or hesitate = drink.",
+      "type": "call-response",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, drink for every person you've kissed in this room. We're watching.",
+      "type": "single-player",
+      "category": "drinking"
+    },
+    {
+      "text": "Medusa! On 3, everyone looks up. If you lock eyes with someone, both drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, you're now Question Master. Anyone who answers your questions drinks until dethroned.",
+      "type": "single-player",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, you're now Thumb Master. When you put your thumb on the table, everyone follows. Last one drinks.",
+      "type": "single-player",
+      "category": "drinking"
+    },
+    {
+      "text": "Drink if your last relationship ended via text.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Arm wrestle! {player1} vs {player2}. Loser finishes their drink, winner gives out 3.",
+      "type": "action",
+      "category": "drinking"
+    },
+    {
+      "text": "Flip cup challenge! {player1} vs {player2}. Loser takes a shot.",
+      "type": "action",
+      "category": "drinking"
+    },
+    {
+      "text": "Pick a mate! {player1} picks someone. They drink every time you drink for the rest of the game.",
+      "type": "single-player",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, give out drinks equal to the number of dating apps on your phone.",
+      "type": "single-player",
+      "category": "drinking"
+    }
+  ],
+  "neverHaveIEver": [
+    {
+      "text": "Never have I ever hooked up with someone I met that night. Drink if you have.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever sent a text I immediately regretted. Drink up, we all have.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever stalked an ex while drunk. Liars drink double.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever faked a sick day for fun. Drink if guilty.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever drunkenly told someone I loved them. Drink and explain.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever woken up somewhere with no idea how I got there. Drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever double-texted after midnight. Drink and show us.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever lied about my body count. Drink if lying right now.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever cried in an Uber. Drink if you've been there.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever hooked up with a coworker. HR would like a word. Drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever slid into someone's DMs successfully. Drink if you have game.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever blocked someone then unblocked them to check their profile. Drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever pretended to be drunker than I was. Method actors drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever caught feelings for a one-night stand. Romantics drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Never have I ever blamed alcohol for something I 100% meant to do. Drink honestly.",
+      "type": "group",
+      "category": "drinking"
+    }
+  ],
+  "mostLikelyTo": [
+    {
+      "text": "Point to who's most likely to black out tonight. That person starts a waterfall.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who's most likely to text their ex tonight. That person shows their last ex conversation or drinks 5.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who's most likely to start drama. That person gives out 5 drinks to prove it.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who's most likely to disappear without saying goodbye. They drink for the audacity.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who's most likely to end up in someone's bed tonight. They drink with confidence.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who's most likely to get into a fight defending a friend. Noble drinkers.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who's most likely to order 4am food. They buy the next round.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who's most likely to give unsolicited advice. They give out 3 drinks of wisdom.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who's most likely to overshare when drunk. They start oversharing or drink 4.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who's most likely to wake up with regrets tomorrow. They take a preventive shot.",
+      "type": "group",
       "category": "drinking"
     }
   ]

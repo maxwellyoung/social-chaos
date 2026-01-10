@@ -1,19 +1,197 @@
 {
-  "playerSpecific": [
+  "deepTalks": [
     {
-      "text": "{player1}, share a story about a time you helped someone in need.",
+      "text": "{player1}, what's a belief you held strongly 5 years ago that you've completely changed your mind on?",
       "type": "single-player",
       "category": "social"
     },
     {
-      "text": "{player1} and {player2}, share your favorite childhood memories.",
+      "text": "{player1}, what's something you pretend to like but secretly don't? Group guesses first.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "Everyone share one thing you're actually insecure about. No jokes allowed. Realest answer gets to give out 2 drinks.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's the most expensive mistake you've ever made?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1} and {player2}, share your honest first impressions of each other.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Everyone answer: what's one thing you wish you could tell your younger self?",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's a compliment you've received that you still think about?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Go around: say one genuine thing you appreciate about the person to your left.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's something you've never told anyone in this room?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Everyone share: what's your biggest 'what if' in life?",
+      "type": "group",
+      "category": "social"
+    }
+  ],
+  "wouldYouRather": [
+    {
+      "text": "{player1}: Would you rather know when you're going to die or how you're going to die?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}: Would you rather be famous and miserable or unknown and happy?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}: Would you rather have everyone you know read your search history or your DMs?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}: Would you rather relive the same day forever or never be able to remember yesterday?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}: Would you rather be stuck in a room with your ex or all your exes' new partners?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}: Would you rather everyone know your salary or your body count?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}: Would you rather never use social media again or never eat your favorite food again?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}: Would you rather be rich and alone or broke with your soulmate?",
+      "type": "single-player",
+      "category": "social"
+    }
+  ],
+  "hotTakes": [
+    {
+      "text": "{player1}, share a hot take. If anyone agrees, they drink with you. If no one agrees, you drink alone.",
       "type": "call-response",
       "category": "social"
     },
     {
-      "text": "If {player1} can make {player2} laugh in the next 30 seconds, they win!",
+      "text": "Hot take round! Everyone shares an unpopular opinion. Group votes on the coldest take - that person drinks.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, give us your most controversial food opinion. If it's not controversial, you drink.",
       "type": "conditional",
-      "category": "action"
+      "category": "social"
+    },
+    {
+      "text": "{player1}, share a hot take about dating in our generation. Agree = drink with them.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "Debate time! {player1} picks a topic, {player2} argues FOR it, {player1} argues AGAINST it. Group decides winner.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, say something nice about someone everyone hates (celebrity, politician, whatever). Mean it.",
+      "type": "single-player",
+      "category": "social"
+    }
+  ],
+  "confessions": [
+    {
+      "text": "Confession time: {player1}, what's the most unhinged thing you've done for a crush?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, confess to something you got away with. We won't judge. Much.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Anonymous confession: everyone texts {player1} a secret. They read them aloud and guess who said what.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's the worst lie you've told someone in this room?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Go around: confess to a time you were the toxic one in a relationship.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's something everyone here thinks about you that isn't true?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Truth circle: everyone has to answer honestly. {player1} asks one yes/no question to the group.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's the most embarrassing thing in your camera roll? Describe it or show it.",
+      "type": "conditional",
+      "category": "social"
+    }
+  ],
+  "appreciation": [
+    {
+      "text": "{player1}, give {player2} a genuine compliment. No sarcasm allowed.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "Go around and say what you admire most about the person to your right. Keep it real.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's your favorite memory with someone in this room? Share it.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Everyone toast to something or someone. Best toast gives out 3 drinks.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, say something you've always wanted to tell {player2} but never have.",
+      "type": "action",
+      "category": "social"
     }
   ]
 }

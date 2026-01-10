@@ -1,18 +1,241 @@
 {
-  "playerSpecific": [
+  "flirty": [
     {
-      "text": "{player1}, share your most romantic date story.",
+      "text": "{player1}, demonstrate your best kiss on your hand. Group rates 1-10. Drink the difference.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, give {player2} bedroom eyes for 10 seconds. No laughing or both drink.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, whisper something to {player2}. Group guesses if it was flirty or insulting.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, say the most attractive thing about {player2}. Make it genuine or drink.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "{player1} and {player2}, hold eye contact for 30 seconds. First to look away or laugh drinks.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, give {player2} a pickup line. If they don't cringe, you drink. If they do, they drink.",
+      "type": "action",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, send a flirty DM to someone not in this room. Show proof or drink 4.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, sit on {player2}'s lap for the next round or both take 3 drinks.",
+      "type": "conditional",
+      "category": "dare"
+    }
+  ],
+  "truths": [
+    {
+      "text": "{player1}, truth: what's your body count? (You can lie but we'll know)",
       "type": "single-player",
       "category": "social"
     },
     {
-      "text": "{player1} and {player2}, act out a romantic movie scene.",
+      "text": "{player1}, describe your type physically. Then we'll point to who matches it.",
       "type": "call-response",
-      "category": "action"
+      "category": "social"
     },
     {
-      "text": "If {player1} can guess {player2}'s ideal date night, they win!",
+      "text": "{player1}, what's the longest you've gone without sex? Oversharing encouraged.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's the weirdest place you've hooked up? Details required.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, who in this room would you hook up with if you had to? Skip = finish your drink.",
       "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, read your last flirty text out loud. We need context.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, what's your most embarrassing hookup story? Under 30 seconds and you drink.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, rank everyone here by dateability. Explain your reasoning.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's your biggest ick? If anyone here has it, they drink.",
+      "type": "call-response",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, describe your ideal first date. If it's basic, you drink.",
+      "type": "conditional",
+      "category": "social"
+    }
+  ],
+  "dares": [
+    {
+      "text": "{player1}, let {player2} go through your dating app matches for 1 minute. They can ask about 3 people.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, do your best sexy dance for 15 seconds. Awkwardness is expected.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "{player1} and {player2}, 7 seconds in heaven (just conversation). Come back with one secret about each other.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, let the group write your next Tinder bio. You have to use it for 24 hours.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, post a thirst trap or drink 5. The group chooses the photo.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, serenade {player2} with any song. At least 30 seconds or drink 4.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "{player1} and {player2}, recreate a movie kiss scene. Group judges authenticity.",
+      "type": "action",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, give {player2} a 30-second massage or both drink 3.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, text your most recent match 'thinking about you' right now. Screenshot or drink 5.",
+      "type": "conditional",
+      "category": "dare"
+    },
+    {
+      "text": "{player1}, swap an article of clothing with {player2} for the next 3 rounds.",
+      "type": "conditional",
+      "category": "dare"
+    }
+  ],
+  "groupChaos": [
+    {
+      "text": "Everyone point to who you'd swipe right on. Most votes drinks.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "Point to who gives off 'good in bed' energy. That person drinks with confidence.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "Drink if you've ever caught feelings for a friend with benefits.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to the best flirt in the room. They prove it by flirting with the person to their left.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "Everyone who's posted a thirst trap this month, drink.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who's most likely to be someone's secret crush. That person drinks.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "Everyone who's ever hooked up with someone in this room, drink. Quietly.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to who gives the worst relationship advice. They have to prove themselves with their next take.",
+      "type": "group",
+      "category": "social"
+    },
+    {
+      "text": "Drink if you have an ex's number still saved under a different name.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "Point to the heartbreaker in the room. They accept or deny. Either way, they drink.",
+      "type": "group",
+      "category": "social"
+    }
+  ],
+  "confessions": [
+    {
+      "text": "{player1}, confess: what's the most unhinged thing you've done for a crush?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's your secret romantic fantasy? Keep it PG-13ish.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, who was your first celebrity crush? If it's embarrassing, drink.",
+      "type": "conditional",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's the fastest you've ever said 'I love you'? Give us the timeline.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, describe the biggest red flag you've ignored. We need details.",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "{player1}, what's the most expensive thing someone's bought you while dating? Was it weird?",
+      "type": "single-player",
+      "category": "social"
+    },
+    {
+      "text": "Drink if you've ever been someone's 'person' while they were in a relationship.",
+      "type": "group",
+      "category": "drinking"
+    },
+    {
+      "text": "{player1}, describe your 'one that got away' without naming them.",
+      "type": "single-player",
       "category": "social"
     }
   ]
