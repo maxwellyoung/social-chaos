@@ -1,10 +1,22 @@
 declare module "*.json" {
+  interface Prompt {
+    text: string;
+    category: string;
+    chaos: number;
+    type: string;
+    timer?: number;
+  }
+
+  interface Category {
+    name: string;
+    emoji: string;
+    description: string;
+  }
+
   const content: {
-    playerSpecific: Array<{
-      text: string;
-      type: "single-player" | "call-response" | "conditional";
-      category: "drinking" | "action" | "social";
-    }>;
+    categories: Record<string, Category>;
+    prompts: Prompt[];
+    sexy: Prompt[];
   };
   export default content;
 }

@@ -1,96 +1,1287 @@
 {
-  "normal": [
+  "categories": {
+    "drinking": {
+      "name": "Drinking",
+      "emoji": "🍻",
+      "description": "Classic drinking game prompts"
+    },
+    "dares": {
+      "name": "Dares",
+      "emoji": "🎯",
+      "description": "Bold challenges and stunts"
+    },
+    "confessions": {
+      "name": "Confessions",
+      "emoji": "🤫",
+      "description": "Spill your secrets"
+    },
+    "hot_takes": {
+      "name": "Hot Takes",
+      "emoji": "🔥",
+      "description": "Controversial opinions"
+    },
+    "physical": {
+      "name": "Physical",
+      "emoji": "💪",
+      "description": "Get moving challenges"
+    },
+    "social": {
+      "name": "Social",
+      "emoji": "💬",
+      "description": "Icebreakers and conversations"
+    },
+    "creative": {
+      "name": "Creative",
+      "emoji": "🎨",
+      "description": "Performance and artistic challenges"
+    },
+    "chaos": {
+      "name": "Pure Chaos",
+      "emoji": "🌪️",
+      "description": "Unpredictable mayhem"
+    }
+  },
+  "prompts": [
     {
-      "text": "{player1}, start a story with one sentence. Going clockwise, everyone adds a sentence. First to hesitate drinks!",
-      "type": "call-response",
-      "category": "social"
+      "text": "{player1}, take a sip",
+      "category": "drinking",
+      "chaos": 1,
+      "type": "simple"
     },
     {
-      "text": "Everyone point to who you think would survive longest in a zombie apocalypse. {player1} gives drinks equal to their votes!",
-      "type": "group",
-      "category": "social"
+      "text": "Everyone who's wearing black drinks",
+      "category": "drinking",
+      "chaos": 1,
+      "type": "group"
     },
     {
-      "text": "{player1} and {player2}, rock paper scissors! Loser drinks, winner gives a drink.",
-      "type": "action",
-      "category": "drinking"
+      "text": "Youngest player drinks",
+      "category": "drinking",
+      "chaos": 1,
+      "type": "group"
     },
     {
-      "text": "Categories! {player1} picks a movie genre, then everyone names a movie. First to repeat or hesitate drinks!",
-      "type": "call-response",
-      "category": "social"
+      "text": "Last person to raise their hand drinks",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "race"
     },
     {
-      "text": "{player1}, you're the judge! Everyone does their best celebrity impression, worst one drinks.",
-      "type": "group",
-      "category": "action"
+      "text": "Everyone who checked their phone in the last hour drinks",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
     },
     {
-      "text": "Phone roulette! {player1} picks a number 1-10, {player2} scrolls that many photos in their camera roll. Show or drink!",
-      "type": "conditional",
-      "category": "social"
+      "text": "{player1} and {player2}, cheers! Both drink",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "versus"
     },
     {
-      "text": "Everyone who's ever ghosted someone drinks! {player1} decides how many sips.",
-      "type": "group",
-      "category": "drinking"
+      "text": "Waterfall! {player1} starts, everyone follows. Can't stop until the person before you stops",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "chain"
     },
     {
-      "text": "{player1}, give your phone to {player2}. They can post anything to your social media or you drink 5 times!",
-      "type": "conditional",
-      "category": "social"
+      "text": "{player1}, pick someone to drink with you",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "target"
     },
     {
-      "text": "Everyone votes on who's most likely to become a CEO. {player1} distributes drinks equal to their votes!",
-      "type": "group",
-      "category": "social"
+      "text": "Everyone who's been to a wedding this year drinks",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
     },
     {
-      "text": "{player1}, truth or dare? Group decides your fate - refuse and drink 3 times!",
-      "type": "conditional",
-      "category": "action"
+      "text": "Categories! {player1} picks a topic. Go around - first to hesitate drinks!",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "chain",
+      "timer": 5
+    },
+    {
+      "text": "{player1}, guess {player2}'s middle name. Wrong = drink, Right = they drink",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "versus"
+    },
+    {
+      "text": "Never have I ever... {player1} picks. Everyone who has, drinks!",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "Everyone votes: who's most likely to black out tonight? That person drinks!",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "Thumb master! {player1} can put their thumb on the table anytime - last to notice drinks!",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "rule"
+    },
+    {
+      "text": "{player1} makes a rule. Break it = drink. Lasts 3 rounds!",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "rule"
+    },
+    {
+      "text": "Everyone who's lied today drinks. {player1} decides how many sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "Rock paper scissors tournament! Losers drink, winner gives out 5 drinks",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "tournament"
+    },
+    {
+      "text": "{player1}, drink for every ex you've had",
+      "category": "drinking",
+      "chaos": 6,
+      "type": "simple"
+    },
+    {
+      "text": "Social! Everyone drinks!",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1} picks a number 1-6. Roll the dice (or random) - if it matches, everyone else drinks. If not, you drink that many",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "gamble"
+    },
+    {
+      "text": "{player1}, give a compliment to everyone or finish your drink",
+      "category": "dares",
+      "chaos": 2,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, show your most recent selfie or drink 3 times",
+      "category": "dares",
+      "chaos": 3,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, do your best impression of {player2}",
+      "category": "dares",
+      "chaos": 3,
+      "type": "perform",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, let the group pick a song. You have to dance to the whole thing",
+      "category": "dares",
+      "chaos": 5,
+      "type": "perform",
+      "timer": 60
+    },
+    {
+      "text": "{player1}, read aloud your last 3 text messages or drink 5 times",
+      "category": "dares",
+      "chaos": 6,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, call the 5th contact in your phone and sing happy birthday",
+      "category": "dares",
+      "chaos": 7,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, let {player2} post anything on your Instagram story",
+      "category": "dares",
+      "chaos": 8,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, switch shirts with {player2}",
+      "category": "dares",
+      "chaos": 5,
+      "type": "action"
+    },
+    {
+      "text": "{player1}, speak in an accent for the next 3 rounds",
+      "category": "dares",
+      "chaos": 4,
+      "type": "rule"
+    },
+    {
+      "text": "{player1}, let someone draw on your face with marker",
+      "category": "dares",
+      "chaos": 8,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, show your screen time report",
+      "category": "dares",
+      "chaos": 4,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, give your phone to {player2} for 1 minute. They can do anything except delete things",
+      "category": "dares",
+      "chaos": 9,
+      "type": "timed",
+      "timer": 60
+    },
+    {
+      "text": "{player1}, eat a spoonful of something spicy or drink 4 times",
+      "category": "dares",
+      "chaos": 6,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, keep your eyes closed for the next 2 rounds",
+      "category": "dares",
+      "chaos": 4,
+      "type": "rule"
+    },
+    {
+      "text": "{player1}, propose to {player2} on one knee. Make it convincing!",
+      "category": "dares",
+      "chaos": 6,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, do a dramatic reading of your last sent email",
+      "category": "dares",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, let the group give you a new hairstyle",
+      "category": "dares",
+      "chaos": 7,
+      "type": "action"
+    },
+    {
+      "text": "{player1}, text 'I love you' to someone random in your contacts",
+      "category": "dares",
+      "chaos": 8,
+      "type": "action"
+    },
+    {
+      "text": "{player1}, describe {player2} using only compliments for 30 seconds",
+      "category": "dares",
+      "chaos": 3,
+      "type": "perform",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, act out your morning routine. Group guesses what you're doing",
+      "category": "dares",
+      "chaos": 4,
+      "type": "perform",
+      "timer": 45
+    },
+    {
+      "text": "{player1}, what's the most embarrassing thing in your search history?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's a lie you've told this week?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's your body count? Drink that many or drink 10 for not answering",
+      "category": "confessions",
+      "chaos": 9,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, what's the pettiest reason you've rejected someone?",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's a secret you've never told anyone here?",
+      "category": "confessions",
+      "chaos": 7,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, who in this room would you trust with your phone unlocked?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's the worst thing you've done while drunk?",
+      "category": "confessions",
+      "chaos": 7,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, who was your last crush?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's something you pretend to like but actually hate?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's the most illegal thing you've done?",
+      "category": "confessions",
+      "chaos": 8,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, who in this room have you stalked on social media?",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's a red flag you ignored in your last relationship?",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's your most embarrassing celebrity crush?",
+      "category": "confessions",
+      "chaos": 3,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's the longest you've gone without showering?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's a rumor about you that's actually true?",
+      "category": "confessions",
+      "chaos": 7,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's your most irrational fear?",
+      "category": "confessions",
+      "chaos": 3,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's the meanest thing you've said about someone here?",
+      "category": "confessions",
+      "chaos": 9,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, who do you secretly judge the most?",
+      "category": "confessions",
+      "chaos": 8,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's a guilty pleasure you're ashamed of?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's the weirdest thing you've done alone?",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, is a hot dog a sandwich? Defend your answer for 30 seconds",
+      "category": "hot_takes",
+      "chaos": 2,
+      "type": "debate",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, what's an opinion that would get you cancelled?",
+      "category": "hot_takes",
+      "chaos": 7,
+      "type": "opinion"
+    },
+    {
+      "text": "{player1}, which overrated celebrity do you not understand the hype for?",
+      "category": "hot_takes",
+      "chaos": 4,
+      "type": "opinion"
+    },
+    {
+      "text": "{player1}, what's a popular movie you think is trash?",
+      "category": "hot_takes",
+      "chaos": 3,
+      "type": "opinion"
+    },
+    {
+      "text": "Debate time! {player1} and {player2} - pineapple on pizza. One for, one against. GO!",
+      "category": "hot_takes",
+      "chaos": 4,
+      "type": "versus",
+      "timer": 60
+    },
+    {
+      "text": "{player1}, what's a relationship dealbreaker that others might find shallow?",
+      "category": "hot_takes",
+      "chaos": 5,
+      "type": "opinion"
+    },
+    {
+      "text": "{player1}, rank everyone here by who you'd want on your apocalypse team",
+      "category": "hot_takes",
+      "chaos": 6,
+      "type": "ranking"
+    },
+    {
+      "text": "{player1}, what's a food combination everyone thinks is weird but you love?",
+      "category": "hot_takes",
+      "chaos": 2,
+      "type": "opinion"
+    },
+    {
+      "text": "{player1}, what's an unpopular opinion about this friend group?",
+      "category": "hot_takes",
+      "chaos": 8,
+      "type": "opinion"
+    },
+    {
+      "text": "{player1}, what popular trend do you think is stupid?",
+      "category": "hot_takes",
+      "chaos": 4,
+      "type": "opinion"
+    },
+    {
+      "text": "{player1}, rate everyone's fashion sense from 1-10. Explain your lowest rating",
+      "category": "hot_takes",
+      "chaos": 7,
+      "type": "ranking"
+    },
+    {
+      "text": "{player1}, what's the most overrated thing in life?",
+      "category": "hot_takes",
+      "chaos": 3,
+      "type": "opinion"
+    },
+    {
+      "text": "{player1}, which fictional character would you fight on sight?",
+      "category": "hot_takes",
+      "chaos": 3,
+      "type": "opinion"
+    },
+    {
+      "text": "{player1}, what's your most boomer or zoomer take?",
+      "category": "hot_takes",
+      "chaos": 4,
+      "type": "opinion"
+    },
+    {
+      "text": "Everyone vote: which celebrity is secretly the worst person? Debate!",
+      "category": "hot_takes",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "{player1}, do 10 pushups or drink 3 times",
+      "category": "physical",
+      "chaos": 3,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, plank until the next prompt or drink 5 times",
+      "category": "physical",
+      "chaos": 5,
+      "type": "challenge"
+    },
+    {
+      "text": "{player1} vs {player2} - arm wrestle! Loser drinks",
+      "category": "physical",
+      "chaos": 4,
+      "type": "versus"
+    },
+    {
+      "text": "Everyone does jumping jacks until someone quits. Quitters drink!",
+      "category": "physical",
+      "chaos": 5,
+      "type": "endurance"
+    },
+    {
+      "text": "{player1}, balance on one foot for 30 seconds while everyone tries to make you laugh",
+      "category": "physical",
+      "chaos": 4,
+      "type": "challenge",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, attempt to do a cartwheel. Group rates it 1-10",
+      "category": "physical",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "Thumb war! {player1} vs {player2}. Loser drinks twice",
+      "category": "physical",
+      "chaos": 2,
+      "type": "versus"
+    },
+    {
+      "text": "{player1}, do your best yoga pose and hold it for 20 seconds",
+      "category": "physical",
+      "chaos": 3,
+      "type": "perform",
+      "timer": 20
+    },
+    {
+      "text": "Last person to touch their nose drinks!",
+      "category": "physical",
+      "chaos": 2,
+      "type": "race"
+    },
+    {
+      "text": "{player1}, spin around 10 times then try to walk in a straight line",
+      "category": "physical",
+      "chaos": 5,
+      "type": "challenge"
+    },
+    {
+      "text": "Staring contest! {player1} vs {player2}. First to blink drinks",
+      "category": "physical",
+      "chaos": 3,
+      "type": "versus",
+      "timer": 60
+    },
+    {
+      "text": "{player1}, hold a cup on your head while standing on one foot. Drop it = drink 3",
+      "category": "physical",
+      "chaos": 4,
+      "type": "challenge",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, do a handstand against the wall for 10 seconds",
+      "category": "physical",
+      "chaos": 5,
+      "type": "challenge",
+      "timer": 10
+    },
+    {
+      "text": "Musical chairs! Losers drink!",
+      "category": "physical",
+      "chaos": 6,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, wall sit until your next turn",
+      "category": "physical",
+      "chaos": 6,
+      "type": "endurance"
+    },
+    {
+      "text": "{player1}, give {player2} your best first impression of them",
+      "category": "social",
+      "chaos": 3,
+      "type": "perform"
+    },
+    {
+      "text": "Go around the circle and give one genuine compliment to each person",
+      "category": "social",
+      "chaos": 2,
+      "type": "chain"
+    },
+    {
+      "text": "{player1}, who here would you want as your roommate and why?",
+      "category": "social",
+      "chaos": 3,
+      "type": "target"
+    },
+    {
+      "text": "{player1}, describe everyone here in 3 words each",
+      "category": "social",
+      "chaos": 4,
+      "type": "chain"
+    },
+    {
+      "text": "Two truths and a lie! {player1} goes. Group guesses the lie. Wrong guesses drink!",
+      "category": "social",
+      "chaos": 4,
+      "type": "game"
+    },
+    {
+      "text": "{player1}, who do you think is most likely to become famous?",
+      "category": "social",
+      "chaos": 3,
+      "type": "target"
+    },
+    {
+      "text": "Everyone writes down their celebrity crush. {player1} reads them out - match person to crush!",
+      "category": "social",
+      "chaos": 4,
+      "type": "game"
+    },
+    {
+      "text": "{player1}, swap seats with the person you know least well. Get to know each other for 1 minute",
+      "category": "social",
+      "chaos": 3,
+      "type": "action"
+    },
+    {
+      "text": "{player1}, share the story of your most embarrassing moment",
+      "category": "social",
+      "chaos": 5,
+      "type": "story"
+    },
+    {
+      "text": "Everyone guess {player1}'s dream vacation spot. Closest guess = {player1} drinks!",
+      "category": "social",
+      "chaos": 2,
+      "type": "game"
+    },
+    {
+      "text": "{player1}, teach everyone a new skill in 60 seconds",
+      "category": "social",
+      "chaos": 4,
+      "type": "perform",
+      "timer": 60
+    },
+    {
+      "text": "{player1}, what would your dating profile say?",
+      "category": "social",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Story time! {player1} starts with one sentence. Each person adds one sentence. Goes for 2 rounds",
+      "category": "social",
+      "chaos": 3,
+      "type": "chain"
+    },
+    {
+      "text": "{player1}, who here would you want to be stranded on an island with?",
+      "category": "social",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "Speed dating round! Everyone has 30 seconds to ask {player1} anything",
+      "category": "social",
+      "chaos": 5,
+      "type": "rapid",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, sing the chorus of your favorite song. Group rates it!",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, write a haiku about {player2}. You have 60 seconds",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform",
+      "timer": 60
+    },
+    {
+      "text": "{player1}, give a TED talk on why you're the best. 45 seconds, GO!",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform",
+      "timer": 45
+    },
+    {
+      "text": "{player1}, rap about the last thing you ate",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, do your best celebrity impression. Group guesses who!",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform"
+    },
+    {
+      "text": "One word story! Go around adding one word each. {player1} starts. Anyone who hesitates drinks!",
+      "category": "creative",
+      "chaos": 3,
+      "type": "chain"
+    },
+    {
+      "text": "{player1}, create a new dance move and name it. Everyone has to learn it!",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, do your best movie villain monologue",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform",
+      "timer": 30
+    },
+    {
+      "text": "{player1} and {player2}, act out a scene from a movie. Group guesses the movie!",
+      "category": "creative",
+      "chaos": 5,
+      "type": "versus"
+    },
+    {
+      "text": "{player1}, speak only in questions for the next 3 rounds. Break it = drink",
+      "category": "creative",
+      "chaos": 4,
+      "type": "rule"
+    },
+    {
+      "text": "{player1}, do a dramatic reading of the last text you received",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, do your best impression of a terrible infomercial for any object in this room",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform",
+      "timer": 45
+    },
+    {
+      "text": "Roast battle! {player1} vs {player2}. Each gets 30 seconds. Group picks a winner!",
+      "category": "creative",
+      "chaos": 7,
+      "type": "versus",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, make up a backstory for how {player2} got their name",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, sing everything you say for the next 2 rounds",
+      "category": "creative",
+      "chaos": 5,
+      "type": "rule"
+    },
+    {
+      "text": "Phone roulette! {player1} scrolls to a random photo, shows it, and explains the context",
+      "category": "chaos",
+      "chaos": 6,
+      "type": "random"
+    },
+    {
+      "text": "Russian roulette! Roll a dice. 1 = finish your drink. 2-6 = safe!",
+      "category": "chaos",
+      "chaos": 7,
+      "type": "gamble"
+    },
+    {
+      "text": "Everyone switches drinks! Person to your right's drink is now yours",
+      "category": "chaos",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "Chaos vote! Everyone secretly points at someone. Most votes = finish your drink",
+      "category": "chaos",
+      "chaos": 8,
+      "type": "vote"
+    },
+    {
+      "text": "Silent round! No one can talk until the next prompt. First to speak finishes their drink",
+      "category": "chaos",
+      "chaos": 5,
+      "type": "rule"
+    },
+    {
+      "text": "{player1}, you're the dealer. Give out 10 drinks however you want",
+      "category": "chaos",
+      "chaos": 7,
+      "type": "power"
+    },
+    {
+      "text": "Reverse! The game now goes in the opposite direction",
+      "category": "chaos",
+      "chaos": 3,
+      "type": "rule"
+    },
+    {
+      "text": "{player1}, pick someone. You're both immune from drinking for 2 rounds",
+      "category": "chaos",
+      "chaos": 4,
+      "type": "power"
+    },
+    {
+      "text": "Wildcard! {player1} makes up any rule for the rest of the game",
+      "category": "chaos",
+      "chaos": 8,
+      "type": "power"
+    },
+    {
+      "text": "Floor is lava! Last person to get their feet off the ground drinks 5 times",
+      "category": "chaos",
+      "chaos": 6,
+      "type": "race"
+    },
+    {
+      "text": "Telephone! {player1} whispers a secret to {player2}. Goes around. Compare start and end!",
+      "category": "chaos",
+      "chaos": 5,
+      "type": "chain"
+    },
+    {
+      "text": "Power shift! {player1}, swap chaos levels with {player2}. Their drinks become yours!",
+      "category": "chaos",
+      "chaos": 6,
+      "type": "power"
+    },
+    {
+      "text": "{player1}, close your eyes and point. Whoever you point at chooses: truth or dare!",
+      "category": "chaos",
+      "chaos": 5,
+      "type": "random"
+    },
+    {
+      "text": "Alliance! {player1} picks a partner. You share all drinks for the next 3 rounds",
+      "category": "chaos",
+      "chaos": 4,
+      "type": "rule"
+    },
+    {
+      "text": "Random! Everyone rolls a dice (or picks 1-6). Highest number gives out drinks = everyone else's total",
+      "category": "chaos",
+      "chaos": 8,
+      "type": "gamble"
+    },
+    {
+      "text": "Medusa! Everyone looks down. On 3, look up. If you make eye contact with someone, both drink!",
+      "category": "chaos",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "Truth booth! {player1} answers any question from each player honestly or takes a shot",
+      "category": "chaos",
+      "chaos": 8,
+      "type": "rapid"
+    },
+    {
+      "text": "{player1}, Viking mode! Point at someone and say 'VIKING!' They must make rowing motions while neighbors make rowing sounds. Slowest drinks!",
+      "category": "chaos",
+      "chaos": 6,
+      "type": "random"
+    },
+    {
+      "text": "Dictator! {player1} is in charge for 2 rounds. Their word is law!",
+      "category": "chaos",
+      "chaos": 9,
+      "type": "power"
+    },
+    {
+      "text": "Confession roulette! Everyone writes a secret. {player1} picks one and reads it. Author takes 3 drinks",
+      "category": "chaos",
+      "chaos": 9,
+      "type": "game"
+    },
+    {
+      "text": "Most likely to! Everyone points at who's most likely to become a millionaire. Most votes drinks!",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to go viral? Most votes drinks!",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to get arrested? Most votes drinks!",
+      "category": "social",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to cry at a movie? Most votes drinks!",
+      "category": "social",
+      "chaos": 3,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to survive a horror movie? Most votes drinks!",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to forget someone's birthday? Most votes drinks!",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to become president? Most votes drinks!",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to get into a bar fight? Most votes drinks!",
+      "category": "social",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to win a reality TV show? Most votes drinks!",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to marry rich? Most votes drinks!",
+      "category": "social",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "{player1} vs {player2}, trivia showdown! First to answer wrong drinks. Topic: capitals",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "versus"
+    },
+    {
+      "text": "Speed round! {player1} has 30 seconds to name 10 countries. Miss = drink for each missed",
+      "category": "creative",
+      "chaos": 4,
+      "type": "timed",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, without looking, guess what {player2}'s phone wallpaper is. Wrong = drink twice",
+      "category": "social",
+      "chaos": 3,
+      "type": "versus"
+    },
+    {
+      "text": "{player1} and {player2}, say the same word at the same time. You have 3 tries. Fail = both drink",
+      "category": "social",
+      "chaos": 4,
+      "type": "versus"
+    },
+    {
+      "text": "{player1}, make a toast. It has to be at least 3 sentences. Everyone drinks at the end!",
+      "category": "social",
+      "chaos": 3,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, you have 10 seconds to make {player2} laugh. Fail = drink 3 times",
+      "category": "creative",
+      "chaos": 4,
+      "type": "challenge",
+      "timer": 10
+    },
+    {
+      "text": "Accent round! Everyone must speak in an accent until the next prompt. {player1} picks the accent!",
+      "category": "creative",
+      "chaos": 5,
+      "type": "rule"
+    },
+    {
+      "text": "{player1}, what's the last lie you told? If group doesn't believe it's the truth, drink twice!",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, show the group your most-used emoji. Explain why",
+      "category": "social",
+      "chaos": 2,
+      "type": "reveal"
+    },
+    {
+      "text": "Psychic round! Everyone guess {player1}'s favorite song. Best guess = {player1} drinks",
+      "category": "social",
+      "chaos": 3,
+      "type": "game"
+    },
+    {
+      "text": "{player1}, rank your exes by how good they were at texting back",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "ranking"
+    },
+    {
+      "text": "Imitation game! {player1} acts like {player2} for 30 seconds. {player2} rates accuracy",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, what's something you'd never admit to your parents?",
+      "category": "confessions",
+      "chaos": 7,
+      "type": "confession"
+    },
+    {
+      "text": "Hot seat! {player1} answers rapid fire questions for 30 seconds. Pass on any = drink!",
+      "category": "chaos",
+      "chaos": 6,
+      "type": "rapid",
+      "timer": 30
+    },
+    {
+      "text": "Everyone who hasn't texted back someone in their phone for 3+ days drinks!",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, do your best TikTok dance",
+      "category": "physical",
+      "chaos": 4,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, what's the worst pickup line you've actually used?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, what's a compliment you want to give {player2} but never have?",
+      "category": "social",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "Speed compliments! Go around giving {player1} one compliment each. 3 seconds max per person!",
+      "category": "social",
+      "chaos": 3,
+      "type": "chain",
+      "timer": 3
+    },
+    {
+      "text": "{player1}, if you had to date one person here, who and why? They drink!",
+      "category": "confessions",
+      "chaos": 7,
+      "type": "target"
+    },
+    {
+      "text": "Conspiracy theory time! {player1} has 30 seconds to convince us of any fake theory",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, recreate your last Instagram post IRL right now",
+      "category": "dares",
+      "chaos": 5,
+      "type": "perform"
     }
   ],
   "sexy": [
     {
-      "text": "{player1}, demonstrate your best pickup line on {player2}. Group rates it - drink the difference from 10!",
-      "type": "action",
-      "category": "social"
+      "text": "{player1}, demonstrate your best pickup line on {player2}. Group rates it 1-10!",
+      "category": "social",
+      "chaos": 4,
+      "type": "perform"
     },
     {
-      "text": "Everyone writes their worst date story anonymously. {player1} reads them out - guess who's is who's!",
-      "type": "group",
-      "category": "social"
+      "text": "{player1}, who here has the best smile?",
+      "category": "social",
+      "chaos": 3,
+      "type": "target"
     },
     {
-      "text": "{player1} and {player2}, staring contest! First to break eye contact shares their most awkward kiss story.",
-      "type": "action",
-      "category": "social"
+      "text": "{player1}, give {player2} a 30-second shoulder massage or drink 3 times",
+      "category": "dares",
+      "chaos": 5,
+      "type": "choice"
     },
     {
-      "text": "Everyone votes on who's most likely to get married first. {player1} gives out drinks equal to their votes!",
-      "type": "group",
-      "category": "social"
+      "text": "Everyone who's kissed someone in this room drinks!",
+      "category": "drinking",
+      "chaos": 6,
+      "type": "group"
     },
     {
-      "text": "{player1}, you're Cupid! Match two players who'd make the best couple - they both drink!",
-      "type": "conditional",
-      "category": "social"
+      "text": "{player1}, what's your biggest turn-on?",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "confession"
     },
     {
-      "text": "Everyone who's ever had a dating app installed drinks! {player1} decides how many sips.",
-      "type": "group",
-      "category": "drinking"
+      "text": "{player1}, rank everyone here by attractiveness or finish your drink",
+      "category": "confessions",
+      "chaos": 8,
+      "type": "ranking"
     },
     {
-      "text": "{player1}, recreate your ideal first date scenario with {player2}. Others rate it - drink the difference from 10!",
-      "type": "action",
-      "category": "social"
+      "text": "{player1} and {player2}, staring contest. First to look away has to compliment the other's appearance",
+      "category": "physical",
+      "chaos": 4,
+      "type": "versus"
     },
     {
-      "text": "Everyone writes their best/worst pickup line. {player1} judges - worst one drinks double!",
-      "type": "group",
-      "category": "social"
+      "text": "{player1}, what's the most romantic thing you've ever done?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Kiss, marry, kill with people in this room. {player1} answers!",
+      "category": "chaos",
+      "chaos": 7,
+      "type": "target"
+    },
+    {
+      "text": "{player1}, show your dating app profile to the group",
+      "category": "dares",
+      "chaos": 6,
+      "type": "reveal"
+    },
+    {
+      "text": "Everyone who's sent a risky text in the last week drinks!",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's your type in 5 words?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, do a seductive walk across the room",
+      "category": "dares",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, give someone here a flirty compliment",
+      "category": "social",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "{player1}, what's your worst date story?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "story"
+    },
+    {
+      "text": "Truth or drink! {player1}, what's your body count?",
+      "category": "confessions",
+      "chaos": 8,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, whisper something to {player2}. They decide if you drink based on what you said",
+      "category": "chaos",
+      "chaos": 6,
+      "type": "secret"
+    },
+    {
+      "text": "{player1}, who was your celebrity crush growing up?",
+      "category": "confessions",
+      "chaos": 3,
+      "type": "confession"
+    },
+    {
+      "text": "Seven minutes in heaven, but just a compliment battle. {player1} and {player2} take turns complimenting each other!",
+      "category": "social",
+      "chaos": 5,
+      "type": "versus"
+    },
+    {
+      "text": "{player1}, read aloud your last flirty text",
+      "category": "dares",
+      "chaos": 7,
+      "type": "reveal"
+    },
+    {
+      "text": "Smash or pass: {player1} picks 3 celebrities. Everyone answers!",
+      "category": "social",
+      "chaos": 4,
+      "type": "game"
+    },
+    {
+      "text": "{player1}, describe your ideal first date in detail",
+      "category": "confessions",
+      "chaos": 3,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, serenade {player2} with any love song",
+      "category": "creative",
+      "chaos": 6,
+      "type": "perform"
+    },
+    {
+      "text": "{player1}, what's the most embarrassing thing in your 'For You' page?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, who here would you swipe right on?",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "target"
+    },
+    {
+      "text": "Most likely to! Who's most likely to slide into a celebrity's DMs? Most votes drinks!",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to get married first? Most votes drinks!",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Most likely to! Who's most likely to have a secret admirer? Most votes drinks!",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "{player1}, what's a deal-breaker that you know is unreasonable?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "{player1}, describe {player2} as a dating profile",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform"
     }
   ]
 }
