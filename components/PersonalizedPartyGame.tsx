@@ -567,6 +567,36 @@ export function PersonalizedPartyGame() {
     setGameState(prev => ({ ...prev, screen: "setup", round: 1, currentPromptIndex: 0 }));
   }, [stopTimer]);
 
+  const shareResults = useCallback(async () => {
+    triggerHaptic("success");
+    const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+    const winner = sortedPlayers[0];
+    const drunkest = [...players].sort((a, b) => b.drinks - a.drinks)[0];
+
+    let message = `🎮 GAMBIT RESULTS 🎮\n\n`;
+
+    if (winner && winner.score > 0) {
+      message += `👑 Champion: ${winner.name} (${winner.score} pts)\n`;
+    }
+
+    if (drunkest && drunkest.drinks > 0) {
+      message += `🍺 Most Hydrated: ${drunkest.name} (${drunkest.drinks} drinks)\n`;
+    }
+
+    message += `\n📊 Final Standings:\n`;
+    sortedPlayers.forEach((p, i) => {
+      message += `${i + 1}. ${p.avatar} ${p.name}: ${p.score}pts`;
+      if (p.drinks > 0) message += ` (🍺${p.drinks})`;
+      message += `\n`;
+    });
+
+    message += `\n🔥 Play Gambit: https://apps.apple.com/app/id6737107968`;
+
+    try {
+      await Share.share({ message });
+    } catch (e) {}
+  }, [players]);
+
   const addPlayer = useCallback(() => {
     if (newPlayerName.trim()) {
       triggerHaptic("light");
@@ -916,11 +946,18 @@ export function PersonalizedPartyGame() {
             ))}
           </View>
 
-          <TouchableOpacity style={styles.playAgainBtn} onPress={resetGame} activeOpacity={0.9}>
-            <LinearGradient colors={["#8B5CF6", "#7C3AED"]} style={styles.playAgainGradient}>
-              <Text style={styles.playAgainText}>Play Again</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+          <View style={styles.resultsButtons}>
+            <TouchableOpacity style={styles.shareResultsBtn} onPress={shareResults} activeOpacity={0.8}>
+              <Ionicons name="share-outline" size={22} color="#FFF" />
+              <Text style={styles.shareResultsText}>Share Results</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.playAgainBtn} onPress={resetGame} activeOpacity={0.9}>
+              <LinearGradient colors={["#8B5CF6", "#7C3AED"]} style={styles.playAgainGradient}>
+                <Text style={styles.playAgainText}>Play Again</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
         {showConfetti && <Confetti count={60} />}
       </View>
@@ -1121,6 +1158,9 @@ const styles = StyleSheet.create({
   drunkestLabel: { fontSize: 11, color: "rgba(59,130,246,0.8)", fontWeight: "700", letterSpacing: 2, marginBottom: 4 },
   drunkestName: { fontSize: 22, fontWeight: "700", color: "#3B82F6" },
   drunkestScore: { fontSize: 14, color: "rgba(59,130,246,0.7)", marginTop: 2, fontWeight: "600" },
+  resultsButtons: { gap: 12, width: "100%", marginTop: 10 },
+  shareResultsBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 16, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.15)" },
+  shareResultsText: { fontSize: 16, fontWeight: "600", color: "#FFF" },
   playAgainBtn: { borderRadius: 20, overflow: "hidden", width: "100%" },
   playAgainGradient: { paddingVertical: 18, alignItems: "center" },
   playAgainText: { fontSize: 17, fontWeight: "700", color: "#FFF" },
