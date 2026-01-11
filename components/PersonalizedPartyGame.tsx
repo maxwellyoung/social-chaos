@@ -15,6 +15,7 @@ import {
   Text,
   Platform,
   ScrollView,
+  Share,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "./Button";
@@ -37,6 +38,8 @@ import Animated, {
   SlideOutLeft,
   ZoomIn,
   BounceIn,
+  FadeIn,
+  FadeOut,
   FadeInUp,
   FadeInDown,
   Layout,
@@ -49,6 +52,9 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
+import { Audio } from "expo-av";
+import * as Sharing from "expo-sharing";
+import ViewShot from "react-native-view-shot";
 
 import promptData from "../assets/prompts/prompts.json";
 
@@ -83,8 +89,14 @@ interface GameState {
   timerSeconds: number;
 }
 
+interface PromptRating {
+  promptText: string;
+  fire: number;
+  skull: number;
+}
+
 // Constants
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.2;
 const MAX_WIDTH = 500;
 
@@ -97,6 +109,41 @@ const CATEGORIES: Record<CategoryKey, { name: string; emoji: string; color: stri
   social: { name: "Social", emoji: "💬", color: "#3B82F6", gradient: ["#3B82F6", "#2563EB"] },
   creative: { name: "Creative", emoji: "🎨", color: "#EC4899", gradient: ["#EC4899", "#DB2777"] },
   chaos: { name: "Chaos", emoji: "🌪️", color: "#8B5CF6", gradient: ["#8B5CF6", "#7C3AED"] },
+};
+
+// Sound Effects Hook
+const useSoundEffects = () => {
+  const sounds = useRef<{ [key: string]: Audio.Sound }>({});
+
+  const playHapticPattern = useCallback(async (pattern: "success" | "error" | "swipe" | "fire" | "skull" | "celebration") => {
+    if (Platform.OS === "web") return;
+
+    switch (pattern) {
+      case "success":
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        break;
+      case "error":
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        break;
+      case "swipe":
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        break;
+      case "fire":
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light), 100);
+        break;
+      case "skull":
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+        break;
+      case "celebration":
+        for (let i = 0; i < 3; i++) {
+          setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light), i * 80);
+        }
+        break;
+    }
+  }, []);
+
+  return { playHapticPattern };
 };
 
 // Floating Orb Component
@@ -196,11 +243,107 @@ const Confetti = ({ count = 40 }: { count?: number }) => {
   );
 };
 
+// Rating Popup Component
+const RatingPopup = ({
+  visible,
+  onRate,
+  promptText
+}: {
+  visible: boolean;
+  onRate: (rating: "fire" | "skull" | "skip") => void;
+  promptText: string;
+}) => {
+  const scale = useSharedValue(0);
+
+  useEffect(() => {
+    if (visible) {
+      scale.value = withSpring(1, { damping: 12, stiffness: 200 });
+    } else {
+      scale.value = withTiming(0, { duration: 150 });
+    }
+  }, [visible]);
+
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: scale.value,
+  }));
+
+  if (!visible) return null;
+
+  return (
+    <Animated.View style={[styles.ratingOverlay, animStyle]}>
+      <View style={styles.ratingCard}>
+        <Text style={styles.ratingTitle}>Rate this prompt</Text>
+        <Text style={styles.ratingPrompt} numberOfLines={2}>{promptText}</Text>
+        <View style={styles.ratingButtons}>
+          <TouchableOpacity
+            style={[styles.ratingBtn, styles.fireBtn]}
+            onPress={() => onRate("fire")}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.ratingEmoji}>🔥</Text>
+            <Text style={styles.ratingLabel}>Fire</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.ratingBtn, styles.skullBtn]}
+            onPress={() => onRate("skull")}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.ratingEmoji}>💀</Text>
+            <Text style={styles.ratingLabel}>Dead</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.skipBtn} onPress={() => onRate("skip")}>
+          <Text style={styles.skipText}>Skip</Text>
+        </TouchableOpacity>
+      </View>
+    </Animated.View>
+  );
+};
+
+// Share Card Component
+const ShareCard = React.forwardRef<ViewShot, { prompt: string; category: CategoryKey; players: Player[] }>(
+  ({ prompt, category, players }, ref) => {
+    const cat = CATEGORIES[category] || CATEGORIES.chaos;
+    return (
+      <ViewShot ref={ref} options={{ format: "png", quality: 1 }}>
+        <View style={styles.shareCard}>
+          <LinearGradient
+            colors={[cat.gradient[0], cat.gradient[1], "#000"]}
+            style={StyleSheet.absoluteFill}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          />
+          <View style={styles.shareCardContent}>
+            <Text style={styles.shareCardBrand}>GAMBIT</Text>
+            <Text style={styles.shareCardEmoji}>{cat.emoji}</Text>
+            <Text style={styles.shareCardPrompt}>{prompt}</Text>
+            <View style={styles.shareCardFooter}>
+              <Text style={styles.shareCardPlayers}>
+                Playing with {players.slice(0, 3).map(p => p.name).join(", ")}
+                {players.length > 3 ? ` +${players.length - 3}` : ""}
+              </Text>
+              <Text style={styles.shareCardCTA}>Download Gambit 🎮</Text>
+            </View>
+          </View>
+        </View>
+      </ViewShot>
+    );
+  }
+);
+
 export function PersonalizedPartyGame() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [isAddPlayerVisible, setIsAddPlayerVisible] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showRating, setShowRating] = useState(false);
+  const [lastPromptForRating, setLastPromptForRating] = useState("");
+  const [promptRatings, setPromptRatings] = useState<PromptRating[]>([]);
+  const [gameStats, setGameStats] = useState({ totalGames: 1247, activeNow: 89 });
+
+  const { playHapticPattern } = useSoundEffects();
+  const shareCardRef = useRef<ViewShot>(null);
 
   const [gameState, setGameState] = useState<GameState>({
     screen: "setup",
@@ -234,6 +377,18 @@ export function PersonalizedPartyGame() {
   const errorShakeX = useSharedValue(0);
   const nextCardScale = useSharedValue(0.88);
   const timerPulse = useSharedValue(1);
+  const statsCounter = useSharedValue(gameStats.activeNow);
+
+  // Animate stats counter
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGameStats(prev => ({
+        ...prev,
+        activeNow: prev.activeNow + Math.floor(Math.random() * 5) - 2,
+      }));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Timer warning
   useEffect(() => {
@@ -303,14 +458,14 @@ export function PersonalizedPartyGame() {
       setGameState(prev => {
         if (prev.timerSeconds <= 1) {
           if (timerRef.current) clearInterval(timerRef.current);
-          if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          playHapticPattern("error");
           return { ...prev, timerActive: false, timerSeconds: 0 };
         }
-        if (prev.timerSeconds <= 5 && Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        if (prev.timerSeconds <= 5) playHapticPattern("swipe");
         return { ...prev, timerSeconds: prev.timerSeconds - 1 };
       });
     }, 1000);
-  }, []);
+  }, [playHapticPattern]);
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
@@ -318,21 +473,67 @@ export function PersonalizedPartyGame() {
     setGameState(prev => ({ ...prev, timerActive: false, timerSeconds: 0 }));
   }, []);
 
+  // Share functionality
+  const sharePrompt = useCallback(async () => {
+    playHapticPattern("success");
+
+    try {
+      const message = `🎮 GAMBIT\n\n"${currentPrompt}"\n\nDownload Gambit and play with your friends!`;
+      await Share.share({
+        message,
+        title: "Share this Gambit prompt",
+      });
+    } catch (error) {
+      console.log("Error sharing:", error);
+    }
+  }, [currentPrompt, playHapticPattern]);
+
+  // Rate prompt
+  const handleRating = useCallback((rating: "fire" | "skull" | "skip") => {
+    if (rating !== "skip") {
+      playHapticPattern(rating);
+      setPromptRatings(prev => {
+        const existing = prev.find(r => r.promptText === lastPromptForRating);
+        if (existing) {
+          return prev.map(r =>
+            r.promptText === lastPromptForRating
+              ? { ...r, [rating]: r[rating] + 1 }
+              : r
+          );
+        }
+        return [...prev, {
+          promptText: lastPromptForRating,
+          fire: rating === "fire" ? 1 : 0,
+          skull: rating === "skull" ? 1 : 0
+        }];
+      });
+    }
+    setShowRating(false);
+  }, [lastPromptForRating, playHapticPattern]);
+
   const handleNext = useCallback(() => {
-    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    playHapticPattern("swipe");
     stopTimer();
+
+    // Show rating popup for previous prompt
+    if (currentPrompt && Math.random() > 0.5) { // 50% chance to show rating
+      setLastPromptForRating(currentPrompt);
+      setShowRating(true);
+    }
 
     const total = gameState.totalRounds * gameState.promptsPerRound;
     const current = (gameState.round - 1) * gameState.promptsPerRound + gameState.currentPromptIndex;
 
     if (current + 1 >= total) {
       setShowConfetti(true);
+      playHapticPattern("celebration");
       setGameState(prev => ({ ...prev, screen: "results" }));
       return;
     }
 
     if (gameState.currentPromptIndex + 1 >= gameState.promptsPerRound) {
       setShowConfetti(true);
+      playHapticPattern("celebration");
       setTimeout(() => setShowConfetti(false), 3000);
       setGameState(prev => ({ ...prev, screen: "roundEnd" }));
       return;
@@ -357,7 +558,7 @@ export function PersonalizedPartyGame() {
       cardScale.value = withSpring(1, { damping: 15, stiffness: 150 });
       cardOpacity.value = withSpring(1, { damping: 15, stiffness: 150 });
     }, 30);
-  }, [gameState, nextPrompt, nextPromptData, getNextPrompt, startTimer, stopTimer]);
+  }, [gameState, nextPrompt, nextPromptData, getNextPrompt, startTimer, stopTimer, currentPrompt, playHapticPattern]);
 
   const continueToNextRound = useCallback(() => {
     setShowConfetti(false);
@@ -380,7 +581,7 @@ export function PersonalizedPartyGame() {
         withSpring(-20, { stiffness: 800, damping: 6 }),
         withSpring(0, { stiffness: 800, damping: 6 })
       );
-      if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      playHapticPattern("error");
       Alert.alert("Need Players", "Add at least 2 players!", [{ text: "Add", onPress: () => setIsAddPlayerVisible(true) }]);
       return;
     }
@@ -398,12 +599,14 @@ export function PersonalizedPartyGame() {
       setNextPromptData(second.data);
       if (first.data.timer) setTimeout(() => startTimer(first.data.timer!), 600);
     }
+    playHapticPattern("success");
     setGameState(prev => ({ ...prev, screen: "playing", round: 1, currentPromptIndex: 0 }));
-  }, [players, gameState.selectedCategories, initializePrompts, getNextPromptFromList, startTimer]);
+  }, [players, gameState.selectedCategories, initializePrompts, getNextPromptFromList, startTimer, playHapticPattern]);
 
   const resetGame = useCallback(() => {
     stopTimer();
     setShowConfetti(false);
+    setShowRating(false);
     setGameState(prev => ({ ...prev, screen: "setup", round: 1, currentPromptIndex: 0 }));
     setCurrentPrompt("");
     setNextPrompt("");
@@ -411,27 +614,27 @@ export function PersonalizedPartyGame() {
 
   const addPlayer = useCallback(() => {
     if (newPlayerName.trim()) {
-      if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      playHapticPattern("success");
       const avatars = ["😎", "🤪", "😈", "🥳", "🤠", "👻", "🦊", "🐸", "🦄", "🔥", "⚡", "💀", "🎃", "🤖", "👽", "🦁", "🐼", "🦋", "🎭", "🌟"];
       setPlayers(prev => [...prev, { name: newPlayerName.trim(), avatar: avatars[Math.floor(Math.random() * avatars.length)], score: 0 }]);
       setNewPlayerName("");
     }
-  }, [newPlayerName]);
+  }, [newPlayerName, playHapticPattern]);
 
   const removePlayer = useCallback((index: number) => {
-    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    playHapticPattern("swipe");
     setPlayers(prev => prev.filter((_, i) => i !== index));
-  }, []);
+  }, [playHapticPattern]);
 
   const toggleCategory = useCallback((cat: CategoryKey) => {
-    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    playHapticPattern("swipe");
     setGameState(prev => ({
       ...prev,
       selectedCategories: prev.selectedCategories.includes(cat)
         ? prev.selectedCategories.filter(c => c !== cat)
         : [...prev.selectedCategories, cat],
     }));
-  }, []);
+  }, [playHapticPattern]);
 
   // Gestures
   const panGesture = Gesture.Pan()
@@ -485,6 +688,12 @@ export function PersonalizedPartyGame() {
   const timerBarStyle = useAnimatedStyle(() => ({ width: `${timerProgress.value * 100}%` }));
   const timerTextStyle = useAnimatedStyle(() => ({ transform: [{ scale: timerPulse.value }] }));
 
+  // Check if prompt is "hot" (well-rated)
+  const isHotPrompt = useCallback((promptText: string) => {
+    const rating = promptRatings.find(r => r.promptText === promptText);
+    return rating && rating.fire > rating.skull && rating.fire >= 3;
+  }, [promptRatings]);
+
   // Render Setup
   const renderSetup = () => (
     <View style={styles.screen}>
@@ -500,6 +709,12 @@ export function PersonalizedPartyGame() {
         <Animated.View entering={FadeInDown.duration(600).springify()} style={styles.hero}>
           <Text style={styles.heroTitle}>GAMBIT</Text>
           <Text style={styles.heroSub}>Party chaos, perfected</Text>
+        </Animated.View>
+
+        {/* Live Stats */}
+        <Animated.View entering={FadeInUp.delay(50).duration(400)} style={styles.liveStats}>
+          <View style={styles.liveDot} />
+          <Text style={styles.liveText}>{gameStats.activeNow} playing now</Text>
         </Animated.View>
 
         {/* Players Card */}
@@ -531,7 +746,7 @@ export function PersonalizedPartyGame() {
           <TouchableOpacity
             style={[styles.modeCard, gameState.isSexyMode && styles.modeCardActive]}
             onPress={() => {
-              if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              playHapticPattern("swipe");
               setGameState(prev => ({ ...prev, isSexyMode: !prev.isSexyMode }));
             }}
             activeOpacity={0.8}
@@ -558,7 +773,7 @@ export function PersonalizedPartyGame() {
               step={1}
               value={gameState.chaosLevel}
               onValueChange={(v) => {
-                if (Platform.OS !== "web") Haptics.selectionAsync();
+                playHapticPattern("swipe");
                 setGameState(prev => ({ ...prev, chaosLevel: v }));
               }}
               minimumTrackTintColor="#8B5CF6"
@@ -655,6 +870,7 @@ export function PersonalizedPartyGame() {
     const catColor = currentPromptData ? CATEGORIES[currentPromptData.category as CategoryKey]?.color || "#8B5CF6" : "#8B5CF6";
     const catGradient = currentPromptData ? CATEGORIES[currentPromptData.category as CategoryKey]?.gradient || ["#8B5CF6", "#7C3AED"] : ["#8B5CF6", "#7C3AED"];
     const timerColor = gameState.timerSeconds <= 5 ? "#EF4444" : "#10B981";
+    const hot = isHotPrompt(currentPrompt);
 
     return (
       <GestureHandlerRootView style={styles.screen}>
@@ -664,7 +880,9 @@ export function PersonalizedPartyGame() {
         <View style={styles.playHeader}>
           <TouchableOpacity onPress={resetGame} style={styles.playBackBtn}><Ionicons name="close" size={20} color="#FFF" /></TouchableOpacity>
           <View style={styles.playRoundBadge}><Text style={styles.playRoundText}>Round {gameState.round}</Text></View>
-          <Text style={styles.playCount}>{current + 1}/{total}</Text>
+          <TouchableOpacity onPress={sharePrompt} style={styles.shareBtn}>
+            <Ionicons name="share-outline" size={20} color="#FFF" />
+          </TouchableOpacity>
         </View>
 
         {/* Progress */}
@@ -672,6 +890,7 @@ export function PersonalizedPartyGame() {
           <View style={styles.progressTrack}>
             <Animated.View style={[styles.progressFill, { width: `${progress * 100}%`, backgroundColor: catColor }]} />
           </View>
+          <Text style={styles.playCount}>{current + 1}/{total}</Text>
         </View>
 
         {/* Cards */}
@@ -683,6 +902,13 @@ export function PersonalizedPartyGame() {
           <GestureDetector gesture={panGesture}>
             <Animated.View style={[styles.promptCard, cardStyle]}>
               <LinearGradient colors={[catGradient[0] + "20", "transparent"]} style={[StyleSheet.absoluteFill, { borderRadius: 24 }]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
+
+              {/* Hot Badge */}
+              {hot && (
+                <View style={styles.hotBadge}>
+                  <Text style={styles.hotBadgeText}>🔥 HOT</Text>
+                </View>
+              )}
 
               {currentPromptData && (
                 <View style={[styles.promptCatBadge, { backgroundColor: catColor + "30" }]}>
@@ -706,14 +932,25 @@ export function PersonalizedPartyGame() {
           </GestureDetector>
         </View>
 
-        {/* Next Button */}
+        {/* Action Buttons */}
         <View style={styles.playFooter}>
-          <TouchableOpacity style={styles.nextBtn} onPress={handleNext} activeOpacity={0.9}>
-            <LinearGradient colors={catGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.nextBtnGradient}>
-              <Text style={styles.nextBtnText}>Next</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+          <View style={styles.actionRow}>
+            <TouchableOpacity style={styles.quickRateBtn} onPress={() => { setLastPromptForRating(currentPrompt); handleRating("skull"); handleNext(); }}>
+              <Text style={styles.quickRateEmoji}>💀</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.nextBtn} onPress={handleNext} activeOpacity={0.9}>
+              <LinearGradient colors={catGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.nextBtnGradient}>
+                <Text style={styles.nextBtnText}>Next</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.quickRateBtn} onPress={() => { setLastPromptForRating(currentPrompt); handleRating("fire"); handleNext(); }}>
+              <Text style={styles.quickRateEmoji}>🔥</Text>
+            </TouchableOpacity>
+          </View>
         </View>
+
+        {/* Rating Popup */}
+        <RatingPopup visible={showRating} onRate={handleRating} promptText={lastPromptForRating} />
       </GestureHandlerRootView>
     );
   };
@@ -753,6 +990,16 @@ export function PersonalizedPartyGame() {
               <Text style={styles.winnerName}>{winner.avatar} {winner.name}</Text>
             </Animated.View>
           )}
+
+          {/* Share Results */}
+          <Animated.View entering={FadeInUp.delay(500)} style={styles.shareResultsWrap}>
+            <TouchableOpacity style={styles.shareResultsBtn} onPress={sharePrompt} activeOpacity={0.9}>
+              <LinearGradient colors={["#EC4899", "#8B5CF6"]} style={styles.shareResultsGradient}>
+                <Ionicons name="share-social" size={20} color="#FFF" />
+                <Text style={styles.shareResultsText}>Share Game</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
 
           <View style={styles.resultsList}>
             {players.map((p, i) => (
@@ -852,6 +1099,18 @@ export function PersonalizedPartyGame() {
           </LinearGradient>
         </TouchableOpacity>
       </SlideDownPanel>
+
+      {/* Hidden Share Card for capture */}
+      {currentPromptData && (
+        <View style={styles.hiddenShareCard}>
+          <ShareCard
+            ref={shareCardRef}
+            prompt={currentPrompt}
+            category={currentPromptData.category as CategoryKey}
+            players={players}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -863,9 +1122,14 @@ const styles = StyleSheet.create({
   scrollContent: { flex: 1 },
   bgOrbs: { ...StyleSheet.absoluteFillObject, overflow: "hidden" },
 
+  // Live Stats
+  liveStats: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 24 },
+  liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#10B981", marginRight: 8 },
+  liveText: { fontSize: 13, color: "rgba(255,255,255,0.6)", fontWeight: "600" },
+
   // Setup
   setupContent: { padding: 20, paddingBottom: 40 },
-  hero: { alignItems: "center", marginTop: 40, marginBottom: 40 },
+  hero: { alignItems: "center", marginTop: 40, marginBottom: 20 },
   heroTitle: { fontSize: 64, fontWeight: "900", color: "#FFF", letterSpacing: 8, textShadowColor: "#8B5CF6", textShadowRadius: 40 },
   heroSub: { fontSize: 16, color: "rgba(255,255,255,0.5)", marginTop: 8, letterSpacing: 2 },
 
@@ -919,11 +1183,12 @@ const styles = StyleSheet.create({
   playBackBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
   playRoundBadge: { backgroundColor: "rgba(255,255,255,0.1)", paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
   playRoundText: { fontSize: 13, fontWeight: "700", color: "#FFF" },
-  playCount: { fontSize: 13, fontWeight: "600", color: "rgba(255,255,255,0.5)" },
+  shareBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
 
-  progressWrap: { paddingHorizontal: 16, marginBottom: 8 },
-  progressTrack: { height: 4, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 2, overflow: "hidden" },
+  progressWrap: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, marginBottom: 8, gap: 12 },
+  progressTrack: { flex: 1, height: 4, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 2, overflow: "hidden" },
   progressFill: { height: "100%", borderRadius: 2 },
+  playCount: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.5)", minWidth: 40, textAlign: "right" },
 
   cardsArea: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 16 },
   promptCard: { width: "100%", aspectRatio: 0.85, backgroundColor: "#111", borderRadius: 24, padding: 24, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", position: "absolute" },
@@ -933,15 +1198,36 @@ const styles = StyleSheet.create({
   promptText: { fontSize: 24, fontWeight: "700", color: "#FFF", textAlign: "center", lineHeight: 34 },
   swipeHint: { position: "absolute", bottom: 20, fontSize: 12, color: "rgba(255,255,255,0.3)", fontWeight: "600", letterSpacing: 2 },
 
+  // Hot Badge
+  hotBadge: { position: "absolute", top: 16, right: 16, backgroundColor: "#EF4444", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  hotBadgeText: { fontSize: 11, fontWeight: "800", color: "#FFF" },
+
   timerWrap: { position: "absolute", bottom: 50, left: 24, right: 24, alignItems: "center" },
   timerNum: { fontSize: 48, fontWeight: "900", marginBottom: 8 },
   timerTrack: { width: "100%", height: 6, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 3, overflow: "hidden" },
   timerFill: { height: "100%", borderRadius: 3 },
 
   playFooter: { padding: 16, paddingBottom: 32 },
-  nextBtn: { borderRadius: 20, overflow: "hidden" },
+  actionRow: { flexDirection: "row", alignItems: "center", gap: 12 },
+  quickRateBtn: { width: 56, height: 56, borderRadius: 28, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
+  quickRateEmoji: { fontSize: 24 },
+  nextBtn: { flex: 1, borderRadius: 20, overflow: "hidden" },
   nextBtnGradient: { paddingVertical: 18, alignItems: "center" },
   nextBtnText: { fontSize: 17, fontWeight: "700", color: "#FFF" },
+
+  // Rating Popup
+  ratingOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.8)", alignItems: "center", justifyContent: "center", zIndex: 100 },
+  ratingCard: { backgroundColor: "#1A1A1A", borderRadius: 24, padding: 24, width: "85%", maxWidth: 340, alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  ratingTitle: { fontSize: 20, fontWeight: "800", color: "#FFF", marginBottom: 12 },
+  ratingPrompt: { fontSize: 14, color: "rgba(255,255,255,0.6)", textAlign: "center", marginBottom: 24, lineHeight: 20 },
+  ratingButtons: { flexDirection: "row", gap: 16, marginBottom: 16 },
+  ratingBtn: { width: 100, height: 100, borderRadius: 20, alignItems: "center", justifyContent: "center" },
+  fireBtn: { backgroundColor: "rgba(239,68,68,0.2)", borderWidth: 2, borderColor: "#EF4444" },
+  skullBtn: { backgroundColor: "rgba(139,92,246,0.2)", borderWidth: 2, borderColor: "#8B5CF6" },
+  ratingEmoji: { fontSize: 40, marginBottom: 8 },
+  ratingLabel: { fontSize: 14, fontWeight: "700", color: "#FFF" },
+  skipBtn: { paddingVertical: 12, paddingHorizontal: 24 },
+  skipText: { fontSize: 14, color: "rgba(255,255,255,0.4)", fontWeight: "600" },
 
   // Round End
   roundEndContent: { flex: 1, alignItems: "center", justifyContent: "center", padding: 32 },
@@ -955,10 +1241,14 @@ const styles = StyleSheet.create({
   // Results
   resultsContent: { padding: 24, paddingTop: 48, alignItems: "center" },
   resultsTitle: { fontSize: 42, fontWeight: "900", color: "#FFF", marginBottom: 32 },
-  winnerCard: { backgroundColor: "rgba(255,215,0,0.1)", borderWidth: 2, borderColor: "rgba(255,215,0,0.3)", borderRadius: 24, padding: 32, alignItems: "center", width: "100%", marginBottom: 32 },
+  winnerCard: { backgroundColor: "rgba(255,215,0,0.1)", borderWidth: 2, borderColor: "rgba(255,215,0,0.3)", borderRadius: 24, padding: 32, alignItems: "center", width: "100%", marginBottom: 24 },
   winnerEmoji: { fontSize: 64, marginBottom: 16 },
   winnerLabel: { fontSize: 12, color: "rgba(255,215,0,0.7)", fontWeight: "700", letterSpacing: 3, marginBottom: 8 },
   winnerName: { fontSize: 28, fontWeight: "800", color: "#FFD700" },
+  shareResultsWrap: { width: "100%", marginBottom: 24 },
+  shareResultsBtn: { borderRadius: 16, overflow: "hidden" },
+  shareResultsGradient: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 14, gap: 8 },
+  shareResultsText: { fontSize: 15, fontWeight: "700", color: "#FFF" },
   resultsList: { width: "100%", gap: 12, marginBottom: 32 },
   resultRow: { flexDirection: "row", alignItems: "center", backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 16, padding: 16, gap: 16 },
   resultRank: { fontSize: 16, fontWeight: "800", color: "rgba(255,255,255,0.4)", width: 24 },
@@ -967,6 +1257,17 @@ const styles = StyleSheet.create({
   playAgainBtn: { borderRadius: 20, overflow: "hidden", width: "100%" },
   playAgainGradient: { paddingVertical: 18, alignItems: "center" },
   playAgainText: { fontSize: 17, fontWeight: "700", color: "#FFF" },
+
+  // Share Card (hidden)
+  hiddenShareCard: { position: "absolute", left: -9999, top: -9999 },
+  shareCard: { width: 350, height: 450, borderRadius: 24, overflow: "hidden" },
+  shareCardContent: { flex: 1, padding: 24, justifyContent: "space-between" },
+  shareCardBrand: { fontSize: 24, fontWeight: "900", color: "#FFF", letterSpacing: 4, opacity: 0.8 },
+  shareCardEmoji: { fontSize: 64, textAlign: "center" },
+  shareCardPrompt: { fontSize: 28, fontWeight: "800", color: "#FFF", textAlign: "center", lineHeight: 38 },
+  shareCardFooter: { alignItems: "center" },
+  shareCardPlayers: { fontSize: 12, color: "rgba(255,255,255,0.6)", marginBottom: 8 },
+  shareCardCTA: { fontSize: 14, fontWeight: "700", color: "#FFF" },
 
   // Dialog - Dark Premium Theme
   dialogHeader: { marginBottom: 20 },
