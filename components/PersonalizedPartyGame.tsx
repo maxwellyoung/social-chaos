@@ -363,6 +363,7 @@ export function PersonalizedPartyGame() {
   const [currentPromptData, setCurrentPromptData] = useState<Prompt | null>(null);
   const [nextPromptData, setNextPromptData] = useState<Prompt | null>(null);
   const [shuffledPrompts, setShuffledPrompts] = useState<Prompt[]>([]);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const promptIndexRef = useRef(0);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -512,9 +513,10 @@ export function PersonalizedPartyGame() {
   }, [lastPromptForRating, playHapticPattern]);
 
   const handleNext = useCallback(() => {
+    if (isTransitioning) return;
+
     playHapticPattern("swipe");
     stopTimer();
-
 
     const total = gameState.totalRounds * gameState.promptsPerRound;
     const current = (gameState.round - 1) * gameState.promptsPerRound + gameState.currentPromptIndex;
@@ -534,9 +536,9 @@ export function PersonalizedPartyGame() {
       return;
     }
 
-    setGameState(prev => ({ ...prev, currentPromptIndex: prev.currentPromptIndex + 1 }));
-    nextCardScale.value = withSequence(withTiming(0.92, { duration: 80 }), withSpring(0.88, { damping: 15 }));
+    setIsTransitioning(true);
 
+    // Update prompts - current becomes next, fetch new next
     const next = getNextPrompt();
     if (next) {
       setCurrentPrompt(nextPrompt);
@@ -546,14 +548,19 @@ export function PersonalizedPartyGame() {
       if (nextPromptData?.timer) setTimeout(() => startTimer(nextPromptData.timer!), 300);
     }
 
+    setGameState(prev => ({ ...prev, currentPromptIndex: prev.currentPromptIndex + 1 }));
+
+    // Reset card position after React has updated state
     setTimeout(() => {
       translateX.value = 0;
       translateY.value = 0;
       cardRotation.value = 0;
-      cardScale.value = withSpring(1, { damping: 15, stiffness: 150 });
-      cardOpacity.value = withSpring(1, { damping: 15, stiffness: 150 });
-    }, 30);
-  }, [gameState, nextPrompt, nextPromptData, getNextPrompt, startTimer, stopTimer, currentPrompt, playHapticPattern]);
+      cardScale.value = 1;
+      cardOpacity.value = withTiming(1, { duration: 150 });
+      nextCardScale.value = 0.88;
+      setIsTransitioning(false);
+    }, 50);
+  }, [gameState, nextPrompt, nextPromptData, getNextPrompt, startTimer, stopTimer, playHapticPattern, isTransitioning]);
 
   const continueToNextRound = useCallback(() => {
     setShowConfetti(false);
