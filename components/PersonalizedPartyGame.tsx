@@ -54,17 +54,28 @@ import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
 import { FluidGradient } from "./FluidGradient";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import promptData from "../assets/prompts/prompts.json";
+
+// Storage keys
+const STORAGE_KEYS = {
+  SKIPPED_PROMPTS: "gambit_skipped_prompts",
+  FAVORITE_PROMPTS: "gambit_favorite_prompts",
+  CUSTOM_PROMPTS: "gambit_custom_prompts",
+};
 
 // Types
 type Player = {
   name: string;
   avatar: string;
   score: number;
+  drinks: number;
+  isHotSeat?: boolean;
 };
 
-type GameScreen = "setup" | "categories" | "playing" | "results" | "roundEnd";
+type GameScreen = "setup" | "categories" | "playing" | "results" | "roundEnd" | "hotSeat" | "truthOrDare";
 type CategoryKey = "drinking" | "dares" | "confessions" | "hot_takes" | "physical" | "social" | "creative" | "chaos";
+type GameMode = "classic" | "hotSeat" | "couples" | "truthOrDare";
 
 interface Prompt {
   text: string;
@@ -85,6 +96,11 @@ interface GameState {
   selectedCategories: CategoryKey[];
   timerActive: boolean;
   timerSeconds: number;
+  gameMode: GameMode;
+  hotSeatPlayer: Player | null;
+  hotSeatQuestionCount: number;
+  truthOrDareChoice: "truth" | "dare" | null;
+  showScoring: boolean;
 }
 
 interface CardItem {
@@ -164,11 +180,17 @@ const SwipeableCard = ({
   isTop,
   onSwipe,
   category,
+  onSkip,
+  onFavorite,
+  isFavorite,
 }: {
   card: CardItem;
   isTop: boolean;
   onSwipe: () => void;
   category: CategoryKey;
+  onSkip?: () => void;
+  onFavorite?: () => void;
+  isFavorite?: boolean;
 }) => {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -233,8 +255,24 @@ const SwipeableCard = ({
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         />
-        <View style={[styles.promptCatBadge, { backgroundColor: cat.color + "30" }]}>
-          <Text style={styles.promptCatText}>{cat.emoji}</Text>
+        <View style={styles.cardTopRow}>
+          <View style={[styles.promptCatBadge, { backgroundColor: cat.color + "30" }]}>
+            <Text style={styles.promptCatText}>{cat.emoji}</Text>
+          </View>
+          {isTop && (
+            <View style={styles.cardActions}>
+              {onFavorite && (
+                <TouchableOpacity onPress={onFavorite} style={styles.cardActionBtn}>
+                  <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={20} color={isFavorite ? "#EC4899" : "rgba(255,255,255,0.5)"} />
+                </TouchableOpacity>
+              )}
+              {onSkip && (
+                <TouchableOpacity onPress={onSkip} style={styles.cardActionBtn}>
+                  <Ionicons name="close-circle-outline" size={20} color="rgba(255,255,255,0.5)" />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </View>
         <Text style={styles.promptText}>{card.text}</Text>
         <Text style={styles.swipeHint}>← Swipe →</Text>
@@ -250,6 +288,14 @@ export function PersonalizedPartyGame() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [gameStats] = useState({ activeNow: Math.floor(Math.random() * 50) + 60 });
 
+  // Skip/Favorites system
+  const [skippedPrompts, setSkippedPrompts] = useState<Set<string>>(new Set());
+  const [favoritePrompts, setFavoritePrompts] = useState<Set<string>>(new Set());
+  const [customPrompts, setCustomPrompts] = useState<Prompt[]>([]);
+  const [showCustomPromptModal, setShowCustomPromptModal] = useState(false);
+  const [newCustomPrompt, setNewCustomPrompt] = useState("");
+  const [selectedCustomCategory, setSelectedCustomCategory] = useState<CategoryKey>("drinking");
+
   const [gameState, setGameState] = useState<GameState>({
     screen: "setup",
     round: 1,
@@ -261,7 +307,83 @@ export function PersonalizedPartyGame() {
     selectedCategories: ["drinking", "social", "dares"],
     timerActive: false,
     timerSeconds: 0,
+    gameMode: "classic",
+    hotSeatPlayer: null,
+    hotSeatQuestionCount: 0,
+    truthOrDareChoice: null,
+    showScoring: true,
   });
+
+  // Load saved data on mount
+  useEffect(() => {
+    const loadSavedData = async () => {
+      try {
+        const [skipped, favorites, custom] = await Promise.all([
+          AsyncStorage.getItem(STORAGE_KEYS.SKIPPED_PROMPTS),
+          AsyncStorage.getItem(STORAGE_KEYS.FAVORITE_PROMPTS),
+          AsyncStorage.getItem(STORAGE_KEYS.CUSTOM_PROMPTS),
+        ]);
+        if (skipped) setSkippedPrompts(new Set(JSON.parse(skipped)));
+        if (favorites) setFavoritePrompts(new Set(JSON.parse(favorites)));
+        if (custom) setCustomPrompts(JSON.parse(custom));
+      } catch (e) {
+        console.log("Error loading saved data:", e);
+      }
+    };
+    loadSavedData();
+  }, []);
+
+  // Save functions
+  const skipForever = useCallback(async (promptText: string) => {
+    triggerHaptic("light");
+    const newSkipped = new Set(skippedPrompts).add(promptText);
+    setSkippedPrompts(newSkipped);
+    await AsyncStorage.setItem(STORAGE_KEYS.SKIPPED_PROMPTS, JSON.stringify([...newSkipped]));
+    // Move to next card
+    handleSwipe();
+  }, [skippedPrompts]);
+
+  const toggleFavorite = useCallback(async (promptText: string) => {
+    triggerHaptic("light");
+    const newFavorites = new Set(favoritePrompts);
+    if (newFavorites.has(promptText)) {
+      newFavorites.delete(promptText);
+    } else {
+      newFavorites.add(promptText);
+    }
+    setFavoritePrompts(newFavorites);
+    await AsyncStorage.setItem(STORAGE_KEYS.FAVORITE_PROMPTS, JSON.stringify([...newFavorites]));
+  }, [favoritePrompts]);
+
+  const addCustomPrompt = useCallback(async () => {
+    if (!newCustomPrompt.trim()) return;
+    triggerHaptic("success");
+    const prompt: Prompt = {
+      text: newCustomPrompt.trim(),
+      category: selectedCustomCategory,
+      chaos: gameState.chaosLevel,
+      type: "simple",
+    };
+    const newCustom = [...customPrompts, prompt];
+    setCustomPrompts(newCustom);
+    await AsyncStorage.setItem(STORAGE_KEYS.CUSTOM_PROMPTS, JSON.stringify(newCustom));
+    setNewCustomPrompt("");
+    setShowCustomPromptModal(false);
+  }, [newCustomPrompt, selectedCustomCategory, customPrompts, gameState.chaosLevel]);
+
+  // Award/deduct points
+  const awardPoints = useCallback((playerIndex: number, points: number) => {
+    triggerHaptic("success");
+    setPlayers(prev => prev.map((p, i) =>
+      i === playerIndex ? { ...p, score: p.score + points } : p
+    ));
+  }, []);
+
+  const addDrink = useCallback((playerIndex: number, drinks: number = 1) => {
+    setPlayers(prev => prev.map((p, i) =>
+      i === playerIndex ? { ...p, drinks: p.drinks + drinks } : p
+    ));
+  }, []);
 
   const [cardStack, setCardStack] = useState<CardItem[]>([]);
   const cardIdRef = useRef(0);
@@ -284,13 +406,17 @@ export function PersonalizedPartyGame() {
   }, [gameState.timerActive, gameState.timerSeconds]);
 
   const getFilteredPrompts = useCallback((): Prompt[] => {
-    const allPrompts = gameState.isSexyMode ? [...promptData.prompts, ...promptData.sexy] : promptData.prompts;
+    const basePrompts = gameState.isSexyMode ? [...promptData.prompts, ...promptData.sexy] : promptData.prompts;
+    const allPrompts = [...basePrompts, ...customPrompts];
     const chaosMin = Math.max(1, gameState.chaosLevel - 3);
     const chaosMax = Math.min(10, gameState.chaosLevel + 3);
     return allPrompts.filter((p: Prompt) =>
-      p.chaos >= chaosMin && p.chaos <= chaosMax && gameState.selectedCategories.includes(p.category as CategoryKey)
+      p.chaos >= chaosMin &&
+      p.chaos <= chaosMax &&
+      gameState.selectedCategories.includes(p.category as CategoryKey) &&
+      !skippedPrompts.has(p.text)
     );
-  }, [gameState.isSexyMode, gameState.chaosLevel, gameState.selectedCategories]);
+  }, [gameState.isSexyMode, gameState.chaosLevel, gameState.selectedCategories, customPrompts, skippedPrompts]);
 
   const replacePlaceholders = useCallback((text: string): string => {
     if (players.length === 0) return text;
@@ -445,7 +571,12 @@ export function PersonalizedPartyGame() {
     if (newPlayerName.trim()) {
       triggerHaptic("light");
       const avatars = ["😎", "🤪", "😈", "🥳", "🤠", "👻", "🦊", "🐸", "🦄", "🔥", "⚡", "💀", "🎃", "🤖", "👽", "🦁", "🐼", "🦋", "🎭", "🌟"];
-      setPlayers(prev => [...prev, { name: newPlayerName.trim(), avatar: avatars[Math.floor(Math.random() * avatars.length)], score: 0 }]);
+      setPlayers(prev => [...prev, {
+        name: newPlayerName.trim(),
+        avatar: avatars[Math.floor(Math.random() * avatars.length)],
+        score: 0,
+        drinks: 0,
+      }]);
       setNewPlayerName("");
     }
   }, [newPlayerName]);
@@ -661,15 +792,21 @@ export function PersonalizedPartyGame() {
         </View>
 
         <View style={styles.cardsArea}>
-          {cardStack.slice(0, 2).reverse().map((card, index) => (
-            <SwipeableCard
-              key={card.id}
-              card={card}
-              isTop={index === cardStack.length - 1 - (cardStack.length > 1 ? 0 : -1)}
-              onSwipe={handleSwipe}
-              category={card.data.category as CategoryKey}
-            />
-          ))}
+          {cardStack.slice(0, 2).reverse().map((card, index) => {
+            const isTopCard = index === cardStack.length - 1 - (cardStack.length > 1 ? 0 : -1);
+            return (
+              <SwipeableCard
+                key={card.id}
+                card={card}
+                isTop={isTopCard}
+                onSwipe={handleSwipe}
+                category={card.data.category as CategoryKey}
+                onSkip={isTopCard ? () => skipForever(card.data.text) : undefined}
+                onFavorite={isTopCard ? () => toggleFavorite(card.data.text) : undefined}
+                isFavorite={favoritePrompts.has(card.data.text)}
+              />
+            );
+          })}
 
           {gameState.timerActive && (
             <View style={styles.timerOverlay}>
@@ -680,6 +817,30 @@ export function PersonalizedPartyGame() {
             </View>
           )}
         </View>
+
+        {/* Scoring buttons */}
+        {gameState.showScoring && players.length > 0 && (
+          <View style={styles.scoringSection}>
+            <Text style={styles.scoringLabel}>Award points</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scoringPlayers}>
+              {players.map((p, i) => (
+                <TouchableOpacity
+                  key={i}
+                  style={styles.scoringPlayer}
+                  onPress={() => awardPoints(i, 1)}
+                  onLongPress={() => addDrink(i)}
+                >
+                  <Text style={styles.scoringAvatar}>{p.avatar}</Text>
+                  <Text style={styles.scoringName}>{p.name}</Text>
+                  <View style={styles.scoringStats}>
+                    <Text style={styles.scoringScore}>+{p.score}</Text>
+                    {p.drinks > 0 && <Text style={styles.scoringDrinks}>🍺{p.drinks}</Text>}
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         <View style={styles.playFooter}>
           <TouchableOpacity style={styles.nextBtn} onPress={handleNextButton} activeOpacity={0.9}>
@@ -712,39 +873,59 @@ export function PersonalizedPartyGame() {
   );
 
   // Render Results
-  const renderResults = () => (
-    <View style={styles.screen}>
-      <LinearGradient colors={["#FFD70020", "#000"]} style={StyleSheet.absoluteFill} />
-      <ScrollView contentContainerStyle={styles.resultsContent}>
-        <Animated.Text entering={FadeInDown.springify()} style={styles.resultsTitle}>Game Over</Animated.Text>
+  const renderResults = () => {
+    const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+    const winner = sortedPlayers[0];
+    const drunkest = [...players].sort((a, b) => b.drinks - a.drinks)[0];
 
-        {players[0] && (
-          <Animated.View entering={ZoomIn.delay(200).springify()} style={styles.winnerCard}>
-            <Animated.Text entering={BounceIn.delay(400)} style={styles.winnerEmoji}>👑</Animated.Text>
-            <Text style={styles.winnerLabel}>CHAMPION</Text>
-            <Text style={styles.winnerName}>{players[0].avatar} {players[0].name}</Text>
-          </Animated.View>
-        )}
+    return (
+      <View style={styles.screen}>
+        <LinearGradient colors={["#FFD70020", "#000"]} style={StyleSheet.absoluteFill} />
+        <ScrollView contentContainerStyle={styles.resultsContent}>
+          <Animated.Text entering={FadeInDown.springify()} style={styles.resultsTitle}>Game Over</Animated.Text>
 
-        <View style={styles.resultsList}>
-          {players.map((p, i) => (
-            <Animated.View key={i} entering={SlideInRight.delay(300 + i * 80).springify()} style={styles.resultRow}>
-              <Text style={styles.resultRank}>{i + 1}</Text>
-              <Text style={styles.resultAvatar}>{p.avatar}</Text>
-              <Text style={styles.resultName}>{p.name}</Text>
+          {winner && winner.score > 0 && (
+            <Animated.View entering={ZoomIn.delay(200).springify()} style={styles.winnerCard}>
+              <Animated.Text entering={BounceIn.delay(400)} style={styles.winnerEmoji}>👑</Animated.Text>
+              <Text style={styles.winnerLabel}>CHAMPION</Text>
+              <Text style={styles.winnerName}>{winner.avatar} {winner.name}</Text>
+              <Text style={styles.winnerScore}>{winner.score} points</Text>
             </Animated.View>
-          ))}
-        </View>
+          )}
 
-        <TouchableOpacity style={styles.playAgainBtn} onPress={resetGame} activeOpacity={0.9}>
-          <LinearGradient colors={["#8B5CF6", "#7C3AED"]} style={styles.playAgainGradient}>
-            <Text style={styles.playAgainText}>Play Again</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </ScrollView>
-      {showConfetti && <Confetti count={60} />}
-    </View>
-  );
+          {drunkest && drunkest.drinks > 0 && (
+            <Animated.View entering={ZoomIn.delay(350).springify()} style={[styles.winnerCard, styles.drunkestCard]}>
+              <Text style={styles.drunkestEmoji}>🍺</Text>
+              <Text style={styles.drunkestLabel}>MOST HYDRATED</Text>
+              <Text style={styles.drunkestName}>{drunkest.avatar} {drunkest.name}</Text>
+              <Text style={styles.drunkestScore}>{drunkest.drinks} drinks</Text>
+            </Animated.View>
+          )}
+
+          <View style={styles.resultsList}>
+            {sortedPlayers.map((p, i) => (
+              <Animated.View key={i} entering={SlideInRight.delay(400 + i * 80).springify()} style={styles.resultRow}>
+                <Text style={[styles.resultRank, i === 0 && styles.resultRankFirst]}>{i + 1}</Text>
+                <Text style={styles.resultAvatar}>{p.avatar}</Text>
+                <Text style={styles.resultName}>{p.name}</Text>
+                <View style={styles.resultStats}>
+                  <Text style={styles.resultScore}>{p.score}pts</Text>
+                  {p.drinks > 0 && <Text style={styles.resultDrinks}>🍺{p.drinks}</Text>}
+                </View>
+              </Animated.View>
+            ))}
+          </View>
+
+          <TouchableOpacity style={styles.playAgainBtn} onPress={resetGame} activeOpacity={0.9}>
+            <LinearGradient colors={["#8B5CF6", "#7C3AED"]} style={styles.playAgainGradient}>
+              <Text style={styles.playAgainText}>Play Again</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </ScrollView>
+        {showConfetti && <Confetti count={60} />}
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -883,10 +1064,23 @@ const styles = StyleSheet.create({
 
   cardsArea: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 20 },
   promptCard: { position: "absolute", width: "100%", aspectRatio: 0.85, backgroundColor: "#111", borderRadius: 24, padding: 24, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
-  promptCatBadge: { position: "absolute", top: 16, left: 16, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 },
+  cardTopRow: { position: "absolute", top: 16, left: 16, right: 16, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  promptCatBadge: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 },
   promptCatText: { fontSize: 18 },
+  cardActions: { flexDirection: "row", gap: 8 },
+  cardActionBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
   promptText: { fontSize: 24, fontWeight: "700", color: "#FFF", textAlign: "center", lineHeight: 34 },
   swipeHint: { position: "absolute", bottom: 20, fontSize: 12, color: "rgba(255,255,255,0.3)", fontWeight: "600", letterSpacing: 2 },
+
+  scoringSection: { paddingHorizontal: 16, paddingBottom: 8 },
+  scoringLabel: { fontSize: 11, fontWeight: "600", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8, textAlign: "center" },
+  scoringPlayers: { gap: 8, paddingHorizontal: 4 },
+  scoringPlayer: { alignItems: "center", backgroundColor: "rgba(255,255,255,0.05)", paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, minWidth: 70 },
+  scoringAvatar: { fontSize: 20, marginBottom: 2 },
+  scoringName: { fontSize: 11, color: "rgba(255,255,255,0.7)", fontWeight: "500" },
+  scoringStats: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 },
+  scoringScore: { fontSize: 12, fontWeight: "700", color: "#8B5CF6" },
+  scoringDrinks: { fontSize: 10, color: "rgba(255,255,255,0.4)" },
 
   timerOverlay: { position: "absolute", bottom: 80, alignItems: "center", width: "80%" },
   timerNum: { fontSize: 48, fontWeight: "900", marginBottom: 8 },
@@ -915,8 +1109,18 @@ const styles = StyleSheet.create({
   resultsList: { width: "100%", gap: 12, marginBottom: 32 },
   resultRow: { flexDirection: "row", alignItems: "center", backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 16, padding: 16, gap: 16 },
   resultRank: { fontSize: 16, fontWeight: "800", color: "rgba(255,255,255,0.4)", width: 24 },
+  resultRankFirst: { color: "#FFD700" },
   resultAvatar: { fontSize: 24 },
-  resultName: { fontSize: 16, fontWeight: "600", color: "#FFF" },
+  resultName: { fontSize: 16, fontWeight: "600", color: "#FFF", flex: 1 },
+  resultStats: { flexDirection: "row", alignItems: "center", gap: 8 },
+  resultScore: { fontSize: 14, fontWeight: "700", color: "#8B5CF6" },
+  resultDrinks: { fontSize: 12, color: "rgba(255,255,255,0.5)" },
+  winnerScore: { fontSize: 16, color: "rgba(255,215,0,0.8)", marginTop: 4, fontWeight: "600" },
+  drunkestCard: { backgroundColor: "rgba(59,130,246,0.1)", borderColor: "rgba(59,130,246,0.3)" },
+  drunkestEmoji: { fontSize: 48, marginBottom: 12 },
+  drunkestLabel: { fontSize: 11, color: "rgba(59,130,246,0.8)", fontWeight: "700", letterSpacing: 2, marginBottom: 4 },
+  drunkestName: { fontSize: 22, fontWeight: "700", color: "#3B82F6" },
+  drunkestScore: { fontSize: 14, color: "rgba(59,130,246,0.7)", marginTop: 2, fontWeight: "600" },
   playAgainBtn: { borderRadius: 20, overflow: "hidden", width: "100%" },
   playAgainGradient: { paddingVertical: 18, alignItems: "center" },
   playAgainText: { fontSize: 17, fontWeight: "700", color: "#FFF" },

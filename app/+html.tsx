@@ -399,7 +399,7 @@ a {
 }
 `;
 
-const preloaderScript = \`
+const preloaderScript = `
   window.addEventListener('load', function() {
     setTimeout(function() {
       document.getElementById('preloader').classList.add('loaded');
@@ -413,4 +413,4 @@ const preloaderScript = \`
       preloader.classList.add('loaded');
     }
   }, 3000);
-\`;
+`;

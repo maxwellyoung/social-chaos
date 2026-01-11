@@ -1100,6 +1100,633 @@
       "category": "dares",
       "chaos": 5,
       "type": "perform"
+    },
+
+    {
+      "text": "{player1}, take 2 sips. No reason, just vibes",
+      "category": "drinking",
+      "chaos": 1,
+      "type": "simple"
+    },
+    {
+      "text": "Everyone take 3 sips for making it this far!",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, take a sip for every streaming service you pay for",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "simple"
+    },
+    {
+      "text": "If you've ever been on the wrong side of TikTok, take 4 sips",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, take 2 sips for every houseplant you've killed",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "simple"
+    },
+    {
+      "text": "Finish your drink if you still use your ex's Netflix password",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "Take 3 sips if you've ever matched with someone you know IRL on a dating app",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, hand out 5 sips to whoever you think needs to loosen up",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "power"
+    },
+    {
+      "text": "Mini-game: WATERFALL! {player1} starts drinking. Next person starts when they start, can't stop until {player1} stops. Chain continues!",
+      "category": "drinking",
+      "chaos": 7,
+      "type": "game"
+    },
+    {
+      "text": "Mini-game: CATEGORIES! {player1} picks a topic. Go around - hesitate or repeat = take 5 sips!",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "game",
+      "timer": 5
+    },
+    {
+      "text": "Mini-game: NEVER HAVE I EVER! {player1} says something. Everyone who HAS done it takes 3 sips!",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "game"
+    },
+    {
+      "text": "Mini-game: MOST LIKELY TO! Who's most likely to ghost someone? Point! Person with most fingers takes that many sips!",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "Mini-game: RHYME TIME! {player1} says a word. Go around rhyming. Fail = 4 sips!",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "game",
+      "timer": 3
+    },
+    {
+      "text": "Mini-game: FLIP CUP! Losers take 6 sips each",
+      "category": "drinking",
+      "chaos": 6,
+      "type": "game"
+    },
+    {
+      "text": "Mini-game: KINGS! Draw an imaginary card. Ace = waterfall, 2 = you, 3 = me, 4 = floor, 5 = guys, 6 = chicks, 7 = heaven, 8 = mate, 9 = rhyme, 10 = categories!",
+      "category": "drinking",
+      "chaos": 6,
+      "type": "game"
+    },
+    {
+      "text": "If you've doom-scrolled past your bedtime this week, take 3 sips",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "Take 2 sips if you've said 'we should hang out more' but never followed up",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, you look like you need 4 sips. Take them",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "simple"
+    },
+    {
+      "text": "If BeReal ever exposed you, take 5 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "Everyone who's been in their flop era take 3 sips",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1} picks someone to drink 4 sips with. Trauma bonding!",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "target"
+    },
+    {
+      "text": "If you've ever said 'I'm never drinking again' take 5 sips (you liar)",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, truth or drink: what's your screen time average? Take a sip per hour over 4",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "choice"
+    },
+    {
+      "text": "Take 2 sips if you still have a finsta",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, show your Spotify Wrapped top artist or take 6 sips",
+      "category": "dares",
+      "chaos": 4,
+      "type": "choice"
+    },
+    {
+      "text": "If your love language is physical touch, take 3 sips. If it's words of affirmation, give someone else 3 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, are you a 'heyyy' or 'hey' texter? Wrong answer = 4 sips (group votes)",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "vote"
+    },
+    {
+      "text": "Quiet luxury or loud budgeting? Everyone who picked wrong (group decides) takes 3 sips",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "vote"
+    },
+    {
+      "text": "{player1}, give a TED talk on why you deserve 0 sips. Group votes. If no = take 5",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "Sip if you've ever had a situationship. Finish your drink if you're in one now",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "Take 4 sips if you've ever been 'delulu'",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's your Roman Empire? Take a sip for every time you've thought about it today",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "simple"
+    },
+    {
+      "text": "If you'd survive 5 minutes in the Hunger Games, give out 5 sips. If not, take them",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "{player1}, would you rather have infinite money or find your soulmate? Group predicts, wrong = 3 sips",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "game"
+    },
+    {
+      "text": "Everyone who has 'hot girl walk' in their vocabulary take 2 sips",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, main character or supporting role? Take 3 sips if you said main character (we know)",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "simple"
+    },
+    {
+      "text": "Take 5 sips if you've ever cried to a Phoebe Bridgers song",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the most unhinged thing in your camera roll? Show it or take 6 sips",
+      "category": "dares",
+      "chaos": 6,
+      "type": "choice"
+    },
+    {
+      "text": "Mini-game: SHOT ROULETTE! Everyone picks a number 1-6. {player1} rolls. If your number hits, take a shot or 5 sips!",
+      "category": "drinking",
+      "chaos": 7,
+      "type": "gamble"
+    },
+    {
+      "text": "If you're the group's therapist friend, take 4 sips. You need it",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, ick check! Name an ick. Anyone guilty takes 3 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "Take 2 sips for every time you said 'slay' unironically today",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here has the best and worst rizz? Best gives 4, worst takes 4",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "target"
+    },
+    {
+      "text": "If you've ever been called 'too much' take 3 sips (and never change)",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "Brunch person or late night person? Losers (minority) take 4 sips",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "vote"
+    },
+    {
+      "text": "{player1}, quick! Name 5 Taylor Swift songs in 15 seconds or take 5 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "timed",
+      "timer": 15
+    },
+    {
+      "text": "Take 3 sips if you've ever blamed Mercury retrograde for your problems",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1} and {player2}, rock paper scissors. Loser takes 4 sips, winner gives out 4",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "versus"
+    },
+    {
+      "text": "If you consider yourself a hater, take 3 sips with pride",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's your toxic trait? Take a sip for every person nodding",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Everyone with commitment issues take 4 sips (you know who you are)",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, you're in your villain era. Hand out 8 sips however you want",
+      "category": "drinking",
+      "chaos": 6,
+      "type": "power"
+    },
+    {
+      "text": "Take 2 sips if you've ever ordered water at a bar",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, describe your type without describing {player2}. Fail = both drink 4",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "challenge"
+    },
+    {
+      "text": "Mini-game: WORD ASSOCIATION! {player1} starts. 2-second limit. Hesitate = 5 sips!",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "game",
+      "timer": 2
+    },
+    {
+      "text": "If you've been parasocial about a podcast host, take 3 sips",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the most NPC thing you've done this week? Take that many sips (1-5)",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Take 4 sips if your ex is still in your Close Friends",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, read your last text out loud in a dramatic voice or take 5 sips",
+      "category": "dares",
+      "chaos": 5,
+      "type": "choice"
+    },
+    {
+      "text": "Everyone who's ever been 'professionally ghosted' after a job interview, take 3 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, are you chronically online? Group votes. If yes, take 5 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Take 2 sips if you've started a true crime doc after midnight",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "Mini-game: TRUTH OR DARE ROULETTE! {player1}, pick truth or dare. If dare and you refuse, take 6 sips!",
+      "category": "dares",
+      "chaos": 6,
+      "type": "choice"
+    },
+    {
+      "text": "{player1}, what's your Uber rating? Under 4.8 = take 5 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "simple"
+    },
+    {
+      "text": "If you've ever sent a screenshot to the wrong person, finish your drink",
+      "category": "drinking",
+      "chaos": 6,
+      "type": "group"
+    },
+    {
+      "text": "Take 3 sips if you're still holding onto that one Venmo request",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here looks like their zodiac sign? They take 2 sips",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "target"
+    },
+    {
+      "text": "If you know your Big Three, take 2 sips. If you've mentioned it today, take 4",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "Mini-game: TONGUE TWISTER! {player1} picks one. First to mess up takes 5 sips!",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "game"
+    },
+    {
+      "text": "{player1}, who here would survive longest in a zombie apocalypse? Everyone else takes 3 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "Take 5 sips if you've ever been compared to a fictional character and didn't hate it",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, give your best villain speech. If it doesn't go hard, take 4 sips",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform",
+      "timer": 30
+    },
+    {
+      "text": "If you have notes app apology energy, take 4 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what would your red flag Tinder bio say? Take a sip for every laugh",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "Take 3 sips if you've ever caught feelings from a Spotify Blend",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, you have 10 seconds to make {player2} break their poker face. Fail = 4 sips",
+      "category": "dares",
+      "chaos": 4,
+      "type": "challenge",
+      "timer": 10
+    },
+    {
+      "text": "If you've ever double-texted after getting left on read, take 4 sips (we've all been there)",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "Mini-game: DEBATE TIME! {player1} and {player2} get 30 seconds each. Topic: Oat milk vs almond milk. Loser (group votes) takes 5 sips!",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "versus",
+      "timer": 30
+    },
+    {
+      "text": "{player1}, show your last online purchase or take 5 sips",
+      "category": "dares",
+      "chaos": 4,
+      "type": "choice"
+    },
+    {
+      "text": "Everyone who has been called 'chaotic neutral', take 3 sips together",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's a hill you'll die on? Group votes if it's valid. Invalid = 5 sips",
+      "category": "hot_takes",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "Take 2 sips if you've ever pretended to know a song when the aux was passed",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, you have immunity. Give out 10 sips however you want. Choose violence",
+      "category": "drinking",
+      "chaos": 7,
+      "type": "power"
+    },
+    {
+      "text": "If you've ever DMed a brand, take 3 sips",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, hot take: is ghosting ever okay? Wrong answer (group decides) = 4 sips",
+      "category": "hot_takes",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "Take 4 sips if you've ever been in your 'I don't need anyone' era",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, show your most used emoji. If it's a red flag, take 4 sips",
+      "category": "dares",
+      "chaos": 4,
+      "type": "reveal"
+    },
+    {
+      "text": "Mini-game: SIMON SAYS! {player1} is Simon for 3 rounds. Mess up = 4 sips each time!",
+      "category": "physical",
+      "chaos": 4,
+      "type": "game"
+    },
+    {
+      "text": "If you've ever stalked an ex's new partner, take 5 sips (no judgment)",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's your most controversial food take? One person must disagree or you take 3 sips",
+      "category": "hot_takes",
+      "chaos": 4,
+      "type": "opinion"
+    },
+    {
+      "text": "Take 2 sips if you've ever replied to an Instagram story as a flirting technique",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, compliment battle with {player2}! First to run out of compliments takes 5 sips",
+      "category": "social",
+      "chaos": 4,
+      "type": "versus"
+    },
+    {
+      "text": "Everyone who still has a gym membership they don't use, take 3 sips",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, is 'lol' dead? Take 3 sips for every person who still uses it",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "vote"
+    },
+    {
+      "text": "Take 4 sips if you've perfected the art of the soft launch",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, without using your hands, describe your dream vacation. Fail = 5 sips",
+      "category": "dares",
+      "chaos": 4,
+      "type": "perform",
+      "timer": 30
+    },
+    {
+      "text": "If you've ever called yourself 'a bit of a perfectionist' in an interview, take 3 sips",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here gives 'only child energy'? They take 3 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "Take 5 sips if you've ever cried in an Uber",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "Mini-game: CELEBRITY HEADS! {player1} thinks of a celeb. 20 questions, yes/no only. Give up = everyone takes 4 sips",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "game"
+    },
+    {
+      "text": "{player1}, give your best 'I'm not like other people' speech. Take a sip for every eye roll",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "Take 2 sips if you've ever blamed something on 'the algorithm'",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here has the most chaotic energy? They distribute 6 sips",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "target"
     }
   ],
   "sexy": [
@@ -1282,6 +1909,236 @@
       "category": "creative",
       "chaos": 5,
       "type": "perform"
+    },
+    {
+      "text": "Take 4 sips if you've ever unmatched someone for bad texting game",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's your hottest take about relationships? Group votes if it's valid or you take 5",
+      "category": "hot_takes",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "{player1}, lock eyes with {player2} for 30 seconds without laughing. First to break takes 5 sips",
+      "category": "dares",
+      "chaos": 5,
+      "type": "versus",
+      "timer": 30
+    },
+    {
+      "text": "If you've ever gone back to an ex, take 4 sips",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what feature do you notice first on someone? Take a sip for every person who guessed wrong",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "game"
+    },
+    {
+      "text": "Take 3 sips if you've ever pretended not to see someone you matched with IRL",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, rate your own rizz from 1-10. Group votes. Difference = sips",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "If you've ever sent a 'u up?' text, take 5 sips",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, describe your ideal type in emojis only. {player2} translates. Wrong = both drink 3",
+      "category": "creative",
+      "chaos": 5,
+      "type": "versus"
+    },
+    {
+      "text": "Take 3 sips if you've ever stalked someone before a first date",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the smoothest thing anyone's ever said to you? Recreate it on {player2}",
+      "category": "dares",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "Hot seat! Everyone asks {player1} one spicy question. Skip any = 3 sips each",
+      "category": "confessions",
+      "chaos": 7,
+      "type": "rapid"
+    },
+    {
+      "text": "Take 4 sips if you have a 'type' but never admit it",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, rank everyone's flirting skills. Lowest ranked takes 4 sips",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "ranking"
+    },
+    {
+      "text": "If you've ever said 'I'm just not looking for anything serious right now' while lying, take 5 sips",
+      "category": "drinking",
+      "chaos": 6,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, give {player2} a compliment you'd give on a first date",
+      "category": "social",
+      "chaos": 4,
+      "type": "perform"
+    },
+    {
+      "text": "Take 3 sips if you've ever had a crush on a friend's sibling",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here would you wingman for? That person gives out 3 sips",
+      "category": "social",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "If you've ever been someone's 2am thought, take 3 sips with confidence",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1} and {player2}, trade phone backgrounds for the next 3 rounds or both drink 5",
+      "category": "dares",
+      "chaos": 5,
+      "type": "choice"
+    },
+    {
+      "text": "Take 4 sips if you know your attachment style and have mentioned it on a date",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's your red flag that you're fully aware of? Take a sip for every 'same'",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "If you've ever liked someone's photo from 47 weeks ago, take 5 sips (and finish if they noticed)",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, send a fire emoji to the 7th person in your DMs or take 5 sips",
+      "category": "dares",
+      "chaos": 6,
+      "type": "choice"
+    },
+    {
+      "text": "Most likely to! Who's most likely to double text? Point! Most votes takes 4 sips",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Take 3 sips if you've ever practiced a text before sending it",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, give a toast to situationships. Everyone drinks at the end",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "If you've manifested a relationship, take 4 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, describe your last 3 crushes using only movie characters. Group guesses",
+      "category": "creative",
+      "chaos": 5,
+      "type": "game"
+    },
+    {
+      "text": "Take 3 sips if you're currently texting someone you shouldn't be",
+      "category": "drinking",
+      "chaos": 6,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who in this room gives the best advice? Worst advice? Best gives 3, worst takes 3",
+      "category": "social",
+      "chaos": 5,
+      "type": "target"
+    },
+    {
+      "text": "If you've ever had a 'what are we' conversation, take 4 sips",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, whisper something to {player2}. They rate it 1-10. Under 5 = you drink that many",
+      "category": "dares",
+      "chaos": 6,
+      "type": "secret"
+    },
+    {
+      "text": "Most likely to! Who's most likely to get married first? Most votes takes 3 sips",
+      "category": "social",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Take 5 sips if you've ever cried over someone who didn't deserve it",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the biggest ick you've ever ignored? Take a sip for every cringe",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "If you've ever lied about where you met someone, take 3 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, you have 20 seconds to rizz up {player2}. Group scores. Under 5 = drink the difference",
+      "category": "dares",
+      "chaos": 6,
+      "type": "challenge",
+      "timer": 20
     }
   ]
 }

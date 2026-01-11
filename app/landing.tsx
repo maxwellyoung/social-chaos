@@ -948,9 +948,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     ...(isWeb && {
       transition: "all 0.3s ease",
-      cursor: "default",
-    }),
-  },
+    } as any),
+  } as any,
   featureIconWrap: {
     width: 56,
     height: 56,
