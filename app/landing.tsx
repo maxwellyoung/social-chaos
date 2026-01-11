@@ -520,7 +520,7 @@ export default function Landing() {
               </View>
               <View style={styles.footerLinkColumn}>
                 <Text style={styles.footerLinkHeader}>Support</Text>
-                <Pressable onPress={() => Linking.openURL("mailto:hello@maxwellyoung.info")}>
+                <Pressable onPress={() => Linking.openURL("mailto:maxwell@ninetynine.digital")}>
                   <Text style={styles.footerLinkItem}>Contact Us</Text>
                 </Pressable>
                 <Pressable onPress={() => router.push("/support")}>

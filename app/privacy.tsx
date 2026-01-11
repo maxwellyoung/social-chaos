@@ -110,7 +110,7 @@ export default function PrivacyPolicy() {
         <Text style={styles.paragraph}>
           If you have any questions about this Privacy Policy, please contact us
           at:{"\n\n"}
-          <Text style={styles.link}>hello@maxwellyoung.info</Text>
+          <Text style={styles.link}>maxwell@ninetynine.digital</Text>
         </Text>
       </ScrollView>
     </View>

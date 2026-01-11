@@ -17,7 +17,7 @@ export default function Support() {
   const insets = useSafeAreaInsets();
 
   const handleEmail = () => {
-    Linking.openURL("mailto:hello@maxwellyoung.info?subject=Gambit%20Support");
+    Linking.openURL("mailto:maxwell@ninetynine.digital?subject=Gambit%20Support");
   };
 
   return (
@@ -67,7 +67,7 @@ export default function Support() {
             you!
           </Text>
           <Pressable style={styles.emailButton} onPress={handleEmail}>
-            <Text style={styles.emailButtonText}>hello@maxwellyoung.info</Text>
+            <Text style={styles.emailButtonText}>maxwell@ninetynine.digital</Text>
             <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
           </Pressable>
         </View>
@@ -143,7 +143,7 @@ export default function Support() {
         <Text style={styles.paragraph}>
           For questions about these Terms, contact us at{" "}
           <Text style={styles.link} onPress={handleEmail}>
-            hello@maxwellyoung.info
+            maxwell@ninetynine.digital
           </Text>
         </Text>
 
