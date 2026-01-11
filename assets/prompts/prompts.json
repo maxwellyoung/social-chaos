@@ -1727,6 +1727,848 @@
       "category": "drinking",
       "chaos": 5,
       "type": "target"
+    },
+
+    {
+      "text": "Drink if you've ever sent a voice memo longer than 2 minutes",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, show the group chat you've muted. 3 sips if it's this one",
+      "category": "dares",
+      "chaos": 4,
+      "type": "choice"
+    },
+    {
+      "text": "Drink if you've posted and deleted in the last month",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's a take you have that would get you kicked out of the group chat?",
+      "category": "hot_takes",
+      "chaos": 6,
+      "type": "opinion"
+    },
+    {
+      "text": "Drink if you have a screenshot in your camera roll that could end a friendship",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, name someone here who you'd trust with your unlocked phone for 60 seconds. They get to scroll",
+      "category": "dares",
+      "chaos": 7,
+      "type": "target",
+      "timer": 60
+    },
+    {
+      "text": "Drink if you've ever 'liked' a message instead of actually responding",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here gives off 'replies to emails on vacation' energy?",
+      "category": "social",
+      "chaos": 3,
+      "type": "target"
+    },
+    {
+      "text": "Drink if you've said 'let's definitely do this again' knowing full well you won't",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, rate your own vibe tonight 1-10. Group votes. Difference = sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "vote"
+    },
+    {
+      "text": "Drink if you've ever blamed traffic when you just left late",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the most chaotic thing you've done this month? Group rates chaos level, drink that many",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Everyone who's ever left someone on delivered for 'strategy' takes 3 sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who in this room has the best music taste? Worst? Best gives out 3, worst takes 3",
+      "category": "social",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "Drink if your notes app would be concerning if leaked",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, without looking, how many unread emails do you have? Closest guess drinks",
+      "category": "social",
+      "chaos": 3,
+      "type": "game"
+    },
+    {
+      "text": "Drink if you've ever orbited someone's social media without actually talking to them",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, share the last thing you copied to your clipboard or take 5",
+      "category": "dares",
+      "chaos": 5,
+      "type": "choice"
+    },
+    {
+      "text": "Drink if you've been in a 'soft launch' that went nowhere",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the most unhinged thing in your Amazon order history?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever said 'I never check this app' while definitely checking that app",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1} and {player2}, who has more followers? Loser drinks the difference in thousands",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "versus"
+    },
+    {
+      "text": "Drink if you've ever unfollowed someone then followed back hoping they wouldn't notice",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, convince the group why you'd survive a horror movie. Unconvinced = 4 sips",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform",
+      "timer": 30
+    },
+    {
+      "text": "Drink if you've ever pretended to text to avoid talking to someone",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's your most niche interest that you've never mentioned to this group?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've stress-purchased something you've never used",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, rank everyone's 'main character energy'. Lowest takes 4",
+      "category": "social",
+      "chaos": 5,
+      "type": "ranking"
+    },
+    {
+      "text": "Drink if you have a carefully curated 'casual' playlist",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something you only do when no one's watching?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever rehearsed a conversation that never happened",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's a hill you'll die on that literally no one else cares about?",
+      "category": "hot_takes",
+      "chaos": 4,
+      "type": "opinion"
+    },
+    {
+      "text": "Drink if you've ever lied about having read a book",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, impersonate how {player2} texts. They rate accuracy, drink the difference from 10",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform"
+    },
+    {
+      "text": "Drink if you've ever said 'I'm not really a phone person' while on your phone",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the most embarrassing thing you've Googled this week?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've checked your own profile to see what others see",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here would you call if you needed to hide a body? That person takes a pride sip",
+      "category": "social",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "Drink if you have strong opinions about Oxford commas",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, give a 20-second pitch on why we should all follow your private account",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform",
+      "timer": 20
+    },
+    {
+      "text": "Drink if you've ever rage-quit following someone",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the most expensive thing you've bought that you regret?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you have a folder of saved posts you'll never look at again",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1} vs {player2}: who has the more unhinged Spotify listening history? Winner picks the loser's punishment",
+      "category": "dares",
+      "chaos": 5,
+      "type": "versus"
+    },
+    {
+      "text": "Drink if you've ever aggressively typed then deleted everything",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, describe your ideal Sunday. Group votes if it sounds boring, boring = 4 sips",
+      "category": "social",
+      "chaos": 3,
+      "type": "vote"
+    },
+    {
+      "text": "Drink if you've sent a risky text then immediately put your phone face down",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something everyone seems to love that you just don't get?",
+      "category": "hot_takes",
+      "chaos": 4,
+      "type": "opinion"
+    },
+    {
+      "text": "Drink if you know your love language but have never told anyone",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, give an acceptance speech for 'most likely to text back within 2 seconds'. If you're not that person, 4 sips",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform"
+    },
+    {
+      "text": "Drink if you've ever pretended to be busy when you were absolutely not",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what personality trait do you fake having?",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever written a caption, deleted it, and just posted with no caption",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something you're weirdly competitive about?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Everyone point at who they think has the most chaotic search history. Most votes takes 5",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "vote"
+    },
+    {
+      "text": "Drink if you've ever called something 'mid' while secretly enjoying it",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's a small thing that gives you irrational joy?",
+      "category": "social",
+      "chaos": 2,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever pretended you already knew something someone was explaining",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, give {player2} a compliment you've thought but never said. Both take a sip after",
+      "category": "social",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "Drink if you've ever stalked your own profile after making a change",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the last thing that made you genuinely laugh out loud alone?",
+      "category": "social",
+      "chaos": 3,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever said 'I'm not on social media that much' while lying",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's a weird thing you'd spend money on if you were rich?",
+      "category": "confessions",
+      "chaos": 3,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever opened someone's story multiple times to show interest",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's an opinion you've changed in the last year?",
+      "category": "social",
+      "chaos": 3,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you can name your ex's current partner",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something you're bad at but refuse to admit?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever typed 'haha' when you didn't actually laugh",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1} and {player2}, compliment battle. Keep going until someone repeats or hesitates. Loser takes 5",
+      "category": "social",
+      "chaos": 4,
+      "type": "versus"
+    },
+    {
+      "text": "Drink if you have notifications turned off for most apps",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who in this room do you think has the most interesting life you know nothing about?",
+      "category": "social",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "Drink if you've ever felt personally attacked by an algorithm",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's a random memory that lives rent-free in your head?",
+      "category": "confessions",
+      "chaos": 3,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever screenshot a message to send to someone else",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, impersonate how someone here would order coffee. Group guesses who",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform"
+    },
+    {
+      "text": "Drink if you've ever liked your own post for 'engagement'",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the longest you've held a grudge?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Everyone who's ever been called 'too much' drinks with pride",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's an excuse you've used more than once?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever muted a group chat that you're actively participating in",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, describe everyone's vibe using only colors. Most offended takes 4",
+      "category": "creative",
+      "chaos": 5,
+      "type": "ranking"
+    },
+    {
+      "text": "Drink if you've ever sent 'wya' knowing exactly where someone is",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something you pretend to care about for social reasons?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever archived instead of deleted",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here would survive the longest without their phone? That person gives out 5 sips",
+      "category": "social",
+      "chaos": 4,
+      "type": "target"
+    },
+    {
+      "text": "Drink if you've ever looked up a word while pretending you already knew it",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something minor that instantly improves your mood?",
+      "category": "social",
+      "chaos": 2,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've left someone on read as a power move",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, pitch a reality show starring this group. Best pitch wins, everyone else drinks",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform",
+      "timer": 45
+    },
+    {
+      "text": "Drink if you own something you bought because of an influencer",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the nicest rejection you've ever given?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever panic-closed an app when someone walked by",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here gives off 'has a five-year plan' energy?",
+      "category": "social",
+      "chaos": 3,
+      "type": "target"
+    },
+    {
+      "text": "Drink if you've ever said 'I'll think about it' with zero intention of thinking about it",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something you find attractive that most people find weird?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever deep-liked to see if someone would notice",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, describe your texting style in three words. Group validates or you drink 3",
+      "category": "social",
+      "chaos": 3,
+      "type": "vote"
+    },
+    {
+      "text": "Drink if you have a comfort show you've seen more than 3 times",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what would your enemies say about you?",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've looked through someone's entire profile before meeting them",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, share an unpopular opinion about this friend group. Brace yourself",
+      "category": "hot_takes",
+      "chaos": 7,
+      "type": "opinion"
+    },
+    {
+      "text": "Drink if you have at least 3 unfinished hobbies",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the most random thing you've been complimented on?",
+      "category": "social",
+      "chaos": 3,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever intentionally not finished a story to seem mysterious",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something you overthink that you know you shouldn't?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever pretended not to see a message so you could respond later",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1} picks a vibe. Everyone has 10 seconds to strike a pose matching it. Worst one drinks 4",
+      "category": "physical",
+      "chaos": 5,
+      "type": "game",
+      "timer": 10
+    },
+    {
+      "text": "Drink if you've ever claimed to be 'five minutes away' while still home",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something you've never admitted to anyone in this room?",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if your most played song would be embarrassing if people knew",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here do you think secretly judges everyone? That person drinks with a smirk",
+      "category": "social",
+      "chaos": 5,
+      "type": "target"
+    },
+    {
+      "text": "Drink if you've ever said 'no worries' when there were definitely worries",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's a boundary you have that people don't expect?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've typed out your feelings and then just sent 'ok'",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, convince us you're not a robot. Failing = 5 sips",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform",
+      "timer": 20
+    },
+    {
+      "text": "Drink if you've ever fact-checked something mid-conversation",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something you thought was cool until you tried it?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Everyone who has beef with someone not in this room takes 3 solidarity sips",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, describe your ideal night out in one sentence. If it sounds boring, 4 sips",
+      "category": "social",
+      "chaos": 3,
+      "type": "vote"
+    },
+    {
+      "text": "Drink if you've ever avoided someone you owe money",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's your hottest take that isn't actually that hot?",
+      "category": "hot_takes",
+      "chaos": 3,
+      "type": "opinion"
+    },
+    {
+      "text": "Drink if you've creeped on your own profile through someone else's eyes",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something you say you hate but secretly love?",
+      "category": "confessions",
+      "chaos": 4,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've rehearsed a story before telling it",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who in this room would thrive in chaos? They become drink distributor for the next round",
+      "category": "social",
+      "chaos": 5,
+      "type": "target"
+    },
+    {
+      "text": "Drink if you've ever claimed you 'don't really watch TV'",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's something you're gatekeeping from this group?",
+      "category": "confessions",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever made plans hoping they'd cancel",
+      "category": "drinking",
+      "chaos": 3,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, demonstrate your 'I'm fine' face vs your actual fine face. Group rates",
+      "category": "creative",
+      "chaos": 4,
+      "type": "perform"
+    },
+    {
+      "text": "Drink if you've ever sent a screenshot to the wrong person",
+      "category": "drinking",
+      "chaos": 5,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what's the most unhinged thought you've had today?",
+      "category": "confessions",
+      "chaos": 6,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you have a note on your phone that would concern a therapist",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, give a TED talk titled 'Why I'm Right About Everything'. 30 seconds. Unconvincing = 4 sips",
+      "category": "creative",
+      "chaos": 5,
+      "type": "perform",
+      "timer": 30
+    },
+    {
+      "text": "Drink if you've ever faked being knowledgeable about something for too long to admit it now",
+      "category": "drinking",
+      "chaos": 4,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, what would be your villain origin story?",
+      "category": "creative",
+      "chaos": 5,
+      "type": "confession"
+    },
+    {
+      "text": "Drink if you've ever typed 'lmao' with a completely straight face",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, who here would you trust with a secret? Who wouldn't you? Both drink",
+      "category": "social",
+      "chaos": 6,
+      "type": "target"
+    },
+    {
+      "text": "Drink if you've ever replied 'yeah haha' when you had no idea what they said",
+      "category": "drinking",
+      "chaos": 2,
+      "type": "group"
+    },
+    {
+      "text": "{player1}, name three green flags about yourself. Group decides if they're valid. Invalid ones = sips each",
+      "category": "social",
+      "chaos": 5,
+      "type": "vote"
     }
   ],
   "sexy": [
