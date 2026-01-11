@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useEffect,
   useRef,
+  useMemo,
 } from "react";
 import {
   View,
@@ -18,9 +19,9 @@ import {
   Share,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button } from "./Button";
 import { SlideDownPanel } from "./SlideDownPanel";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -38,10 +39,9 @@ import Animated, {
   SlideOutLeft,
   ZoomIn,
   BounceIn,
-  FadeIn,
-  FadeOut,
   FadeInUp,
   FadeInDown,
+  FadeIn,
   Layout,
 } from "react-native-reanimated";
 import {
@@ -52,9 +52,6 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
-import { Audio } from "expo-av";
-import * as Sharing from "expo-sharing";
-import ViewShot from "react-native-view-shot";
 
 import promptData from "../assets/prompts/prompts.json";
 
@@ -89,15 +86,15 @@ interface GameState {
   timerSeconds: number;
 }
 
-interface PromptRating {
-  promptText: string;
-  fire: number;
-  skull: number;
+interface CardItem {
+  id: number;
+  text: string;
+  data: Prompt;
 }
 
 // Constants
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.2;
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.25;
 const MAX_WIDTH = 500;
 
 const CATEGORIES: Record<CategoryKey, { name: string; emoji: string; color: string; gradient: [string, string] }> = {
@@ -111,39 +108,16 @@ const CATEGORIES: Record<CategoryKey, { name: string; emoji: string; color: stri
   chaos: { name: "Chaos", emoji: "🌪️", color: "#8B5CF6", gradient: ["#8B5CF6", "#7C3AED"] },
 };
 
-// Sound Effects Hook
-const useSoundEffects = () => {
-  const sounds = useRef<{ [key: string]: Audio.Sound }>({});
-
-  const playHapticPattern = useCallback(async (pattern: "success" | "error" | "swipe" | "fire" | "skull" | "celebration") => {
-    if (Platform.OS === "web") return;
-
-    switch (pattern) {
-      case "success":
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        break;
-      case "error":
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        break;
-      case "swipe":
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        break;
-      case "fire":
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light), 100);
-        break;
-      case "skull":
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
-        break;
-      case "celebration":
-        for (let i = 0; i < 3; i++) {
-          setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light), i * 80);
-        }
-        break;
-    }
-  }, []);
-
-  return { playHapticPattern };
+// Haptic helper
+const triggerHaptic = (type: "light" | "medium" | "heavy" | "success" | "error") => {
+  if (Platform.OS === "web") return;
+  switch (type) {
+    case "light": Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); break;
+    case "medium": Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); break;
+    case "heavy": Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy); break;
+    case "success": Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); break;
+    case "error": Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error); break;
+  }
 };
 
 // Floating Orb Component
@@ -158,48 +132,29 @@ const FloatingOrb = ({ color, size, initialX, initialY, duration }: any) => {
         withTiming(initialX + 50, { duration, easing: Easing.inOut(Easing.ease) }),
         withTiming(initialX - 30, { duration: duration * 0.8, easing: Easing.inOut(Easing.ease) }),
         withTiming(initialX, { duration: duration * 0.6, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      false
+      ), -1, false
     );
     translateY.value = withRepeat(
       withSequence(
         withTiming(initialY - 40, { duration: duration * 0.7, easing: Easing.inOut(Easing.ease) }),
         withTiming(initialY + 30, { duration, easing: Easing.inOut(Easing.ease) }),
         withTiming(initialY, { duration: duration * 0.5, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      false
+      ), -1, false
     );
-    scale.value = withRepeat(
-      withSequence(
-        withTiming(1.2, { duration: duration * 0.5 }),
-        withTiming(0.9, { duration: duration * 0.5 })
-      ),
-      -1,
-      true
-    );
+    scale.value = withRepeat(withSequence(withTiming(1.2, { duration: duration * 0.5 }), withTiming(0.9, { duration: duration * 0.5 })), -1, true);
   }, []);
 
   const style = useAnimatedStyle(() => ({
     position: "absolute" as const,
-    width: size,
-    height: size,
-    borderRadius: size / 2,
-    backgroundColor: color,
-    opacity: 0.15,
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-    filter: "blur(40px)",
+    width: size, height: size, borderRadius: size / 2,
+    backgroundColor: color, opacity: 0.15,
+    transform: [{ translateX: translateX.value }, { translateY: translateY.value }, { scale: scale.value }],
   }));
 
   return <Animated.View style={style} />;
 };
 
-// Confetti
+// Confetti Particle
 const Particle = ({ delay, startX }: { delay: number; startX: number }) => {
   const translateY = useSharedValue(-20);
   const translateX = useSharedValue(startX);
@@ -217,12 +172,7 @@ const Particle = ({ delay, startX }: { delay: number; startX: number }) => {
 
   const style = useAnimatedStyle(() => ({
     position: "absolute" as const,
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { rotate: `${rotate.value}deg` },
-      { scale: scale.value },
-    ],
+    transform: [{ translateX: translateX.value }, { translateY: translateY.value }, { rotate: `${rotate.value}deg` }, { scale: scale.value }],
     opacity: opacity.value,
   }));
 
@@ -231,11 +181,9 @@ const Particle = ({ delay, startX }: { delay: number; startX: number }) => {
 };
 
 const Confetti = ({ count = 40 }: { count?: number }) => {
-  const particles = Array.from({ length: count }, (_, i) => ({
-    id: i,
-    delay: Math.random() * 400,
-    startX: Math.random() * SCREEN_WIDTH,
-  }));
+  const particles = useMemo(() => Array.from({ length: count }, (_, i) => ({
+    id: i, delay: Math.random() * 400, startX: Math.random() * SCREEN_WIDTH,
+  })), [count]);
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
       {particles.map((p) => <Particle key={p.id} delay={p.delay} startX={p.startX} />)}
@@ -243,107 +191,97 @@ const Confetti = ({ count = 40 }: { count?: number }) => {
   );
 };
 
-// Rating Popup Component
-const RatingPopup = ({
-  visible,
-  onRate,
-  promptText
+// Swipeable Card Component
+const SwipeableCard = ({
+  card,
+  isTop,
+  onSwipe,
+  category,
 }: {
-  visible: boolean;
-  onRate: (rating: "fire" | "skull" | "skip") => void;
-  promptText: string;
+  card: CardItem;
+  isTop: boolean;
+  onSwipe: () => void;
+  category: CategoryKey;
 }) => {
-  const scale = useSharedValue(0);
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const rotation = useSharedValue(0);
+  const scale = useSharedValue(isTop ? 1 : 0.92);
+  const opacity = useSharedValue(isTop ? 1 : 0.7);
+
+  const cat = CATEGORIES[category] || CATEGORIES.chaos;
 
   useEffect(() => {
-    if (visible) {
-      scale.value = withSpring(1, { damping: 12, stiffness: 200 });
+    if (isTop) {
+      scale.value = withSpring(1, { damping: 15 });
+      opacity.value = withTiming(1, { duration: 200 });
     } else {
-      scale.value = withTiming(0, { duration: 150 });
+      scale.value = withSpring(0.92, { damping: 15 });
+      opacity.value = withTiming(0.7, { duration: 200 });
     }
-  }, [visible]);
+  }, [isTop]);
 
-  const animStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: scale.value,
+  const gesture = Gesture.Pan()
+    .enabled(isTop)
+    .onStart(() => {
+      if (Platform.OS !== "web") runOnJS(Haptics.selectionAsync)();
+    })
+    .onUpdate((e) => {
+      translateX.value = e.translationX;
+      translateY.value = e.translationY * 0.3;
+      rotation.value = (e.translationX / SCREEN_WIDTH) * 20;
+    })
+    .onEnd((e) => {
+      if (Math.abs(e.translationX) > SWIPE_THRESHOLD) {
+        const dir = e.translationX > 0 ? 1 : -1;
+        translateX.value = withTiming(dir * SCREEN_WIDTH * 1.5, { duration: 300 });
+        rotation.value = withTiming(dir * 30, { duration: 300 });
+        opacity.value = withTiming(0, { duration: 200 }, () => {
+          runOnJS(onSwipe)();
+        });
+      } else {
+        translateX.value = withSpring(0, { damping: 15 });
+        translateY.value = withSpring(0, { damping: 15 });
+        rotation.value = withSpring(0, { damping: 15 });
+      }
+    });
+
+  const cardStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { rotate: `${rotation.value}deg` },
+      { scale: scale.value },
+    ],
+    opacity: opacity.value,
+    zIndex: isTop ? 2 : 1,
   }));
 
-  if (!visible) return null;
-
   return (
-    <Animated.View style={[styles.ratingOverlay, animStyle]}>
-      <View style={styles.ratingCard}>
-        <Text style={styles.ratingTitle}>Rate this prompt</Text>
-        <Text style={styles.ratingPrompt} numberOfLines={2}>{promptText}</Text>
-        <View style={styles.ratingButtons}>
-          <TouchableOpacity
-            style={[styles.ratingBtn, styles.fireBtn]}
-            onPress={() => onRate("fire")}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.ratingEmoji}>🔥</Text>
-            <Text style={styles.ratingLabel}>Fire</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.ratingBtn, styles.skullBtn]}
-            onPress={() => onRate("skull")}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.ratingEmoji}>💀</Text>
-            <Text style={styles.ratingLabel}>Dead</Text>
-          </TouchableOpacity>
+    <GestureDetector gesture={gesture}>
+      <Animated.View style={[styles.promptCard, cardStyle]}>
+        <LinearGradient
+          colors={[cat.gradient[0] + "25", "transparent"]}
+          style={[StyleSheet.absoluteFill, { borderRadius: 24 }]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        />
+        <View style={[styles.promptCatBadge, { backgroundColor: cat.color + "30" }]}>
+          <Text style={styles.promptCatText}>{cat.emoji}</Text>
         </View>
-        <TouchableOpacity style={styles.skipBtn} onPress={() => onRate("skip")}>
-          <Text style={styles.skipText}>Skip</Text>
-        </TouchableOpacity>
-      </View>
-    </Animated.View>
+        <Text style={styles.promptText}>{card.text}</Text>
+        <Text style={styles.swipeHint}>← Swipe →</Text>
+      </Animated.View>
+    </GestureDetector>
   );
 };
-
-// Share Card Component
-const ShareCard = React.forwardRef<ViewShot, { prompt: string; category: CategoryKey; players: Player[] }>(
-  ({ prompt, category, players }, ref) => {
-    const cat = CATEGORIES[category] || CATEGORIES.chaos;
-    return (
-      <ViewShot ref={ref} options={{ format: "png", quality: 1 }}>
-        <View style={styles.shareCard}>
-          <LinearGradient
-            colors={[cat.gradient[0], cat.gradient[1], "#000"]}
-            style={StyleSheet.absoluteFill}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          />
-          <View style={styles.shareCardContent}>
-            <Text style={styles.shareCardBrand}>GAMBIT</Text>
-            <Text style={styles.shareCardEmoji}>{cat.emoji}</Text>
-            <Text style={styles.shareCardPrompt}>{prompt}</Text>
-            <View style={styles.shareCardFooter}>
-              <Text style={styles.shareCardPlayers}>
-                Playing with {players.slice(0, 3).map(p => p.name).join(", ")}
-                {players.length > 3 ? ` +${players.length - 3}` : ""}
-              </Text>
-              <Text style={styles.shareCardCTA}>Download Gambit 🎮</Text>
-            </View>
-          </View>
-        </View>
-      </ViewShot>
-    );
-  }
-);
 
 export function PersonalizedPartyGame() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [isAddPlayerVisible, setIsAddPlayerVisible] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [showRating, setShowRating] = useState(false);
-  const [lastPromptForRating, setLastPromptForRating] = useState("");
-  const [promptRatings, setPromptRatings] = useState<PromptRating[]>([]);
-  const [gameStats, setGameStats] = useState({ totalGames: 1247, activeNow: 89 });
-
-  const { playHapticPattern } = useSoundEffects();
-  const shareCardRef = useRef<ViewShot>(null);
+  const [gameStats] = useState({ activeNow: Math.floor(Math.random() * 50) + 60 });
 
   const [gameState, setGameState] = useState<GameState>({
     screen: "setup",
@@ -358,40 +296,17 @@ export function PersonalizedPartyGame() {
     timerSeconds: 0,
   });
 
-  const [currentPrompt, setCurrentPrompt] = useState("");
-  const [nextPrompt, setNextPrompt] = useState("");
-  const [currentPromptData, setCurrentPromptData] = useState<Prompt | null>(null);
-  const [nextPromptData, setNextPromptData] = useState<Prompt | null>(null);
-  const [shuffledPrompts, setShuffledPrompts] = useState<Prompt[]>([]);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [cardStack, setCardStack] = useState<CardItem[]>([]);
+  const cardIdRef = useRef(0);
+  const shuffledPromptsRef = useRef<Prompt[]>([]);
   const promptIndexRef = useRef(0);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const timerProgress = useSharedValue(1);
-
-  // Animation values
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const cardRotation = useSharedValue(0);
-  const cardScale = useSharedValue(1);
-  const cardOpacity = useSharedValue(1);
-  const errorShakeX = useSharedValue(0);
-  const nextCardScale = useSharedValue(0.88);
   const timerPulse = useSharedValue(1);
-  const statsCounter = useSharedValue(gameStats.activeNow);
+  const errorShakeX = useSharedValue(0);
 
-  // Animate stats counter
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setGameStats(prev => ({
-        ...prev,
-        activeNow: prev.activeNow + Math.floor(Math.random() * 5) - 2,
-      }));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Timer warning
+  // Timer warning pulse
   useEffect(() => {
     if (gameState.timerActive && gameState.timerSeconds <= 5 && gameState.timerSeconds > 0) {
       timerPulse.value = withRepeat(withSequence(withTiming(1.3, { duration: 150 }), withTiming(1, { duration: 150 })), -1, true);
@@ -405,7 +320,9 @@ export function PersonalizedPartyGame() {
     const allPrompts = gameState.isSexyMode ? [...promptData.prompts, ...promptData.sexy] : promptData.prompts;
     const chaosMin = Math.max(1, gameState.chaosLevel - 3);
     const chaosMax = Math.min(10, gameState.chaosLevel + 3);
-    return allPrompts.filter((p: Prompt) => p.chaos >= chaosMin && p.chaos <= chaosMax && gameState.selectedCategories.includes(p.category as CategoryKey));
+    return allPrompts.filter((p: Prompt) =>
+      p.chaos >= chaosMin && p.chaos <= chaosMax && gameState.selectedCategories.includes(p.category as CategoryKey)
+    );
   }, [gameState.isSexyMode, gameState.chaosLevel, gameState.selectedCategories]);
 
   const replacePlaceholders = useCallback((text: string): string => {
@@ -421,34 +338,35 @@ export function PersonalizedPartyGame() {
     return result;
   }, [players]);
 
-  const initializePrompts = useCallback((): Prompt[] => {
-    const filtered = getFilteredPrompts();
-    const shuffled = [...filtered].sort(() => Math.random() - 0.5);
-    setShuffledPrompts(shuffled);
-    promptIndexRef.current = 0;
-    return shuffled;
-  }, [getFilteredPrompts]);
-
-  const getNextPromptFromList = useCallback((prompts: Prompt[]): { text: string; data: Prompt } | null => {
-    if (prompts.length === 0) return null;
-    if (promptIndexRef.current >= prompts.length) {
+  const getNextCard = useCallback((): CardItem | null => {
+    if (shuffledPromptsRef.current.length === 0) return null;
+    if (promptIndexRef.current >= shuffledPromptsRef.current.length) {
       promptIndexRef.current = 0;
+      shuffledPromptsRef.current = [...shuffledPromptsRef.current].sort(() => Math.random() - 0.5);
     }
-    const prompt = prompts[promptIndexRef.current];
+    const prompt = shuffledPromptsRef.current[promptIndexRef.current];
     promptIndexRef.current++;
-    return { text: replacePlaceholders(prompt.text), data: prompt };
+    cardIdRef.current++;
+    return {
+      id: cardIdRef.current,
+      text: replacePlaceholders(prompt.text),
+      data: prompt,
+    };
   }, [replacePlaceholders]);
 
-  const getNextPrompt = useCallback((): { text: string; data: Prompt } | null => {
-    if (shuffledPrompts.length === 0) return null;
-    if (promptIndexRef.current >= shuffledPrompts.length) {
-      promptIndexRef.current = 0;
-      setShuffledPrompts(prev => [...prev].sort(() => Math.random() - 0.5));
+  const initializeGame = useCallback(() => {
+    const filtered = getFilteredPrompts();
+    shuffledPromptsRef.current = [...filtered].sort(() => Math.random() - 0.5);
+    promptIndexRef.current = 0;
+    cardIdRef.current = 0;
+
+    const cards: CardItem[] = [];
+    for (let i = 0; i < 2; i++) {
+      const card = getNextCard();
+      if (card) cards.push(card);
     }
-    const prompt = shuffledPrompts[promptIndexRef.current];
-    promptIndexRef.current++;
-    return { text: replacePlaceholders(prompt.text), data: prompt };
-  }, [shuffledPrompts, replacePlaceholders]);
+    setCardStack(cards);
+  }, [getFilteredPrompts, getNextCard]);
 
   const startTimer = useCallback((seconds: number) => {
     setGameState(prev => ({ ...prev, timerActive: true, timerSeconds: seconds }));
@@ -459,14 +377,14 @@ export function PersonalizedPartyGame() {
       setGameState(prev => {
         if (prev.timerSeconds <= 1) {
           if (timerRef.current) clearInterval(timerRef.current);
-          playHapticPattern("error");
+          triggerHaptic("error");
           return { ...prev, timerActive: false, timerSeconds: 0 };
         }
-        if (prev.timerSeconds <= 5) playHapticPattern("swipe");
+        if (prev.timerSeconds <= 5) triggerHaptic("light");
         return { ...prev, timerSeconds: prev.timerSeconds - 1 };
       });
     }, 1000);
-  }, [playHapticPattern]);
+  }, []);
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
@@ -474,48 +392,8 @@ export function PersonalizedPartyGame() {
     setGameState(prev => ({ ...prev, timerActive: false, timerSeconds: 0 }));
   }, []);
 
-  // Share functionality
-  const sharePrompt = useCallback(async () => {
-    playHapticPattern("success");
-
-    try {
-      const message = `🎮 GAMBIT\n\n"${currentPrompt}"\n\nDownload Gambit and play with your friends!`;
-      await Share.share({
-        message,
-        title: "Share this Gambit prompt",
-      });
-    } catch (error) {
-      console.log("Error sharing:", error);
-    }
-  }, [currentPrompt, playHapticPattern]);
-
-  // Rate prompt
-  const handleRating = useCallback((rating: "fire" | "skull" | "skip") => {
-    if (rating !== "skip") {
-      playHapticPattern(rating);
-      setPromptRatings(prev => {
-        const existing = prev.find(r => r.promptText === lastPromptForRating);
-        if (existing) {
-          return prev.map(r =>
-            r.promptText === lastPromptForRating
-              ? { ...r, [rating]: r[rating] + 1 }
-              : r
-          );
-        }
-        return [...prev, {
-          promptText: lastPromptForRating,
-          fire: rating === "fire" ? 1 : 0,
-          skull: rating === "skull" ? 1 : 0
-        }];
-      });
-    }
-    setShowRating(false);
-  }, [lastPromptForRating, playHapticPattern]);
-
-  const handleNext = useCallback(() => {
-    if (isTransitioning) return;
-
-    playHapticPattern("swipe");
+  const handleSwipe = useCallback(() => {
+    triggerHaptic("medium");
     stopTimer();
 
     const total = gameState.totalRounds * gameState.promptsPerRound;
@@ -523,67 +401,60 @@ export function PersonalizedPartyGame() {
 
     if (current + 1 >= total) {
       setShowConfetti(true);
-      playHapticPattern("celebration");
+      triggerHaptic("success");
       setGameState(prev => ({ ...prev, screen: "results" }));
       return;
     }
 
     if (gameState.currentPromptIndex + 1 >= gameState.promptsPerRound) {
       setShowConfetti(true);
-      playHapticPattern("celebration");
+      triggerHaptic("success");
       setTimeout(() => setShowConfetti(false), 3000);
       setGameState(prev => ({ ...prev, screen: "roundEnd" }));
       return;
     }
 
-    setIsTransitioning(true);
-
-    // Update prompts - current becomes next, fetch new next
-    const next = getNextPrompt();
-    if (next) {
-      setCurrentPrompt(nextPrompt);
-      setCurrentPromptData(nextPromptData);
-      setNextPrompt(next.text);
-      setNextPromptData(next.data);
-      if (nextPromptData?.timer) setTimeout(() => startTimer(nextPromptData.timer!), 300);
-    }
+    // Remove top card, add new one to bottom
+    setCardStack(prev => {
+      const newStack = prev.slice(1);
+      const newCard = getNextCard();
+      if (newCard) newStack.push(newCard);
+      return newStack;
+    });
 
     setGameState(prev => ({ ...prev, currentPromptIndex: prev.currentPromptIndex + 1 }));
 
-    // Reset card position after React has updated state
-    setTimeout(() => {
-      translateX.value = 0;
-      translateY.value = 0;
-      cardRotation.value = 0;
-      cardScale.value = 1;
-      cardOpacity.value = withTiming(1, { duration: 150 });
-      nextCardScale.value = 0.88;
-      setIsTransitioning(false);
-    }, 50);
-  }, [gameState, nextPrompt, nextPromptData, getNextPrompt, startTimer, stopTimer, playHapticPattern, isTransitioning]);
+    // Start timer if next card has one
+    const nextCard = cardStack[1];
+    if (nextCard?.data.timer) {
+      setTimeout(() => startTimer(nextCard.data.timer!), 300);
+    }
+  }, [gameState, cardStack, getNextCard, startTimer, stopTimer]);
+
+  const handleNextButton = useCallback(() => {
+    handleSwipe();
+  }, [handleSwipe]);
 
   const continueToNextRound = useCallback(() => {
     setShowConfetti(false);
-    setGameState(prev => ({ ...prev, screen: "playing", round: prev.round + 1, currentPromptIndex: 0 }));
-    const next = getNextPrompt();
-    if (next) {
-      setCurrentPrompt(next.text);
-      setCurrentPromptData(next.data);
-      const second = getNextPrompt();
-      if (second) { setNextPrompt(second.text); setNextPromptData(second.data); }
-      if (next.data.timer) setTimeout(() => startTimer(next.data.timer!), 500);
+    const cards: CardItem[] = [];
+    for (let i = 0; i < 2; i++) {
+      const card = getNextCard();
+      if (card) cards.push(card);
     }
-  }, [getNextPrompt, startTimer]);
+    setCardStack(cards);
+    setGameState(prev => ({ ...prev, screen: "playing", round: prev.round + 1, currentPromptIndex: 0 }));
+  }, [getNextCard]);
 
   const startGame = useCallback(() => {
     if (players.length < 2) {
       errorShakeX.value = withSequence(
-        withSpring(-20, { stiffness: 800, damping: 6 }),
-        withSpring(20, { stiffness: 800, damping: 6 }),
-        withSpring(-20, { stiffness: 800, damping: 6 }),
-        withSpring(0, { stiffness: 800, damping: 6 })
+        withSpring(-15, { stiffness: 800, damping: 8 }),
+        withSpring(15, { stiffness: 800, damping: 8 }),
+        withSpring(-15, { stiffness: 800, damping: 8 }),
+        withSpring(0, { stiffness: 800, damping: 8 })
       );
-      playHapticPattern("error");
+      triggerHaptic("error");
       Alert.alert("Need Players", "Add at least 2 players!", [{ text: "Add", onPress: () => setIsAddPlayerVisible(true) }]);
       return;
     }
@@ -591,115 +462,65 @@ export function PersonalizedPartyGame() {
       Alert.alert("No Categories", "Pick at least one!");
       return;
     }
-    const prompts = initializePrompts();
-    const first = getNextPromptFromList(prompts);
-    const second = getNextPromptFromList(prompts);
-    if (first && second) {
-      setCurrentPrompt(first.text);
-      setCurrentPromptData(first.data);
-      setNextPrompt(second.text);
-      setNextPromptData(second.data);
-      if (first.data.timer) setTimeout(() => startTimer(first.data.timer!), 600);
-    }
-    playHapticPattern("success");
+    initializeGame();
+    triggerHaptic("success");
     setGameState(prev => ({ ...prev, screen: "playing", round: 1, currentPromptIndex: 0 }));
-  }, [players, gameState.selectedCategories, initializePrompts, getNextPromptFromList, startTimer, playHapticPattern]);
+  }, [players, gameState.selectedCategories, initializeGame]);
 
   const resetGame = useCallback(() => {
     stopTimer();
     setShowConfetti(false);
-    setShowRating(false);
+    setCardStack([]);
     setGameState(prev => ({ ...prev, screen: "setup", round: 1, currentPromptIndex: 0 }));
-    setCurrentPrompt("");
-    setNextPrompt("");
   }, [stopTimer]);
 
   const addPlayer = useCallback(() => {
     if (newPlayerName.trim()) {
-      playHapticPattern("success");
+      triggerHaptic("light");
       const avatars = ["😎", "🤪", "😈", "🥳", "🤠", "👻", "🦊", "🐸", "🦄", "🔥", "⚡", "💀", "🎃", "🤖", "👽", "🦁", "🐼", "🦋", "🎭", "🌟"];
       setPlayers(prev => [...prev, { name: newPlayerName.trim(), avatar: avatars[Math.floor(Math.random() * avatars.length)], score: 0 }]);
       setNewPlayerName("");
     }
-  }, [newPlayerName, playHapticPattern]);
+  }, [newPlayerName]);
 
   const removePlayer = useCallback((index: number) => {
-    playHapticPattern("swipe");
+    triggerHaptic("light");
     setPlayers(prev => prev.filter((_, i) => i !== index));
-  }, [playHapticPattern]);
+  }, []);
 
   const toggleCategory = useCallback((cat: CategoryKey) => {
-    playHapticPattern("swipe");
+    triggerHaptic("light");
     setGameState(prev => ({
       ...prev,
       selectedCategories: prev.selectedCategories.includes(cat)
         ? prev.selectedCategories.filter(c => c !== cat)
         : [...prev.selectedCategories, cat],
     }));
-  }, [playHapticPattern]);
+  }, []);
 
-  // Gestures
-  const panGesture = Gesture.Pan()
-    .onBegin(() => { if (Platform.OS !== "web") runOnJS(Haptics.selectionAsync)(); })
-    .onUpdate((e) => {
-      "worklet";
-      translateX.value = e.translationX;
-      translateY.value = e.translationY * 0.4;
-      cardRotation.value = (e.translationX / SCREEN_WIDTH) * 25;
-      const progress = Math.abs(e.translationX) / SCREEN_WIDTH;
-      cardScale.value = interpolate(progress, [0, 0.4], [1, 0.9], Extrapolate.CLAMP);
-      cardOpacity.value = interpolate(Math.abs(e.translationX), [0, SCREEN_WIDTH / 3], [1, 0.2], Extrapolate.CLAMP);
-      nextCardScale.value = interpolate(progress, [0, 0.4], [0.88, 1], Extrapolate.CLAMP);
-    })
-    .onEnd((e) => {
-      "worklet";
-      if (Math.abs(e.translationX) > SWIPE_THRESHOLD) {
-        const dir = e.translationX > 0 ? 1 : -1;
-        translateX.value = withSpring(dir * SCREEN_WIDTH * 1.5, { velocity: e.velocityX, stiffness: 60, damping: 12 });
-        translateY.value = withSpring(e.translationY * 0.5, { stiffness: 60, damping: 12 });
-        cardRotation.value = withSpring(dir * 50, { stiffness: 60, damping: 12 });
-        cardScale.value = withTiming(0.7, { duration: 150 });
-        cardOpacity.value = withTiming(0, { duration: 200 }, (done) => { if (done) runOnJS(handleNext)(); });
-      } else {
-        translateX.value = withSpring(0, { stiffness: 400, damping: 30 });
-        translateY.value = withSpring(0, { stiffness: 400, damping: 30 });
-        cardRotation.value = withSpring(0, { stiffness: 400, damping: 30 });
-        cardScale.value = withSpring(1, { stiffness: 400, damping: 30 });
-        cardOpacity.value = withSpring(1, { stiffness: 400, damping: 30 });
-        nextCardScale.value = withSpring(0.88, { stiffness: 400, damping: 30 });
-      }
-    });
-
-  // Animated styles
-  const cardStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { rotate: `${cardRotation.value}deg` },
-      { scale: cardScale.value },
-    ],
-    opacity: cardOpacity.value,
-  }));
-
-  const nextCardAnimStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: nextCardScale.value }],
-    opacity: interpolate(nextCardScale.value, [0.88, 1], [0.6, 1], Extrapolate.CLAMP),
-  }));
+  const sharePrompt = useCallback(async () => {
+    triggerHaptic("success");
+    const topCard = cardStack[0];
+    if (!topCard) return;
+    try {
+      await Share.share({
+        message: `🎮 GAMBIT\n\n"${topCard.text}"\n\nDownload Gambit and play with your friends!`,
+      });
+    } catch (e) {}
+  }, [cardStack]);
 
   const errorStyle = useAnimatedStyle(() => ({ transform: [{ translateX: errorShakeX.value }] }));
   const timerBarStyle = useAnimatedStyle(() => ({ width: `${timerProgress.value * 100}%` }));
   const timerTextStyle = useAnimatedStyle(() => ({ transform: [{ scale: timerPulse.value }] }));
 
-  // Check if prompt is "hot" (well-rated)
-  const isHotPrompt = useCallback((promptText: string) => {
-    const rating = promptRatings.find(r => r.promptText === promptText);
-    return rating && rating.fire > rating.skull && rating.fire >= 3;
-  }, [promptRatings]);
+  // Current category for styling
+  const currentCategory = cardStack[0]?.data.category as CategoryKey || "chaos";
+  const catColor = CATEGORIES[currentCategory]?.color || "#8B5CF6";
+  const catGradient = CATEGORIES[currentCategory]?.gradient || ["#8B5CF6", "#7C3AED"];
 
   // Render Setup
   const renderSetup = () => (
     <View style={styles.screen}>
-      {/* Animated Background */}
       <View style={styles.bgOrbs}>
         <FloatingOrb color="#8B5CF6" size={300} initialX={-50} initialY={100} duration={8000} />
         <FloatingOrb color="#EC4899" size={250} initialX={SCREEN_WIDTH - 100} initialY={300} duration={10000} />
@@ -707,19 +528,16 @@ export function PersonalizedPartyGame() {
       </View>
 
       <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false} contentContainerStyle={styles.setupContent}>
-        {/* Hero */}
         <Animated.View entering={FadeInDown.duration(600).springify()} style={styles.hero}>
           <Text style={styles.heroTitle}>GAMBIT</Text>
           <Text style={styles.heroSub}>Party chaos, perfected</Text>
         </Animated.View>
 
-        {/* Live Stats */}
         <Animated.View entering={FadeInUp.delay(50).duration(400)} style={styles.liveStats}>
           <View style={styles.liveDot} />
           <Text style={styles.liveText}>{gameStats.activeNow} playing now</Text>
         </Animated.View>
 
-        {/* Players Card */}
         <Animated.View entering={FadeInUp.delay(100).duration(500)} style={styles.card}>
           <TouchableOpacity style={styles.cardTouchable} onPress={() => setIsAddPlayerVisible(true)} activeOpacity={0.8}>
             <View style={styles.cardRow}>
@@ -733,9 +551,7 @@ export function PersonalizedPartyGame() {
             {players.length > 0 && (
               <View style={styles.playerChips}>
                 {players.slice(0, 5).map((p, i) => (
-                  <View key={i} style={styles.playerChip}>
-                    <Text style={styles.playerChipText}>{p.avatar} {p.name}</Text>
-                  </View>
+                  <View key={i} style={styles.playerChip}><Text style={styles.playerChipText}>{p.avatar} {p.name}</Text></View>
                 ))}
                 {players.length > 5 && <Text style={styles.moreChip}>+{players.length - 5}</Text>}
               </View>
@@ -743,14 +559,10 @@ export function PersonalizedPartyGame() {
           </TouchableOpacity>
         </Animated.View>
 
-        {/* Mode Toggle */}
         <Animated.View entering={FadeInUp.delay(200).duration(500)}>
           <TouchableOpacity
             style={[styles.modeCard, gameState.isSexyMode && styles.modeCardActive]}
-            onPress={() => {
-              playHapticPattern("swipe");
-              setGameState(prev => ({ ...prev, isSexyMode: !prev.isSexyMode }));
-            }}
+            onPress={() => { triggerHaptic("light"); setGameState(prev => ({ ...prev, isSexyMode: !prev.isSexyMode })); }}
             activeOpacity={0.8}
           >
             <Text style={styles.modeEmoji}>{gameState.isSexyMode ? "🌶️" : "🎉"}</Text>
@@ -759,37 +571,28 @@ export function PersonalizedPartyGame() {
           </TouchableOpacity>
         </Animated.View>
 
-        {/* Chaos Slider */}
         <Animated.View entering={FadeInUp.delay(300).duration(500)} style={styles.sliderCard}>
           <View style={styles.sliderHeader}>
             <Text style={styles.sliderLabel}>Chaos Level</Text>
-            <View style={styles.chaosValueBadge}>
-              <Text style={styles.chaosValue}>{gameState.chaosLevel}</Text>
-            </View>
+            <View style={styles.chaosValueBadge}><Text style={styles.chaosValue}>{gameState.chaosLevel}</Text></View>
           </View>
-          <View style={styles.sliderTrack}>
-            <Slider
-              style={styles.slider}
-              minimumValue={1}
-              maximumValue={10}
-              step={1}
-              value={gameState.chaosLevel}
-              onValueChange={(v) => {
-                playHapticPattern("swipe");
-                setGameState(prev => ({ ...prev, chaosLevel: v }));
-              }}
-              minimumTrackTintColor="#8B5CF6"
-              maximumTrackTintColor="rgba(255,255,255,0.1)"
-              thumbTintColor="#FFFFFF"
-            />
-          </View>
+          <Slider
+            style={styles.slider}
+            minimumValue={1}
+            maximumValue={10}
+            step={1}
+            value={gameState.chaosLevel}
+            onValueChange={(v) => setGameState(prev => ({ ...prev, chaosLevel: v }))}
+            minimumTrackTintColor="#8B5CF6"
+            maximumTrackTintColor="rgba(255,255,255,0.1)"
+            thumbTintColor="#FFF"
+          />
           <View style={styles.sliderLabels}>
             <Text style={styles.sliderLabelText}>Chill</Text>
             <Text style={styles.sliderLabelText}>Unhinged</Text>
           </View>
         </Animated.View>
 
-        {/* Start Button */}
         <Animated.View style={errorStyle} entering={FadeInUp.delay(400).duration(500)}>
           <TouchableOpacity
             style={styles.startButton}
@@ -797,11 +600,19 @@ export function PersonalizedPartyGame() {
             activeOpacity={0.9}
           >
             <LinearGradient colors={["#8B5CF6", "#7C3AED"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.startButtonGradient}>
-              <Text style={styles.startButtonText}>
-                {players.length < 2 ? `Add ${2 - players.length} More` : "Choose Categories"}
-              </Text>
+              <Text style={styles.startButtonText}>{players.length < 2 ? `Add ${2 - players.length} More` : "Choose Categories"}</Text>
               <Ionicons name="arrow-forward" size={20} color="#FFF" style={{ marginLeft: 8 }} />
             </LinearGradient>
+          </TouchableOpacity>
+        </Animated.View>
+
+        <Animated.View entering={FadeIn.delay(600).duration(400)} style={styles.footer}>
+          <TouchableOpacity onPress={() => router.push("/privacy")} activeOpacity={0.7}>
+            <Text style={styles.footerLink}>Privacy</Text>
+          </TouchableOpacity>
+          <Text style={styles.footerDot}>•</Text>
+          <TouchableOpacity onPress={() => router.push("/support")} activeOpacity={0.7}>
+            <Text style={styles.footerLink}>Terms & Support</Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
@@ -817,7 +628,6 @@ export function PersonalizedPartyGame() {
       </View>
 
       <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <View style={styles.catHeader}>
           <TouchableOpacity onPress={() => setGameState(prev => ({ ...prev, screen: "setup" }))} style={styles.backBtn}>
             <Ionicons name="arrow-back" size={24} color="#FFF" />
@@ -829,18 +639,13 @@ export function PersonalizedPartyGame() {
           <Text style={styles.catTitle}>Pick Your Poison</Text>
         </Animated.View>
 
-        {/* Category Grid */}
         <View style={styles.catGrid}>
           {(Object.keys(CATEGORIES) as CategoryKey[]).map((key, i) => {
             const cat = CATEGORIES[key];
             const selected = gameState.selectedCategories.includes(key);
             return (
               <Animated.View key={key} entering={ZoomIn.delay(100 + i * 40).springify()}>
-                <TouchableOpacity
-                  style={[styles.catCard, selected && { borderColor: cat.color }]}
-                  onPress={() => toggleCategory(key)}
-                  activeOpacity={0.85}
-                >
+                <TouchableOpacity style={[styles.catCard, selected && { borderColor: cat.color }]} onPress={() => toggleCategory(key)} activeOpacity={0.85}>
                   {selected && <LinearGradient colors={[cat.gradient[0] + "30", cat.gradient[1] + "10"]} style={StyleSheet.absoluteFill} />}
                   <Text style={styles.catEmoji}>{cat.emoji}</Text>
                   <Text style={[styles.catName, selected && { color: cat.color }]}>{cat.name}</Text>
@@ -851,7 +656,6 @@ export function PersonalizedPartyGame() {
           })}
         </View>
 
-        {/* Start */}
         <Animated.View entering={FadeInUp.delay(500).duration(500)} style={styles.catStartWrap}>
           <TouchableOpacity style={styles.startButton} onPress={startGame} activeOpacity={0.9}>
             <LinearGradient colors={["#8B5CF6", "#7C3AED"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.startButtonGradient}>
@@ -869,88 +673,53 @@ export function PersonalizedPartyGame() {
     const total = gameState.totalRounds * gameState.promptsPerRound;
     const current = (gameState.round - 1) * gameState.promptsPerRound + gameState.currentPromptIndex;
     const progress = (current + 1) / total;
-    const catColor = currentPromptData ? CATEGORIES[currentPromptData.category as CategoryKey]?.color || "#8B5CF6" : "#8B5CF6";
-    const catGradient = currentPromptData ? CATEGORIES[currentPromptData.category as CategoryKey]?.gradient || ["#8B5CF6", "#7C3AED"] : ["#8B5CF6", "#7C3AED"];
     const timerColor = gameState.timerSeconds <= 5 ? "#EF4444" : "#10B981";
-    const hot = isHotPrompt(currentPrompt);
 
     return (
       <GestureHandlerRootView style={styles.screen}>
-        <LinearGradient colors={[catColor + "15", "#000000"]} style={StyleSheet.absoluteFill} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 0.5 }} />
+        <LinearGradient colors={[catColor + "15", "#000"]} style={StyleSheet.absoluteFill} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 0.5 }} />
 
-        {/* Header */}
         <View style={styles.playHeader}>
           <TouchableOpacity onPress={resetGame} style={styles.playBackBtn}><Ionicons name="close" size={20} color="#FFF" /></TouchableOpacity>
           <View style={styles.playRoundBadge}><Text style={styles.playRoundText}>Round {gameState.round}</Text></View>
-          <TouchableOpacity onPress={sharePrompt} style={styles.shareBtn}>
-            <Ionicons name="share-outline" size={20} color="#FFF" />
-          </TouchableOpacity>
+          <TouchableOpacity onPress={sharePrompt} style={styles.shareBtn}><Ionicons name="share-outline" size={20} color="#FFF" /></TouchableOpacity>
         </View>
 
-        {/* Progress */}
         <View style={styles.progressWrap}>
           <View style={styles.progressTrack}>
-            <Animated.View style={[styles.progressFill, { width: `${progress * 100}%`, backgroundColor: catColor }]} />
+            <View style={[styles.progressFill, { width: `${progress * 100}%`, backgroundColor: catColor }]} />
           </View>
           <Text style={styles.playCount}>{current + 1}/{total}</Text>
         </View>
 
-        {/* Cards */}
         <View style={styles.cardsArea}>
-          <Animated.View style={[styles.promptCard, styles.nextPromptCard, nextCardAnimStyle]}>
-            <Text style={styles.promptText} numberOfLines={5}>{nextPrompt}</Text>
-          </Animated.View>
+          {cardStack.slice(0, 2).reverse().map((card, index) => (
+            <SwipeableCard
+              key={card.id}
+              card={card}
+              isTop={index === cardStack.length - 1 - (cardStack.length > 1 ? 0 : -1)}
+              onSwipe={handleSwipe}
+              category={card.data.category as CategoryKey}
+            />
+          ))}
 
-          <GestureDetector gesture={panGesture}>
-            <Animated.View style={[styles.promptCard, cardStyle]}>
-              <LinearGradient colors={[catGradient[0] + "20", "transparent"]} style={[StyleSheet.absoluteFill, { borderRadius: 24 }]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
-
-              {/* Hot Badge */}
-              {hot && (
-                <View style={styles.hotBadge}>
-                  <Text style={styles.hotBadgeText}>🔥 HOT</Text>
-                </View>
-              )}
-
-              {currentPromptData && (
-                <View style={[styles.promptCatBadge, { backgroundColor: catColor + "30" }]}>
-                  <Text style={styles.promptCatText}>{CATEGORIES[currentPromptData.category as CategoryKey]?.emoji}</Text>
-                </View>
-              )}
-
-              <Text style={styles.promptText}>{currentPrompt}</Text>
-
-              {gameState.timerActive && (
-                <View style={styles.timerWrap}>
-                  <Animated.Text style={[styles.timerNum, timerTextStyle, { color: timerColor }]}>{gameState.timerSeconds}</Animated.Text>
-                  <View style={styles.timerTrack}>
-                    <Animated.View style={[styles.timerFill, timerBarStyle, { backgroundColor: timerColor }]} />
-                  </View>
-                </View>
-              )}
-
-              <Text style={styles.swipeHint}>← Swipe →</Text>
-            </Animated.View>
-          </GestureDetector>
+          {gameState.timerActive && (
+            <View style={styles.timerOverlay}>
+              <Animated.Text style={[styles.timerNum, timerTextStyle, { color: timerColor }]}>{gameState.timerSeconds}</Animated.Text>
+              <View style={styles.timerTrack}>
+                <Animated.View style={[styles.timerFill, timerBarStyle, { backgroundColor: timerColor }]} />
+              </View>
+            </View>
+          )}
         </View>
 
-        {/* Action Buttons */}
         <View style={styles.playFooter}>
-          <View style={styles.actionRow}>
-            <TouchableOpacity style={styles.quickRateBtn} onPress={() => { setLastPromptForRating(currentPrompt); handleRating("skull"); handleNext(); }}>
-              <Text style={styles.quickRateEmoji}>💀</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.nextBtn} onPress={handleNext} activeOpacity={0.9}>
-              <LinearGradient colors={catGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.nextBtnGradient}>
-                <Text style={styles.nextBtnText}>Next</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickRateBtn} onPress={() => { setLastPromptForRating(currentPrompt); handleRating("fire"); handleNext(); }}>
-              <Text style={styles.quickRateEmoji}>🔥</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity style={styles.nextBtn} onPress={handleNextButton} activeOpacity={0.9}>
+            <LinearGradient colors={catGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.nextBtnGradient}>
+              <Text style={styles.nextBtnText}>Next</Text>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
-
       </GestureHandlerRootView>
     );
   };
@@ -975,52 +744,39 @@ export function PersonalizedPartyGame() {
   );
 
   // Render Results
-  const renderResults = () => {
-    const winner = players[0];
-    return (
-      <View style={styles.screen}>
-        <LinearGradient colors={["#FFD70020", "#000"]} style={StyleSheet.absoluteFill} />
-        <ScrollView contentContainerStyle={styles.resultsContent}>
-          <Animated.Text entering={FadeInDown.springify()} style={styles.resultsTitle}>Game Over</Animated.Text>
+  const renderResults = () => (
+    <View style={styles.screen}>
+      <LinearGradient colors={["#FFD70020", "#000"]} style={StyleSheet.absoluteFill} />
+      <ScrollView contentContainerStyle={styles.resultsContent}>
+        <Animated.Text entering={FadeInDown.springify()} style={styles.resultsTitle}>Game Over</Animated.Text>
 
-          {winner && (
-            <Animated.View entering={ZoomIn.delay(200).springify()} style={styles.winnerCard}>
-              <Animated.Text entering={BounceIn.delay(400)} style={styles.winnerEmoji}>👑</Animated.Text>
-              <Text style={styles.winnerLabel}>CHAMPION</Text>
-              <Text style={styles.winnerName}>{winner.avatar} {winner.name}</Text>
-            </Animated.View>
-          )}
-
-          {/* Share Results */}
-          <Animated.View entering={FadeInUp.delay(500)} style={styles.shareResultsWrap}>
-            <TouchableOpacity style={styles.shareResultsBtn} onPress={sharePrompt} activeOpacity={0.9}>
-              <LinearGradient colors={["#EC4899", "#8B5CF6"]} style={styles.shareResultsGradient}>
-                <Ionicons name="share-social" size={20} color="#FFF" />
-                <Text style={styles.shareResultsText}>Share Game</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+        {players[0] && (
+          <Animated.View entering={ZoomIn.delay(200).springify()} style={styles.winnerCard}>
+            <Animated.Text entering={BounceIn.delay(400)} style={styles.winnerEmoji}>👑</Animated.Text>
+            <Text style={styles.winnerLabel}>CHAMPION</Text>
+            <Text style={styles.winnerName}>{players[0].avatar} {players[0].name}</Text>
           </Animated.View>
+        )}
 
-          <View style={styles.resultsList}>
-            {players.map((p, i) => (
-              <Animated.View key={i} entering={SlideInRight.delay(300 + i * 80).springify()} style={styles.resultRow}>
-                <Text style={styles.resultRank}>{i + 1}</Text>
-                <Text style={styles.resultAvatar}>{p.avatar}</Text>
-                <Text style={styles.resultName}>{p.name}</Text>
-              </Animated.View>
-            ))}
-          </View>
+        <View style={styles.resultsList}>
+          {players.map((p, i) => (
+            <Animated.View key={i} entering={SlideInRight.delay(300 + i * 80).springify()} style={styles.resultRow}>
+              <Text style={styles.resultRank}>{i + 1}</Text>
+              <Text style={styles.resultAvatar}>{p.avatar}</Text>
+              <Text style={styles.resultName}>{p.name}</Text>
+            </Animated.View>
+          ))}
+        </View>
 
-          <TouchableOpacity style={styles.playAgainBtn} onPress={resetGame} activeOpacity={0.9}>
-            <LinearGradient colors={["#8B5CF6", "#7C3AED"]} style={styles.playAgainGradient}>
-              <Text style={styles.playAgainText}>Play Again</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </ScrollView>
-        {showConfetti && <Confetti count={60} />}
-      </View>
-    );
-  };
+        <TouchableOpacity style={styles.playAgainBtn} onPress={resetGame} activeOpacity={0.9}>
+          <LinearGradient colors={["#8B5CF6", "#7C3AED"]} style={styles.playAgainGradient}>
+            <Text style={styles.playAgainText}>Play Again</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </ScrollView>
+      {showConfetti && <Confetti count={60} />}
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
@@ -1064,32 +820,17 @@ export function PersonalizedPartyGame() {
           data={players}
           keyExtractor={(_, i) => i.toString()}
           renderItem={({ item, index }) => (
-            <Animated.View
-              entering={FadeInUp.delay(index * 40).duration(200).springify()}
-              exiting={SlideOutLeft.duration(150)}
-              layout={Layout.springify().damping(18).stiffness(200)}
-              style={styles.dialogPlayer}
-            >
-              <View style={styles.playerAvatarWrap}>
-                <Text style={styles.playerAvatar}>{item.avatar}</Text>
-              </View>
+            <Animated.View entering={FadeInUp.delay(index * 40).duration(200).springify()} exiting={SlideOutLeft.duration(150)} layout={Layout.springify()} style={styles.dialogPlayer}>
+              <View style={styles.playerAvatarWrap}><Text style={styles.playerAvatar}>{item.avatar}</Text></View>
               <Text style={styles.dialogPlayerText}>{item.name}</Text>
-              <TouchableOpacity
-                style={styles.removeBtn}
-                onPress={() => removePlayer(index)}
-                activeOpacity={0.7}
-              >
+              <TouchableOpacity style={styles.removeBtn} onPress={() => removePlayer(index)} activeOpacity={0.7}>
                 <Ionicons name="close" size={16} color="rgba(255,255,255,0.6)" />
               </TouchableOpacity>
             </Animated.View>
           )}
           style={styles.dialogList}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <View style={styles.emptyList}>
-              <Text style={styles.emptyListText}>No players yet</Text>
-            </View>
-          }
+          ListEmptyComponent={<View style={styles.emptyList}><Text style={styles.emptyListText}>No players yet</Text></View>}
         />
 
         <TouchableOpacity style={styles.doneBtn} onPress={() => setIsAddPlayerVisible(false)} activeOpacity={0.9}>
@@ -1099,18 +840,6 @@ export function PersonalizedPartyGame() {
           </LinearGradient>
         </TouchableOpacity>
       </SlideDownPanel>
-
-      {/* Hidden Share Card for capture */}
-      {currentPromptData && (
-        <View style={styles.hiddenShareCard}>
-          <ShareCard
-            ref={shareCardRef}
-            prompt={currentPrompt}
-            category={currentPromptData.category as CategoryKey}
-            players={players}
-          />
-        </View>
-      )}
     </SafeAreaView>
   );
 }
@@ -1122,18 +851,16 @@ const styles = StyleSheet.create({
   scrollContent: { flex: 1 },
   bgOrbs: { ...StyleSheet.absoluteFillObject, overflow: "hidden" },
 
-  // Live Stats
   liveStats: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 24 },
   liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#10B981", marginRight: 8 },
   liveText: { fontSize: 13, color: "rgba(255,255,255,0.6)", fontWeight: "600" },
 
-  // Setup
   setupContent: { padding: 20, paddingBottom: 40 },
   hero: { alignItems: "center", marginTop: 40, marginBottom: 20 },
-  heroTitle: { fontSize: 64, fontWeight: "900", color: "#FFF", letterSpacing: 8, textShadowColor: "#8B5CF6", textShadowRadius: 40 },
+  heroTitle: { fontSize: 64, fontWeight: "900", color: "#FFF", letterSpacing: 8 },
   heroSub: { fontSize: 16, color: "rgba(255,255,255,0.5)", marginTop: 8, letterSpacing: 2 },
 
-  card: { backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 20, marginBottom: 16, overflow: "hidden", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
+  card: { backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 20, marginBottom: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
   cardTouchable: { padding: 20 },
   cardRow: { flexDirection: "row", alignItems: "center" },
   cardEmoji: { fontSize: 32, marginRight: 16 },
@@ -1149,7 +876,7 @@ const styles = StyleSheet.create({
   modeCardActive: { backgroundColor: "rgba(236,72,153,0.1)", borderColor: "rgba(236,72,153,0.3)" },
   modeEmoji: { fontSize: 28, marginRight: 16 },
   modeText: { fontSize: 17, fontWeight: "600", color: "#FFF", flex: 1 },
-  modeIndicator: { width: 48, height: 28, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.1)", justifyContent: "center", paddingHorizontal: 3 },
+  modeIndicator: { width: 48, height: 28, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.1)" },
   modeIndicatorActive: { backgroundColor: "#EC4899" },
 
   sliderCard: { backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 20, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
@@ -1157,7 +884,6 @@ const styles = StyleSheet.create({
   sliderLabel: { fontSize: 16, fontWeight: "600", color: "#FFF" },
   chaosValueBadge: { backgroundColor: "#8B5CF6", paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20 },
   chaosValue: { fontSize: 15, fontWeight: "800", color: "#FFF" },
-  sliderTrack: { marginHorizontal: -8 },
   slider: { width: "100%", height: 40 },
   sliderLabels: { flexDirection: "row", justifyContent: "space-between", marginTop: 8 },
   sliderLabelText: { fontSize: 12, color: "rgba(255,255,255,0.4)", fontWeight: "600" },
@@ -1166,7 +892,6 @@ const styles = StyleSheet.create({
   startButtonGradient: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 18, paddingHorizontal: 32 },
   startButtonText: { fontSize: 17, fontWeight: "700", color: "#FFF" },
 
-  // Categories
   catHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 20, paddingBottom: 0 },
   backBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
   catCount: { fontSize: 14, color: "rgba(255,255,255,0.5)", fontWeight: "600" },
@@ -1178,7 +903,6 @@ const styles = StyleSheet.create({
   catCheck: { position: "absolute", top: 12, right: 12, width: 24, height: 24, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   catStartWrap: { padding: 20, paddingTop: 32 },
 
-  // Playing
   playHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 12 },
   playBackBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
   playRoundBadge: { backgroundColor: "rgba(255,255,255,0.1)", paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
@@ -1190,46 +914,23 @@ const styles = StyleSheet.create({
   progressFill: { height: "100%", borderRadius: 2 },
   playCount: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.5)", minWidth: 40, textAlign: "right" },
 
-  cardsArea: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 16 },
-  promptCard: { width: "100%", aspectRatio: 0.85, backgroundColor: "#111", borderRadius: 24, padding: 24, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", position: "absolute" },
-  nextPromptCard: { zIndex: 0 },
+  cardsArea: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 20 },
+  promptCard: { position: "absolute", width: "100%", aspectRatio: 0.85, backgroundColor: "#111", borderRadius: 24, padding: 24, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   promptCatBadge: { position: "absolute", top: 16, left: 16, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 },
   promptCatText: { fontSize: 18 },
   promptText: { fontSize: 24, fontWeight: "700", color: "#FFF", textAlign: "center", lineHeight: 34 },
   swipeHint: { position: "absolute", bottom: 20, fontSize: 12, color: "rgba(255,255,255,0.3)", fontWeight: "600", letterSpacing: 2 },
 
-  // Hot Badge
-  hotBadge: { position: "absolute", top: 16, right: 16, backgroundColor: "#EF4444", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
-  hotBadgeText: { fontSize: 11, fontWeight: "800", color: "#FFF" },
-
-  timerWrap: { position: "absolute", bottom: 50, left: 24, right: 24, alignItems: "center" },
+  timerOverlay: { position: "absolute", bottom: 80, alignItems: "center", width: "80%" },
   timerNum: { fontSize: 48, fontWeight: "900", marginBottom: 8 },
   timerTrack: { width: "100%", height: 6, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 3, overflow: "hidden" },
   timerFill: { height: "100%", borderRadius: 3 },
 
   playFooter: { padding: 16, paddingBottom: 32 },
-  actionRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  quickRateBtn: { width: 56, height: 56, borderRadius: 28, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
-  quickRateEmoji: { fontSize: 24 },
-  nextBtn: { flex: 1, borderRadius: 20, overflow: "hidden" },
+  nextBtn: { borderRadius: 20, overflow: "hidden" },
   nextBtnGradient: { paddingVertical: 18, alignItems: "center" },
   nextBtnText: { fontSize: 17, fontWeight: "700", color: "#FFF" },
 
-  // Rating Popup
-  ratingOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.8)", alignItems: "center", justifyContent: "center", zIndex: 100 },
-  ratingCard: { backgroundColor: "#1A1A1A", borderRadius: 24, padding: 24, width: "85%", maxWidth: 340, alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
-  ratingTitle: { fontSize: 20, fontWeight: "800", color: "#FFF", marginBottom: 12 },
-  ratingPrompt: { fontSize: 14, color: "rgba(255,255,255,0.6)", textAlign: "center", marginBottom: 24, lineHeight: 20 },
-  ratingButtons: { flexDirection: "row", gap: 16, marginBottom: 16 },
-  ratingBtn: { width: 100, height: 100, borderRadius: 20, alignItems: "center", justifyContent: "center" },
-  fireBtn: { backgroundColor: "rgba(239,68,68,0.2)", borderWidth: 2, borderColor: "#EF4444" },
-  skullBtn: { backgroundColor: "rgba(139,92,246,0.2)", borderWidth: 2, borderColor: "#8B5CF6" },
-  ratingEmoji: { fontSize: 40, marginBottom: 8 },
-  ratingLabel: { fontSize: 14, fontWeight: "700", color: "#FFF" },
-  skipBtn: { paddingVertical: 12, paddingHorizontal: 24 },
-  skipText: { fontSize: 14, color: "rgba(255,255,255,0.4)", fontWeight: "600" },
-
-  // Round End
   roundEndContent: { flex: 1, alignItems: "center", justifyContent: "center", padding: 32 },
   roundEndEmoji: { fontSize: 80, marginBottom: 24 },
   roundEndTitle: { fontSize: 36, fontWeight: "800", color: "#FFF", marginBottom: 8 },
@@ -1238,17 +939,12 @@ const styles = StyleSheet.create({
   continueBtnGradient: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 18, gap: 8 },
   continueBtnText: { fontSize: 17, fontWeight: "700", color: "#FFF" },
 
-  // Results
   resultsContent: { padding: 24, paddingTop: 48, alignItems: "center" },
   resultsTitle: { fontSize: 42, fontWeight: "900", color: "#FFF", marginBottom: 32 },
   winnerCard: { backgroundColor: "rgba(255,215,0,0.1)", borderWidth: 2, borderColor: "rgba(255,215,0,0.3)", borderRadius: 24, padding: 32, alignItems: "center", width: "100%", marginBottom: 24 },
   winnerEmoji: { fontSize: 64, marginBottom: 16 },
   winnerLabel: { fontSize: 12, color: "rgba(255,215,0,0.7)", fontWeight: "700", letterSpacing: 3, marginBottom: 8 },
   winnerName: { fontSize: 28, fontWeight: "800", color: "#FFD700" },
-  shareResultsWrap: { width: "100%", marginBottom: 24 },
-  shareResultsBtn: { borderRadius: 16, overflow: "hidden" },
-  shareResultsGradient: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 14, gap: 8 },
-  shareResultsText: { fontSize: 15, fontWeight: "700", color: "#FFF" },
   resultsList: { width: "100%", gap: 12, marginBottom: 32 },
   resultRow: { flexDirection: "row", alignItems: "center", backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 16, padding: 16, gap: 16 },
   resultRank: { fontSize: 16, fontWeight: "800", color: "rgba(255,255,255,0.4)", width: 24 },
@@ -1258,40 +954,28 @@ const styles = StyleSheet.create({
   playAgainGradient: { paddingVertical: 18, alignItems: "center" },
   playAgainText: { fontSize: 17, fontWeight: "700", color: "#FFF" },
 
-  // Share Card (hidden)
-  hiddenShareCard: { position: "absolute", left: -9999, top: -9999 },
-  shareCard: { width: 350, height: 450, borderRadius: 24, overflow: "hidden" },
-  shareCardContent: { flex: 1, padding: 24, justifyContent: "space-between" },
-  shareCardBrand: { fontSize: 24, fontWeight: "900", color: "#FFF", letterSpacing: 4, opacity: 0.8 },
-  shareCardEmoji: { fontSize: 64, textAlign: "center" },
-  shareCardPrompt: { fontSize: 28, fontWeight: "800", color: "#FFF", textAlign: "center", lineHeight: 38 },
-  shareCardFooter: { alignItems: "center" },
-  shareCardPlayers: { fontSize: 12, color: "rgba(255,255,255,0.6)", marginBottom: 8 },
-  shareCardCTA: { fontSize: 14, fontWeight: "700", color: "#FFF" },
-
-  // Dialog - Dark Premium Theme
   dialogHeader: { marginBottom: 20 },
   dialogTitle: { fontSize: 28, fontWeight: "800", color: "#FFF", textAlign: "center" },
   dialogSubtitle: { fontSize: 13, color: "rgba(255,255,255,0.4)", textAlign: "center", marginTop: 4, fontWeight: "500" },
-
   inputRow: { flexDirection: "row", gap: 10, marginBottom: 20 },
   inputWrap: { flex: 1, flexDirection: "row", alignItems: "center", height: 52, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   inputIcon: { marginLeft: 16 },
   input: { flex: 1, height: 52, paddingHorizontal: 12, fontSize: 16, color: "#FFF", fontWeight: "500" },
   addBtn: { width: 52, height: 52, borderRadius: 16, overflow: "hidden" },
   addBtnGradient: { width: "100%", height: "100%", alignItems: "center", justifyContent: "center" },
-
   dialogList: { maxHeight: 220, marginBottom: 20 },
   dialogPlayer: { flexDirection: "row", alignItems: "center", paddingVertical: 12, paddingHorizontal: 14, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 14, marginBottom: 8, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)" },
   playerAvatarWrap: { width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(139,92,246,0.2)", alignItems: "center", justifyContent: "center", marginRight: 12 },
   playerAvatar: { fontSize: 18 },
   dialogPlayerText: { flex: 1, fontSize: 16, color: "#FFF", fontWeight: "600" },
   removeBtn: { width: 28, height: 28, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
-
   emptyList: { paddingVertical: 32, alignItems: "center" },
   emptyListText: { fontSize: 14, color: "rgba(255,255,255,0.3)", fontWeight: "500" },
-
   doneBtn: { borderRadius: 16, overflow: "hidden" },
   doneBtnGradient: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 16, gap: 8 },
   doneBtnText: { fontSize: 16, fontWeight: "700", color: "#FFF" },
+
+  footer: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 24, gap: 12 },
+  footerLink: { fontSize: 13, color: "rgba(255,255,255,0.4)", fontWeight: "500" },
+  footerDot: { fontSize: 13, color: "rgba(255,255,255,0.2)" },
 });
