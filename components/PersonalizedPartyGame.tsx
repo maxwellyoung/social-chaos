@@ -515,11 +515,6 @@ export function PersonalizedPartyGame() {
     playHapticPattern("swipe");
     stopTimer();
 
-    // Show rating popup for previous prompt
-    if (currentPrompt && Math.random() > 0.5) { // 50% chance to show rating
-      setLastPromptForRating(currentPrompt);
-      setShowRating(true);
-    }
 
     const total = gameState.totalRounds * gameState.promptsPerRound;
     const current = (gameState.round - 1) * gameState.promptsPerRound + gameState.currentPromptIndex;
@@ -949,8 +944,6 @@ export function PersonalizedPartyGame() {
           </View>
         </View>
 
-        {/* Rating Popup */}
-        <RatingPopup visible={showRating} onRate={handleRating} promptText={lastPromptForRating} />
       </GestureHandlerRootView>
     );
   };
