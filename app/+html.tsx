@@ -10,9 +10,9 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
 
         {/* Primary Meta Tags */}
-        <title>Gambit - The Ultimate Party Game App | 150+ Prompts, 8 Categories</title>
-        <meta name="title" content="Gambit - The Ultimate Party Game App | 150+ Prompts, 8 Categories" />
-        <meta name="description" content="Gambit is the #1 party game app with 150+ curated prompts across 8 categories. Drinking games, dares, confessions & more. Download free for iOS and Android." />
+        <title>Gambit - The Ultimate Party Game App | 250+ Prompts, 8 Categories</title>
+        <meta name="title" content="Gambit - The Ultimate Party Game App | 250+ Prompts, 8 Categories" />
+        <meta name="description" content="Gambit is the #1 party game app with 250+ curated prompts across 8 categories. Drinking games, dares, confessions, mini-games & more. Download free for iOS and Android." />
         <meta name="keywords" content="party game app, drinking game app, party games, truth or dare app, gambit, social games, group games, party app, friends game, best party game" />
         <meta name="author" content="Maxwell Young" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
@@ -29,7 +29,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://playgambit.app/" />
         <meta property="og:title" content="Gambit - The Ultimate Party Game App" />
-        <meta property="og:description" content="150+ curated prompts across 8 categories. Drinking games, dares, confessions & more. The #1 party game for unforgettable nights." />
+        <meta property="og:description" content="250+ curated prompts across 8 categories. Drinking games, dares, confessions, mini-games & more. The #1 party game for unforgettable nights." />
         <meta property="og:image" content="https://playgambit.app/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -41,7 +41,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content="https://playgambit.app/" />
         <meta name="twitter:title" content="Gambit - The Ultimate Party Game App" />
-        <meta name="twitter:description" content="150+ curated prompts across 8 categories. The #1 party game for unforgettable nights with friends." />
+        <meta name="twitter:description" content="250+ curated prompts across 8 categories. The #1 party game for unforgettable nights with friends." />
         <meta name="twitter:image" content="https://playgambit.app/og-image.png" />
         <meta name="twitter:creator" content="@maxwellyoung_" />
 
@@ -75,7 +75,7 @@ export default function Root({ children }: PropsWithChildren) {
               "name": "Gambit",
               "alternateName": "Gambit Party Game",
               "url": "https://playgambit.app/",
-              "description": "The ultimate party game app with 150+ curated prompts across 8 categories.",
+              "description": "The ultimate party game app with 250+ curated prompts across 8 categories.",
               "publisher": {
                 "@type": "Person",
                 "name": "Maxwell Young",
@@ -107,9 +107,9 @@ export default function Root({ children }: PropsWithChildren) {
                 "bestRating": "5",
                 "worstRating": "1"
               },
-              "description": "The #1 party game app with 150+ curated prompts across 8 categories including drinking games, dares, confessions, hot takes, and more.",
+              "description": "The #1 party game app with 250+ curated prompts across 8 categories including drinking games, dares, confessions, hot takes, mini-games, and more.",
               "screenshot": "https://playgambit.app/screenshot.png",
-              "featureList": "150+ Prompts, 8 Categories, 10 Chaos Levels, Spicy Mode, Timed Challenges, Zero Ads",
+              "featureList": "250+ Prompts, 8 Categories, 10 Chaos Levels, Mini-Games, Spicy Mode, Skip Forever, Favorites, Scoring System, Zero Ads",
               "softwareVersion": "1.0.5",
               "author": {
                 "@type": "Person",
@@ -136,7 +136,7 @@ export default function Root({ children }: PropsWithChildren) {
                   "name": "What is Gambit?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Gambit is a party game app with 150+ curated prompts across 8 categories including drinking games, dares, confessions, hot takes, physical challenges, social games, creative prompts, and chaos mode."
+                    "text": "Gambit is a party game app with 250+ curated prompts across 8 categories including drinking games, dares, confessions, hot takes, physical challenges, social games, creative prompts, and chaos mode. It also features mini-games like waterfall, categories, and never have I ever."
                   }
                 },
                 {
