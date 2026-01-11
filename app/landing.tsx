@@ -91,7 +91,7 @@ const FloatingCard = ({ text, emoji, delay, x, y }: { text: string; emoji: strin
 const FEATURES = [
   {
     emoji: "🎯",
-    title: "250+ Curated Prompts",
+    title: "480+ Curated Prompts",
     description: "Hand-crafted challenges with specific drink amounts and cultural references.",
   },
   {
@@ -211,7 +211,7 @@ export default function Landing() {
           </Animated.Text>
 
           <Animated.Text entering={FadeInUp.delay(350).duration(1000)} style={styles.heroSubtitle}>
-            250+ prompts across 8 categories.{"\n"}
+            480+ prompts across 8 categories.{"\n"}
             Mini-games, scoring, and unforgettable chaos.
           </Animated.Text>
 
