@@ -581,11 +581,17 @@ const styles = StyleSheet.create({
   navLink: {
     paddingVertical: 8,
     paddingHorizontal: 4,
+    ...(isWeb && {
+      cursor: "pointer",
+    }),
   },
   navLinkText: {
     fontSize: 14,
     color: "rgba(255,255,255,0.6)",
     fontWeight: "500",
+    ...(isWeb && {
+      transition: "color 0.2s ease",
+    }),
   },
   navCTA: {
     backgroundColor: "#8B5CF6",
@@ -593,6 +599,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     marginLeft: 8,
+    ...(isWeb && {
+      transition: "all 0.2s ease",
+      cursor: "pointer",
+    }),
   },
   navCTAText: {
     fontSize: 14,
@@ -662,6 +672,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.2)",
     backgroundColor: "rgba(255,255,255,0.05)",
+    ...(isWeb && {
+      transition: "all 0.3s ease",
+      cursor: "pointer",
+    }),
   },
   storeButtonInner: {
     flexDirection: "row",
@@ -932,6 +946,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.06)",
     overflow: "hidden",
+    ...(isWeb && {
+      transition: "all 0.3s ease",
+      cursor: "default",
+    }),
   },
   featureIconWrap: {
     width: 56,
@@ -972,6 +990,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     gap: 12,
     borderWidth: 1,
+    ...(isWeb && {
+      transition: "all 0.2s ease",
+      cursor: "pointer",
+    }),
   },
   categoryEmoji: {
     fontSize: 22,
@@ -995,6 +1017,9 @@ const styles = StyleSheet.create({
     padding: 28,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.06)",
+    ...(isWeb && {
+      transition: "all 0.3s ease",
+    }),
   },
   testimonialStars: {
     flexDirection: "row",

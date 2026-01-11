@@ -171,7 +171,17 @@ export default function Root({ children }: PropsWithChildren) {
         <ScrollViewStyleReset />
         <style dangerouslySetInnerHTML={{ __html: globalStyles }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {/* Preloader */}
+        <div id="preloader">
+          <div className="preloader-content">
+            <div className="preloader-logo">GAMBIT</div>
+            <div className="preloader-spinner"></div>
+          </div>
+        </div>
+        {children}
+        <script dangerouslySetInnerHTML={{ __html: preloaderScript }} />
+      </body>
     </html>
   );
 }
@@ -278,4 +288,129 @@ body {
     background: black;
   }
 }
+
+/* Preloader styles */
+#preloader {
+  position: fixed;
+  inset: 0;
+  background: #050505;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#preloader.loaded {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.preloader-logo {
+  font-size: 48px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: 6px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.preloader-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(139, 92, 246, 0.2);
+  border-top-color: #8B5CF6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.98); }
+}
+
+/* Button hover effects */
+@media (hover: hover) {
+  button, [role="button"], a {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+
+  button:hover, [role="button"]:hover {
+    transform: translateY(-2px);
+  }
+
+  button:active, [role="button"]:active {
+    transform: translateY(0);
+  }
+}
+
+/* Card hover effects */
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15);
+}
+
+/* Smooth link underlines */
+a {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* Glass morphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effect utility */
+.glow {
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
 `;
+
+const preloaderScript = \`
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      document.getElementById('preloader').classList.add('loaded');
+    }, 500);
+  });
+
+  // Fallback: hide preloader after 3 seconds max
+  setTimeout(function() {
+    var preloader = document.getElementById('preloader');
+    if (preloader && !preloader.classList.contains('loaded')) {
+      preloader.classList.add('loaded');
+    }
+  }, 3000);
+\`;
