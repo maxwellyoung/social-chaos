@@ -91,13 +91,13 @@ const FloatingCard = ({ text, emoji, delay, x, y }: { text: string; emoji: strin
 const FEATURES = [
   {
     emoji: "🎯",
-    title: "150+ Curated Prompts",
-    description: "Hand-crafted challenges that actually work. No filler, just pure entertainment.",
+    title: "250+ Curated Prompts",
+    description: "Hand-crafted challenges with specific drink amounts and cultural references.",
   },
   {
-    emoji: "🌶️",
-    title: "Spicy Mode",
-    description: "Turn up the heat with adults-only prompts. Perfect for that kind of party.",
+    emoji: "🎮",
+    title: "Mini-Games",
+    description: "Waterfall, Categories, Never Have I Ever, Rhyme Time and more built-in.",
   },
   {
     emoji: "⚡",
@@ -105,14 +105,14 @@ const FEATURES = [
     description: "From wholesome fun to absolute mayhem. Dial in exactly the vibe you want.",
   },
   {
-    emoji: "⏱️",
-    title: "Timed Challenges",
-    description: "Beat the clock on special prompts. Pressure makes it interesting.",
+    emoji: "🏆",
+    title: "Scoring System",
+    description: "Track points and drinks. Crown a champion and 'Most Hydrated' award.",
   },
   {
-    emoji: "🎨",
-    title: "8 Categories",
-    description: "Drinking, dares, confessions, hot takes, physical, social, creative, and chaos.",
+    emoji: "⭐",
+    title: "Skip & Favorites",
+    description: "Skip prompts forever or save your favorites. Your game, your rules.",
   },
   {
     emoji: "✨",
@@ -211,8 +211,8 @@ export default function Landing() {
           </Animated.Text>
 
           <Animated.Text entering={FadeInUp.delay(350).duration(1000)} style={styles.heroSubtitle}>
-            150+ prompts across 8 categories.{"\n"}
-            Designed to create unforgettable moments.
+            250+ prompts across 8 categories.{"\n"}
+            Mini-games, scoring, and unforgettable chaos.
           </Animated.Text>
 
           <Animated.View entering={FadeInUp.delay(500).duration(800)} style={styles.heroCTAs}>
@@ -256,7 +256,7 @@ export default function Landing() {
           {/* Stats */}
           <Animated.View entering={FadeInUp.delay(650).duration(800)} style={styles.statsRow}>
             <View style={styles.stat}>
-              <AnimatedCounter end={150} suffix="+" />
+              <AnimatedCounter end={250} suffix="+" />
               <Text style={styles.statLabel}>Prompts</Text>
             </View>
             <View style={styles.statDivider} />
