@@ -24,3 +24,5 @@ expo-env.d.ts
 AuthKey.p8
 APNs_Certificate.p12
 .keystore
+.vercel
+.env*.local
