@@ -265,11 +265,23 @@ export function PersonalizedPartyGame() {
     return result;
   }, [players]);
 
-  const initializePrompts = useCallback(() => {
+  const initializePrompts = useCallback((): Prompt[] => {
     const filtered = getFilteredPrompts();
-    setShuffledPrompts([...filtered].sort(() => Math.random() - 0.5));
+    const shuffled = [...filtered].sort(() => Math.random() - 0.5);
+    setShuffledPrompts(shuffled);
     promptIndexRef.current = 0;
+    return shuffled;
   }, [getFilteredPrompts]);
+
+  const getNextPromptFromList = useCallback((prompts: Prompt[]): { text: string; data: Prompt } | null => {
+    if (prompts.length === 0) return null;
+    if (promptIndexRef.current >= prompts.length) {
+      promptIndexRef.current = 0;
+    }
+    const prompt = prompts[promptIndexRef.current];
+    promptIndexRef.current++;
+    return { text: replacePlaceholders(prompt.text), data: prompt };
+  }, [replacePlaceholders]);
 
   const getNextPrompt = useCallback((): { text: string; data: Prompt } | null => {
     if (shuffledPrompts.length === 0) return null;
@@ -376,20 +388,18 @@ export function PersonalizedPartyGame() {
       Alert.alert("No Categories", "Pick at least one!");
       return;
     }
-    initializePrompts();
-    setTimeout(() => {
-      const first = getNextPrompt();
-      const second = getNextPrompt();
-      if (first && second) {
-        setCurrentPrompt(first.text);
-        setCurrentPromptData(first.data);
-        setNextPrompt(second.text);
-        setNextPromptData(second.data);
-        if (first.data.timer) setTimeout(() => startTimer(first.data.timer!), 600);
-      }
-      setGameState(prev => ({ ...prev, screen: "playing", round: 1, currentPromptIndex: 0 }));
-    }, 50);
-  }, [players, gameState.selectedCategories, initializePrompts, getNextPrompt, startTimer]);
+    const prompts = initializePrompts();
+    const first = getNextPromptFromList(prompts);
+    const second = getNextPromptFromList(prompts);
+    if (first && second) {
+      setCurrentPrompt(first.text);
+      setCurrentPromptData(first.data);
+      setNextPrompt(second.text);
+      setNextPromptData(second.data);
+      if (first.data.timer) setTimeout(() => startTimer(first.data.timer!), 600);
+    }
+    setGameState(prev => ({ ...prev, screen: "playing", round: 1, currentPromptIndex: 0 }));
+  }, [players, gameState.selectedCategories, initializePrompts, getNextPromptFromList, startTimer]);
 
   const resetGame = useCallback(() => {
     stopTimer();
