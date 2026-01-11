@@ -8,7 +8,6 @@ import {
   Platform,
   Linking,
   Dimensions,
-  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -20,73 +19,17 @@ import Animated, {
   withSequence,
   withTiming,
   withDelay,
-  withSpring,
   Easing,
   FadeInDown,
   FadeInUp,
   FadeIn,
   ZoomIn,
-  interpolate,
-  Extrapolate,
 } from "react-native-reanimated";
+import { FluidGradient } from "@/components/FluidGradient";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const MAX_WIDTH = 1200;
 const isWeb = Platform.OS === "web";
-
-// Floating Orb with parallax effect
-const FloatingOrb = ({ color, size, initialX, initialY, duration, blur = 80 }: {
-  color: string;
-  size: number;
-  initialX: number;
-  initialY: number;
-  duration: number;
-  blur?: number;
-}) => {
-  const translateX = useSharedValue(initialX);
-  const translateY = useSharedValue(initialY);
-  const scale = useSharedValue(1);
-
-  useEffect(() => {
-    translateX.value = withRepeat(
-      withSequence(
-        withTiming(initialX + 100, { duration, easing: Easing.inOut(Easing.ease) }),
-        withTiming(initialX - 60, { duration: duration * 0.8, easing: Easing.inOut(Easing.ease) }),
-        withTiming(initialX, { duration: duration * 0.6, easing: Easing.inOut(Easing.ease) })
-      ), -1, false
-    );
-    translateY.value = withRepeat(
-      withSequence(
-        withTiming(initialY - 80, { duration: duration * 0.7, easing: Easing.inOut(Easing.ease) }),
-        withTiming(initialY + 50, { duration, easing: Easing.inOut(Easing.ease) }),
-        withTiming(initialY, { duration: duration * 0.5, easing: Easing.inOut(Easing.ease) })
-      ), -1, false
-    );
-    scale.value = withRepeat(
-      withSequence(
-        withTiming(1.4, { duration: duration * 0.5 }),
-        withTiming(0.7, { duration: duration * 0.5 })
-      ), -1, true
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute" as const,
-    width: size,
-    height: size,
-    borderRadius: size / 2,
-    backgroundColor: color,
-    opacity: 0.15,
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-    ...(isWeb && { filter: `blur(${blur}px)` }),
-  }));
-
-  return <Animated.View style={style} />;
-};
 
 // Animated counter for stats
 const AnimatedCounter = ({ end, suffix = "", duration = 2000 }: { end: number; suffix?: string; duration?: number }) => {
@@ -216,19 +159,12 @@ export default function Landing() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={["#050505", "#0A0A0A", "#0D0D0D"]}
-        style={StyleSheet.absoluteFill}
+      {/* Fluid Gradient Background */}
+      <FluidGradient
+        colors={["#8B5CF6", "#EC4899", "#3B82F6", "#10B981", "#F59E0B"]}
+        speed={0.8}
+        blur={120}
       />
-
-      {/* Background Orbs */}
-      <View style={styles.orbContainer}>
-        <FloatingOrb color="#8B5CF6" size={500} initialX={-150} initialY={-100} duration={15000} blur={100} />
-        <FloatingOrb color="#EC4899" size={400} initialX={SCREEN_WIDTH - 100} initialY={150} duration={18000} blur={90} />
-        <FloatingOrb color="#3B82F6" size={350} initialX={-50} initialY={SCREEN_HEIGHT * 0.5} duration={12000} blur={80} />
-        <FloatingOrb color="#F59E0B" size={300} initialX={SCREEN_WIDTH - 150} initialY={SCREEN_HEIGHT * 0.7} duration={16000} blur={70} />
-        <FloatingOrb color="#10B981" size={250} initialX={SCREEN_WIDTH * 0.5} initialY={SCREEN_HEIGHT} duration={14000} blur={60} />
-      </View>
 
       <ScrollView
         style={styles.scrollView}
@@ -609,10 +545,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#050505",
-  },
-  orbContainer: {
-    ...StyleSheet.absoluteFillObject,
-    overflow: "hidden",
   },
   scrollView: {
     flex: 1,

@@ -52,6 +52,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
+import { FluidGradient } from "./FluidGradient";
 
 import promptData from "../assets/prompts/prompts.json";
 
@@ -118,40 +119,6 @@ const triggerHaptic = (type: "light" | "medium" | "heavy" | "success" | "error")
     case "success": Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); break;
     case "error": Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error); break;
   }
-};
-
-// Floating Orb Component
-const FloatingOrb = ({ color, size, initialX, initialY, duration }: any) => {
-  const translateX = useSharedValue(initialX);
-  const translateY = useSharedValue(initialY);
-  const scale = useSharedValue(1);
-
-  useEffect(() => {
-    translateX.value = withRepeat(
-      withSequence(
-        withTiming(initialX + 50, { duration, easing: Easing.inOut(Easing.ease) }),
-        withTiming(initialX - 30, { duration: duration * 0.8, easing: Easing.inOut(Easing.ease) }),
-        withTiming(initialX, { duration: duration * 0.6, easing: Easing.inOut(Easing.ease) })
-      ), -1, false
-    );
-    translateY.value = withRepeat(
-      withSequence(
-        withTiming(initialY - 40, { duration: duration * 0.7, easing: Easing.inOut(Easing.ease) }),
-        withTiming(initialY + 30, { duration, easing: Easing.inOut(Easing.ease) }),
-        withTiming(initialY, { duration: duration * 0.5, easing: Easing.inOut(Easing.ease) })
-      ), -1, false
-    );
-    scale.value = withRepeat(withSequence(withTiming(1.2, { duration: duration * 0.5 }), withTiming(0.9, { duration: duration * 0.5 })), -1, true);
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute" as const,
-    width: size, height: size, borderRadius: size / 2,
-    backgroundColor: color, opacity: 0.15,
-    transform: [{ translateX: translateX.value }, { translateY: translateY.value }, { scale: scale.value }],
-  }));
-
-  return <Animated.View style={style} />;
 };
 
 // Confetti Particle
@@ -521,11 +488,11 @@ export function PersonalizedPartyGame() {
   // Render Setup
   const renderSetup = () => (
     <View style={styles.screen}>
-      <View style={styles.bgOrbs}>
-        <FloatingOrb color="#8B5CF6" size={300} initialX={-50} initialY={100} duration={8000} />
-        <FloatingOrb color="#EC4899" size={250} initialX={SCREEN_WIDTH - 100} initialY={300} duration={10000} />
-        <FloatingOrb color="#3B82F6" size={200} initialX={100} initialY={500} duration={7000} />
-      </View>
+      <FluidGradient
+        colors={["#8B5CF6", "#EC4899", "#3B82F6"]}
+        speed={0.6}
+        blur={100}
+      />
 
       <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false} contentContainerStyle={styles.setupContent}>
         <Animated.View entering={FadeInDown.duration(600).springify()} style={styles.hero}>
@@ -622,10 +589,11 @@ export function PersonalizedPartyGame() {
   // Render Categories
   const renderCategories = () => (
     <View style={styles.screen}>
-      <View style={styles.bgOrbs}>
-        <FloatingOrb color="#8B5CF6" size={300} initialX={-50} initialY={100} duration={8000} />
-        <FloatingOrb color="#EC4899" size={250} initialX={SCREEN_WIDTH - 100} initialY={400} duration={10000} />
-      </View>
+      <FluidGradient
+        colors={["#8B5CF6", "#EC4899", "#F59E0B"]}
+        speed={0.5}
+        blur={100}
+      />
 
       <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.catHeader}>
@@ -849,7 +817,6 @@ const styles = StyleSheet.create({
   inner: { flex: 1, maxWidth: Platform.OS === "web" ? MAX_WIDTH : "100%", width: "100%", alignSelf: "center" },
   screen: { flex: 1, backgroundColor: "#000" },
   scrollContent: { flex: 1 },
-  bgOrbs: { ...StyleSheet.absoluteFillObject, overflow: "hidden" },
 
   liveStats: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 24 },
   liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#10B981", marginRight: 8 },
