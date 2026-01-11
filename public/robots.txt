@@ -1,0 +1,11 @@
+# Gambit - Party Game App
+# https://playgambit.app
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://playgambit.app/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
