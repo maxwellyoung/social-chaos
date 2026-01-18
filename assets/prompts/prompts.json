@@ -1,9 +1,9 @@
 {
   "categories": {
     "drinking": {
-      "name": "Drinking",
+      "name": "Forfeits",
       "emoji": "🍻",
-      "description": "Classic drinking game prompts"
+      "description": "Fun penalty challenges"
     },
     "dares": {
       "name": "Dares",
@@ -43,37 +43,37 @@
   },
   "prompts": [
     {
-      "text": "{player1}, take a sip",
+      "text": "{player1}, take a penalty",
       "category": "drinking",
       "chaos": 1,
       "type": "simple"
     },
     {
-      "text": "Everyone who's wearing black drinks",
+      "text": "Everyone who's wearing black forfeits",
       "category": "drinking",
       "chaos": 1,
       "type": "group"
     },
     {
-      "text": "Youngest player drinks",
+      "text": "Youngest player forfeits",
       "category": "drinking",
       "chaos": 1,
       "type": "group"
     },
     {
-      "text": "Last person to raise their hand drinks",
+      "text": "Last person to raise their hand forfeits",
       "category": "drinking",
       "chaos": 2,
       "type": "race"
     },
     {
-      "text": "Everyone who checked their phone in the last hour drinks",
+      "text": "Everyone who checked their phone in the last hour forfeits",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "{player1} and {player2}, cheers! Both drink",
+      "text": "{player1} and {player2}, cheers! Both forfeit",
       "category": "drinking",
       "chaos": 2,
       "type": "versus"
@@ -85,92 +85,92 @@
       "type": "chain"
     },
     {
-      "text": "{player1}, pick someone to drink with you",
+      "text": "{player1}, pick someone to forfeit with you",
       "category": "drinking",
       "chaos": 2,
       "type": "target"
     },
     {
-      "text": "Everyone who's been to a wedding this year drinks",
+      "text": "Everyone who's been to a wedding this year forfeits",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "Categories! {player1} picks a topic. Go around - first to hesitate drinks!",
+      "text": "Categories! {player1} picks a topic. Go around - first to hesitate forfeits!",
       "category": "drinking",
       "chaos": 3,
       "type": "chain",
       "timer": 5
     },
     {
-      "text": "{player1}, guess {player2}'s middle name. Wrong = drink, Right = they drink",
+      "text": "{player1}, guess {player2}'s middle name. Wrong = forfeit, Right = they forfeit",
       "category": "drinking",
       "chaos": 3,
       "type": "versus"
     },
     {
-      "text": "Never have I ever... {player1} picks. Everyone who has, drinks!",
+      "text": "Never have I ever... {player1} picks. Everyone who has, forfeits!",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "Everyone votes: who's most likely to black out tonight? That person drinks!",
+      "text": "Everyone votes: who's most likely to black out tonight? That person forfeits!",
       "category": "drinking",
       "chaos": 5,
       "type": "vote"
     },
     {
-      "text": "Thumb master! {player1} can put their thumb on the table anytime - last to notice drinks!",
+      "text": "Thumb master! {player1} can put their thumb on the table anytime - last to notice forfeits!",
       "category": "drinking",
       "chaos": 4,
       "type": "rule"
     },
     {
-      "text": "{player1} makes a rule. Break it = drink. Lasts 3 rounds!",
+      "text": "{player1} makes a rule. Break it = forfeit. Lasts 3 rounds!",
       "category": "drinking",
       "chaos": 5,
       "type": "rule"
     },
     {
-      "text": "Everyone who's lied today drinks. {player1} decides how many sips",
+      "text": "Everyone who's lied today forfeits. {player1} decides how many penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "Rock paper scissors tournament! Losers drink, winner gives out 5 drinks",
+      "text": "Rock paper scissors tournament! Losers forfeit, winner gives out 5 forfeits",
       "category": "drinking",
       "chaos": 5,
       "type": "tournament"
     },
     {
-      "text": "{player1}, drink for every ex you've had",
+      "text": "{player1}, forfeit for every ex you've had",
       "category": "drinking",
       "chaos": 6,
       "type": "simple"
     },
     {
-      "text": "Social! Everyone drinks!",
+      "text": "Social! Everyone forfeits!",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1} picks a number 1-6. Roll the dice (or random) - if it matches, everyone else drinks. If not, you drink that many",
+      "text": "{player1} picks a number 1-6. Roll the dice (or random) - if it matches, everyone else forfeits. If not, you forfeit that many",
       "category": "drinking",
       "chaos": 5,
       "type": "gamble"
     },
     {
-      "text": "{player1}, give a compliment to everyone or finish your drink",
+      "text": "{player1}, give a compliment to everyone or take a big penalty",
       "category": "dares",
       "chaos": 2,
       "type": "choice"
     },
     {
-      "text": "{player1}, show your most recent selfie or drink 3 times",
+      "text": "{player1}, show your most recent selfie or forfeit 3 times",
       "category": "dares",
       "chaos": 3,
       "type": "choice"
@@ -190,7 +190,7 @@
       "timer": 60
     },
     {
-      "text": "{player1}, read aloud your last 3 text messages or drink 5 times",
+      "text": "{player1}, read aloud your last 3 text messages or forfeit 5 times",
       "category": "dares",
       "chaos": 6,
       "type": "choice"
@@ -239,7 +239,7 @@
       "timer": 60
     },
     {
-      "text": "{player1}, eat a spoonful of something spicy or drink 4 times",
+      "text": "{player1}, eat a spoonful of something spicy or forfeit 4 times",
       "category": "dares",
       "chaos": 6,
       "type": "choice"
@@ -301,7 +301,7 @@
       "type": "confession"
     },
     {
-      "text": "{player1}, what's your body count? Drink that many or drink 10 for not answering",
+      "text": "{player1}, what's your body count? Forfeit that many or forfeit 10 for not answering",
       "category": "confessions",
       "chaos": 9,
       "type": "choice"
@@ -325,7 +325,7 @@
       "type": "confession"
     },
     {
-      "text": "{player1}, what's the worst thing you've done while drunk?",
+      "text": "{player1}, what's the worst thing you've done at a party?",
       "category": "confessions",
       "chaos": 7,
       "type": "confession"
@@ -501,25 +501,25 @@
       "type": "vote"
     },
     {
-      "text": "{player1}, do 10 pushups or drink 3 times",
+      "text": "{player1}, do 10 pushups or forfeit 3 times",
       "category": "physical",
       "chaos": 3,
       "type": "choice"
     },
     {
-      "text": "{player1}, plank until the next prompt or drink 5 times",
+      "text": "{player1}, plank until the next prompt or forfeit 5 times",
       "category": "physical",
       "chaos": 5,
       "type": "challenge"
     },
     {
-      "text": "{player1} vs {player2} - arm wrestle! Loser drinks",
+      "text": "{player1} vs {player2} - arm wrestle! Loser forfeits",
       "category": "physical",
       "chaos": 4,
       "type": "versus"
     },
     {
-      "text": "Everyone does jumping jacks until someone quits. Quitters drink!",
+      "text": "Everyone does jumping jacks until someone quits. Quitters forfeit!",
       "category": "physical",
       "chaos": 5,
       "type": "endurance"
@@ -538,7 +538,7 @@
       "type": "perform"
     },
     {
-      "text": "Thumb war! {player1} vs {player2}. Loser drinks twice",
+      "text": "Thumb war! {player1} vs {player2}. Loser forfeits twice",
       "category": "physical",
       "chaos": 2,
       "type": "versus"
@@ -551,7 +551,7 @@
       "timer": 20
     },
     {
-      "text": "Last person to touch their nose drinks!",
+      "text": "Last person to touch their nose forfeits!",
       "category": "physical",
       "chaos": 2,
       "type": "race"
@@ -563,14 +563,14 @@
       "type": "challenge"
     },
     {
-      "text": "Staring contest! {player1} vs {player2}. First to blink drinks",
+      "text": "Staring contest! {player1} vs {player2}. First to blink forfeits",
       "category": "physical",
       "chaos": 3,
       "type": "versus",
       "timer": 60
     },
     {
-      "text": "{player1}, hold a cup on your head while standing on one foot. Drop it = drink 3",
+      "text": "{player1}, hold a cup on your head while standing on one foot. Drop it = forfeit 3",
       "category": "physical",
       "chaos": 4,
       "type": "challenge",
@@ -584,7 +584,7 @@
       "timer": 10
     },
     {
-      "text": "Musical chairs! Losers drink!",
+      "text": "Musical chairs! Losers forfeit!",
       "category": "physical",
       "chaos": 6,
       "type": "group"
@@ -620,7 +620,7 @@
       "type": "chain"
     },
     {
-      "text": "Two truths and a lie! {player1} goes. Group guesses the lie. Wrong guesses drink!",
+      "text": "Two truths and a lie! {player1} goes. Group guesses the lie. Wrong guesses forfeit!",
       "category": "social",
       "chaos": 4,
       "type": "game"
@@ -650,7 +650,7 @@
       "type": "story"
     },
     {
-      "text": "Everyone guess {player1}'s dream vacation spot. Closest guess = {player1} drinks!",
+      "text": "Everyone guess {player1}'s dream vacation spot. Closest guess = {player1} forfeits!",
       "category": "social",
       "chaos": 2,
       "type": "game"
@@ -721,7 +721,7 @@
       "type": "perform"
     },
     {
-      "text": "One word story! Go around adding one word each. {player1} starts. Anyone who hesitates drinks!",
+      "text": "One word story! Go around adding one word each. {player1} starts. Anyone who hesitates forfeits!",
       "category": "creative",
       "chaos": 3,
       "type": "chain"
@@ -746,7 +746,7 @@
       "type": "versus"
     },
     {
-      "text": "{player1}, speak only in questions for the next 3 rounds. Break it = drink",
+      "text": "{player1}, speak only in questions for the next 3 rounds. Break it = forfeit",
       "category": "creative",
       "chaos": 4,
       "type": "rule"
@@ -790,31 +790,31 @@
       "type": "random"
     },
     {
-      "text": "Russian roulette! Roll a dice. 1 = finish your drink. 2-6 = safe!",
+      "text": "Russian roulette! Roll a dice. 1 = take a big penalty. 2-6 = safe!",
       "category": "chaos",
       "chaos": 7,
       "type": "gamble"
     },
     {
-      "text": "Everyone switches drinks! Person to your right's drink is now yours",
+      "text": "Everyone switches penalties! Person to your right's penalty is now yours",
       "category": "chaos",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "Chaos vote! Everyone secretly points at someone. Most votes = finish your drink",
+      "text": "Chaos vote! Everyone secretly points at someone. Most votes = take a big penalty",
       "category": "chaos",
       "chaos": 8,
       "type": "vote"
     },
     {
-      "text": "Silent round! No one can talk until the next prompt. First to speak finishes their drink",
+      "text": "Silent round! No one can talk until the next prompt. First to speak takes a big penalty",
       "category": "chaos",
       "chaos": 5,
       "type": "rule"
     },
     {
-      "text": "{player1}, you're the dealer. Give out 10 drinks however you want",
+      "text": "{player1}, you're the dealer. Give out 10 forfeits however you want",
       "category": "chaos",
       "chaos": 7,
       "type": "power"
@@ -826,7 +826,7 @@
       "type": "rule"
     },
     {
-      "text": "{player1}, pick someone. You're both immune from drinking for 2 rounds",
+      "text": "{player1}, pick someone. You're both immune from penalties for 2 rounds",
       "category": "chaos",
       "chaos": 4,
       "type": "power"
@@ -838,7 +838,7 @@
       "type": "power"
     },
     {
-      "text": "Floor is lava! Last person to get their feet off the ground drinks 5 times",
+      "text": "Floor is lava! Last person to get their feet off the ground forfeits 5 times",
       "category": "chaos",
       "chaos": 6,
       "type": "race"
@@ -850,7 +850,7 @@
       "type": "chain"
     },
     {
-      "text": "Power shift! {player1}, swap chaos levels with {player2}. Their drinks become yours!",
+      "text": "Power shift! {player1}, swap chaos levels with {player2}. Their penalties become yours!",
       "category": "chaos",
       "chaos": 6,
       "type": "power"
@@ -862,31 +862,31 @@
       "type": "random"
     },
     {
-      "text": "Alliance! {player1} picks a partner. You share all drinks for the next 3 rounds",
+      "text": "Alliance! {player1} picks a partner. You share all forfeits for the next 3 rounds",
       "category": "chaos",
       "chaos": 4,
       "type": "rule"
     },
     {
-      "text": "Random! Everyone rolls a dice (or picks 1-6). Highest number gives out drinks = everyone else's total",
+      "text": "Random! Everyone rolls a dice (or picks 1-6). Highest number gives out forfeits = everyone else's total",
       "category": "chaos",
       "chaos": 8,
       "type": "gamble"
     },
     {
-      "text": "Medusa! Everyone looks down. On 3, look up. If you make eye contact with someone, both drink!",
+      "text": "Medusa! Everyone looks down. On 3, look up. If you make eye contact with someone, both forfeit!",
       "category": "chaos",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "Truth booth! {player1} answers any question from each player honestly or takes a shot",
+      "text": "Truth booth! {player1} answers any question from each player honestly or takes a big penalty",
       "category": "chaos",
       "chaos": 8,
       "type": "rapid"
     },
     {
-      "text": "{player1}, Viking mode! Point at someone and say 'VIKING!' They must make rowing motions while neighbors make rowing sounds. Slowest drinks!",
+      "text": "{player1}, Viking mode! Point at someone and say 'VIKING!' They must make rowing motions while neighbors make rowing sounds. Slowest forfeits!",
       "category": "chaos",
       "chaos": 6,
       "type": "random"
@@ -898,104 +898,104 @@
       "type": "power"
     },
     {
-      "text": "Confession roulette! Everyone writes a secret. {player1} picks one and reads it. Author takes 3 drinks",
+      "text": "Confession roulette! Everyone writes a secret. {player1} picks one and reads it. Author takes 3 forfeits",
       "category": "chaos",
       "chaos": 9,
       "type": "game"
     },
     {
-      "text": "Most likely to! Everyone points at who's most likely to become a millionaire. Most votes drinks!",
+      "text": "Most likely to! Everyone points at who's most likely to become a millionaire. Most votes forfeits!",
       "category": "social",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to go viral? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to go viral? Most votes forfeits!",
       "category": "social",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to get arrested? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to get arrested? Most votes forfeits!",
       "category": "social",
       "chaos": 5,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to cry at a movie? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to cry at a movie? Most votes forfeits!",
       "category": "social",
       "chaos": 3,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to survive a horror movie? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to survive a horror movie? Most votes forfeits!",
       "category": "social",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to forget someone's birthday? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to forget someone's birthday? Most votes forfeits!",
       "category": "social",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to become president? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to become president? Most votes forfeits!",
       "category": "social",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to get into a bar fight? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to get into a bar fight? Most votes forfeits!",
       "category": "social",
       "chaos": 5,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to win a reality TV show? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to win a reality TV show? Most votes forfeits!",
       "category": "social",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to marry rich? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to marry rich? Most votes forfeits!",
       "category": "social",
       "chaos": 5,
       "type": "vote"
     },
     {
-      "text": "{player1} vs {player2}, trivia showdown! First to answer wrong drinks. Topic: capitals",
+      "text": "{player1} vs {player2}, trivia showdown! First to answer wrong forfeits. Topic: capitals",
       "category": "drinking",
       "chaos": 4,
       "type": "versus"
     },
     {
-      "text": "Speed round! {player1} has 30 seconds to name 10 countries. Miss = drink for each missed",
+      "text": "Speed round! {player1} has 30 seconds to name 10 countries. Miss = forfeit for each missed",
       "category": "creative",
       "chaos": 4,
       "type": "timed",
       "timer": 30
     },
     {
-      "text": "{player1}, without looking, guess what {player2}'s phone wallpaper is. Wrong = drink twice",
+      "text": "{player1}, without looking, guess what {player2}'s phone wallpaper is. Wrong = forfeit twice",
       "category": "social",
       "chaos": 3,
       "type": "versus"
     },
     {
-      "text": "{player1} and {player2}, say the same word at the same time. You have 3 tries. Fail = both drink",
+      "text": "{player1} and {player2}, say the same word at the same time. You have 3 tries. Fail = both forfeit",
       "category": "social",
       "chaos": 4,
       "type": "versus"
     },
     {
-      "text": "{player1}, make a toast. It has to be at least 3 sentences. Everyone drinks at the end!",
+      "text": "{player1}, make a toast. It has to be at least 3 sentences. Everyone forfeits at the end!",
       "category": "social",
       "chaos": 3,
       "type": "perform"
     },
     {
-      "text": "{player1}, you have 10 seconds to make {player2} laugh. Fail = drink 3 times",
+      "text": "{player1}, you have 10 seconds to make {player2} laugh. Fail = forfeit 3 times",
       "category": "creative",
       "chaos": 4,
       "type": "challenge",
@@ -1008,7 +1008,7 @@
       "type": "rule"
     },
     {
-      "text": "{player1}, what's the last lie you told? If group doesn't believe it's the truth, drink twice!",
+      "text": "{player1}, what's the last lie you told? If group doesn't believe it's the truth, forfeit twice!",
       "category": "confessions",
       "chaos": 5,
       "type": "confession"
@@ -1020,7 +1020,7 @@
       "type": "reveal"
     },
     {
-      "text": "Psychic round! Everyone guess {player1}'s favorite song. Best guess = {player1} drinks",
+      "text": "Psychic round! Everyone guess {player1}'s favorite song. Best guess = {player1} forfeits",
       "category": "social",
       "chaos": 3,
       "type": "game"
@@ -1045,14 +1045,14 @@
       "type": "confession"
     },
     {
-      "text": "Hot seat! {player1} answers rapid fire questions for 30 seconds. Pass on any = drink!",
+      "text": "Hot seat! {player1} answers rapid fire questions for 30 seconds. Pass on any = forfeit!",
       "category": "chaos",
       "chaos": 6,
       "type": "rapid",
       "timer": 30
     },
     {
-      "text": "Everyone who hasn't texted back someone in their phone for 3+ days drinks!",
+      "text": "Everyone who hasn't texted back someone in their phone for 3+ days forfeits!",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -1083,7 +1083,7 @@
       "timer": 3
     },
     {
-      "text": "{player1}, if you had to date one person here, who and why? They drink!",
+      "text": "{player1}, if you had to date one person here, who and why? They forfeit!",
       "category": "confessions",
       "chaos": 7,
       "type": "target"
@@ -1103,87 +1103,87 @@
     },
 
     {
-      "text": "{player1}, take 2 sips. No reason, just vibes",
+      "text": "{player1}, take 2 penalties. No reason, just vibes",
       "category": "drinking",
       "chaos": 1,
       "type": "simple"
     },
     {
-      "text": "Everyone take 3 sips for making it this far!",
+      "text": "Everyone take 3 penalties for making it this far!",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "{player1}, take a sip for every streaming service you pay for",
+      "text": "{player1}, take a penalty for every streaming service you pay for",
       "category": "drinking",
       "chaos": 3,
       "type": "simple"
     },
     {
-      "text": "If you've ever been on the wrong side of TikTok, take 4 sips",
+      "text": "If you've ever been on the wrong side of TikTok, take 4 penalties",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, take 2 sips for every houseplant you've killed",
+      "text": "{player1}, take 2 penalties for every houseplant you've killed",
       "category": "drinking",
       "chaos": 3,
       "type": "simple"
     },
     {
-      "text": "Finish your drink if you still use your ex's Netflix password",
+      "text": "Take a big penalty if you still use your ex's Netflix password",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "Take 3 sips if you've ever matched with someone you know IRL on a dating app",
+      "text": "Take 3 penalties if you've ever matched with someone you know IRL on a dating app",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, hand out 5 sips to whoever you think needs to loosen up",
+      "text": "{player1}, hand out 5 penalties to whoever you think needs to loosen up",
       "category": "drinking",
       "chaos": 4,
       "type": "power"
     },
     {
-      "text": "Mini-game: WATERFALL! {player1} starts drinking. Next person starts when they start, can't stop until {player1} stops. Chain continues!",
+      "text": "Mini-game: PENALTY CHAIN! {player1} starts the chain. Next person starts when they start, can't stop until {player1} stops. Chain continues!",
       "category": "drinking",
       "chaos": 7,
       "type": "game"
     },
     {
-      "text": "Mini-game: CATEGORIES! {player1} picks a topic. Go around - hesitate or repeat = take 5 sips!",
+      "text": "Mini-game: CATEGORIES! {player1} picks a topic. Go around - hesitate or repeat = take 5 penalties!",
       "category": "drinking",
       "chaos": 5,
       "type": "game",
       "timer": 5
     },
     {
-      "text": "Mini-game: NEVER HAVE I EVER! {player1} says something. Everyone who HAS done it takes 3 sips!",
+      "text": "Mini-game: NEVER HAVE I EVER! {player1} says something. Everyone who HAS done it takes 3 penalties!",
       "category": "drinking",
       "chaos": 5,
       "type": "game"
     },
     {
-      "text": "Mini-game: MOST LIKELY TO! Who's most likely to ghost someone? Point! Person with most fingers takes that many sips!",
+      "text": "Mini-game: MOST LIKELY TO! Who's most likely to ghost someone? Point! Person with most fingers takes that many penalties!",
       "category": "drinking",
       "chaos": 5,
       "type": "vote"
     },
     {
-      "text": "Mini-game: RHYME TIME! {player1} says a word. Go around rhyming. Fail = 4 sips!",
+      "text": "Mini-game: RHYME TIME! {player1} says a word. Go around rhyming. Fail = 4 penalties!",
       "category": "drinking",
       "chaos": 4,
       "type": "game",
       "timer": 3
     },
     {
-      "text": "Mini-game: FLIP CUP! Losers take 6 sips each",
+      "text": "Mini-game: FLIP CUP! Losers take 6 penalties each",
       "category": "drinking",
       "chaos": 6,
       "type": "game"
@@ -1195,163 +1195,163 @@
       "type": "game"
     },
     {
-      "text": "If you've doom-scrolled past your bedtime this week, take 3 sips",
+      "text": "If you've doom-scrolled past your bedtime this week, take 3 penalties",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "Take 2 sips if you've said 'we should hang out more' but never followed up",
+      "text": "Take 2 penalties if you've said 'we should hang out more' but never followed up",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, you look like you need 4 sips. Take them",
+      "text": "{player1}, you look like you need 4 penalties. Take them",
       "category": "drinking",
       "chaos": 3,
       "type": "simple"
     },
     {
-      "text": "If BeReal ever exposed you, take 5 sips",
+      "text": "If BeReal ever exposed you, take 5 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "Everyone who's been in their flop era take 3 sips",
+      "text": "Everyone who's been in their flop era take 3 penalties",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1} picks someone to drink 4 sips with. Trauma bonding!",
+      "text": "{player1} picks someone to forfeit 4 penalties with. Trauma bonding!",
       "category": "drinking",
       "chaos": 3,
       "type": "target"
     },
     {
-      "text": "If you've ever said 'I'm never drinking again' take 5 sips (you liar)",
+      "text": "If you've ever said 'I'm never doing this again' take 5 penalties (you liar)",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, truth or drink: what's your screen time average? Take a sip per hour over 4",
+      "text": "{player1}, truth or forfeit: what's your screen time average? Take a penalty per hour over 4",
       "category": "drinking",
       "chaos": 4,
       "type": "choice"
     },
     {
-      "text": "Take 2 sips if you still have a finsta",
+      "text": "Take 2 penalties if you still have a finsta",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, show your Spotify Wrapped top artist or take 6 sips",
+      "text": "{player1}, show your Spotify Wrapped top artist or take 6 penalties",
       "category": "dares",
       "chaos": 4,
       "type": "choice"
     },
     {
-      "text": "If your love language is physical touch, take 3 sips. If it's words of affirmation, give someone else 3 sips",
+      "text": "If your love language is physical touch, take 3 penalties. If it's words of affirmation, give someone else 3 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, are you a 'heyyy' or 'hey' texter? Wrong answer = 4 sips (group votes)",
+      "text": "{player1}, are you a 'heyyy' or 'hey' texter? Wrong answer = 4 penalties (group votes)",
       "category": "drinking",
       "chaos": 3,
       "type": "vote"
     },
     {
-      "text": "Quiet luxury or loud budgeting? Everyone who picked wrong (group decides) takes 3 sips",
+      "text": "Quiet luxury or loud budgeting? Everyone who picked wrong (group decides) takes 3 penalties",
       "category": "drinking",
       "chaos": 3,
       "type": "vote"
     },
     {
-      "text": "{player1}, give a TED talk on why you deserve 0 sips. Group votes. If no = take 5",
+      "text": "{player1}, give a TED talk on why you deserve 0 penalties. Group votes. If no = take 5",
       "category": "drinking",
       "chaos": 5,
       "type": "perform"
     },
     {
-      "text": "Sip if you've ever had a situationship. Finish your drink if you're in one now",
+      "text": "Forfeit if you've ever had a situationship. Take a big penalty if you're in one now",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "Take 4 sips if you've ever been 'delulu'",
+      "text": "Take 4 penalties if you've ever been 'delulu'",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, what's your Roman Empire? Take a sip for every time you've thought about it today",
+      "text": "{player1}, what's your Roman Empire? Take a penalty for every time you've thought about it today",
       "category": "drinking",
       "chaos": 4,
       "type": "simple"
     },
     {
-      "text": "If you'd survive 5 minutes in the Hunger Games, give out 5 sips. If not, take them",
+      "text": "If you'd survive 5 minutes in the Hunger Games, give out 5 penalties. If not, take them",
       "category": "drinking",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "{player1}, would you rather have infinite money or find your soulmate? Group predicts, wrong = 3 sips",
+      "text": "{player1}, would you rather have infinite money or find your soulmate? Group predicts, wrong = 3 penalties",
       "category": "drinking",
       "chaos": 3,
       "type": "game"
     },
     {
-      "text": "Everyone who has 'hot girl walk' in their vocabulary take 2 sips",
+      "text": "Everyone who has 'hot girl walk' in their vocabulary take 2 penalties",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "{player1}, main character or supporting role? Take 3 sips if you said main character (we know)",
+      "text": "{player1}, main character or supporting role? Take 3 penalties if you said main character (we know)",
       "category": "drinking",
       "chaos": 3,
       "type": "simple"
     },
     {
-      "text": "Take 5 sips if you've ever cried to a Phoebe Bridgers song",
+      "text": "Take 5 penalties if you've ever cried to a Phoebe Bridgers song",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, what's the most unhinged thing in your camera roll? Show it or take 6 sips",
+      "text": "{player1}, what's the most unhinged thing in your camera roll? Show it or take 6 penalties",
       "category": "dares",
       "chaos": 6,
       "type": "choice"
     },
     {
-      "text": "Mini-game: SHOT ROULETTE! Everyone picks a number 1-6. {player1} rolls. If your number hits, take a shot or 5 sips!",
+      "text": "Mini-game: PENALTY ROULETTE! Everyone picks a number 1-6. {player1} rolls. If your number hits, take a big penalty or 5 penalties!",
       "category": "drinking",
       "chaos": 7,
       "type": "gamble"
     },
     {
-      "text": "If you're the group's therapist friend, take 4 sips. You need it",
+      "text": "If you're the group's therapist friend, take 4 penalties. You need it",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, ick check! Name an ick. Anyone guilty takes 3 sips",
+      "text": "{player1}, ick check! Name an ick. Anyone guilty takes 3 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "Take 2 sips for every time you said 'slay' unironically today",
+      "text": "Take 2 penalties for every time you said 'slay' unironically today",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -1363,386 +1363,386 @@
       "type": "target"
     },
     {
-      "text": "If you've ever been called 'too much' take 3 sips (and never change)",
+      "text": "If you've ever been called 'too much' take 3 penalties (and never change)",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "Brunch person or late night person? Losers (minority) take 4 sips",
+      "text": "Brunch person or late night person? Losers (minority) take 4 penalties",
       "category": "drinking",
       "chaos": 3,
       "type": "vote"
     },
     {
-      "text": "{player1}, quick! Name 5 Taylor Swift songs in 15 seconds or take 5 sips",
+      "text": "{player1}, quick! Name 5 Taylor Swift songs in 15 seconds or take 5 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "timed",
       "timer": 15
     },
     {
-      "text": "Take 3 sips if you've ever blamed Mercury retrograde for your problems",
+      "text": "Take 3 penalties if you've ever blamed Mercury retrograde for your problems",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1} and {player2}, rock paper scissors. Loser takes 4 sips, winner gives out 4",
+      "text": "{player1} and {player2}, rock paper scissors. Loser takes 4 penalties, winner gives out 4",
       "category": "drinking",
       "chaos": 4,
       "type": "versus"
     },
     {
-      "text": "If you consider yourself a hater, take 3 sips with pride",
+      "text": "If you consider yourself a hater, take 3 penalties with pride",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, what's your toxic trait? Take a sip for every person nodding",
+      "text": "{player1}, what's your toxic trait? Take a penalty for every person nodding",
       "category": "drinking",
       "chaos": 5,
       "type": "confession"
     },
     {
-      "text": "Everyone with commitment issues take 4 sips (you know who you are)",
+      "text": "Everyone with commitment issues take 4 penalties (you know who you are)",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "{player1}, you're in your villain era. Hand out 8 sips however you want",
+      "text": "{player1}, you're in your villain era. Hand out 8 penalties however you want",
       "category": "drinking",
       "chaos": 6,
       "type": "power"
     },
     {
-      "text": "Take 2 sips if you've ever ordered water at a bar",
+      "text": "Take 2 penalties if you've ever ordered water at a bar",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "{player1}, describe your type without describing {player2}. Fail = both drink 4",
+      "text": "{player1}, describe your type without describing {player2}. Fail = both forfeit 4",
       "category": "confessions",
       "chaos": 6,
       "type": "challenge"
     },
     {
-      "text": "Mini-game: WORD ASSOCIATION! {player1} starts. 2-second limit. Hesitate = 5 sips!",
+      "text": "Mini-game: WORD ASSOCIATION! {player1} starts. 2-second limit. Hesitate = 5 penalties!",
       "category": "drinking",
       "chaos": 4,
       "type": "game",
       "timer": 2
     },
     {
-      "text": "If you've been parasocial about a podcast host, take 3 sips",
+      "text": "If you've been parasocial about a podcast host, take 3 penalties",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, what's the most NPC thing you've done this week? Take that many sips (1-5)",
+      "text": "{player1}, what's the most NPC thing you've done this week? Take that many penalties (1-5)",
       "category": "drinking",
       "chaos": 4,
       "type": "confession"
     },
     {
-      "text": "Take 4 sips if your ex is still in your Close Friends",
+      "text": "Take 4 penalties if your ex is still in your Close Friends",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "{player1}, read your last text out loud in a dramatic voice or take 5 sips",
+      "text": "{player1}, read your last text out loud in a dramatic voice or take 5 penalties",
       "category": "dares",
       "chaos": 5,
       "type": "choice"
     },
     {
-      "text": "Everyone who's ever been 'professionally ghosted' after a job interview, take 3 sips",
+      "text": "Everyone who's ever been 'professionally ghosted' after a job interview, take 3 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, are you chronically online? Group votes. If yes, take 5 sips",
+      "text": "{player1}, are you chronically online? Group votes. If yes, take 5 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Take 2 sips if you've started a true crime doc after midnight",
+      "text": "Take 2 penalties if you've started a true crime doc after midnight",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "Mini-game: TRUTH OR DARE ROULETTE! {player1}, pick truth or dare. If dare and you refuse, take 6 sips!",
+      "text": "Mini-game: TRUTH OR DARE ROULETTE! {player1}, pick truth or dare. If dare and you refuse, take 6 penalties!",
       "category": "dares",
       "chaos": 6,
       "type": "choice"
     },
     {
-      "text": "{player1}, what's your Uber rating? Under 4.8 = take 5 sips",
+      "text": "{player1}, what's your Uber rating? Under 4.8 = take 5 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "simple"
     },
     {
-      "text": "If you've ever sent a screenshot to the wrong person, finish your drink",
+      "text": "If you've ever sent a screenshot to the wrong person, take a big penalty",
       "category": "drinking",
       "chaos": 6,
       "type": "group"
     },
     {
-      "text": "Take 3 sips if you're still holding onto that one Venmo request",
+      "text": "Take 3 penalties if you're still holding onto that one Venmo request",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, who here looks like their zodiac sign? They take 2 sips",
+      "text": "{player1}, who here looks like their zodiac sign? They take 2 penalties",
       "category": "drinking",
       "chaos": 3,
       "type": "target"
     },
     {
-      "text": "If you know your Big Three, take 2 sips. If you've mentioned it today, take 4",
+      "text": "If you know your Big Three, take 2 penalties. If you've mentioned it today, take 4",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "Mini-game: TONGUE TWISTER! {player1} picks one. First to mess up takes 5 sips!",
+      "text": "Mini-game: TONGUE TWISTER! {player1} picks one. First to mess up takes 5 penalties!",
       "category": "drinking",
       "chaos": 4,
       "type": "game"
     },
     {
-      "text": "{player1}, who here would survive longest in a zombie apocalypse? Everyone else takes 3 sips",
+      "text": "{player1}, who here would survive longest in a zombie apocalypse? Everyone else takes 3 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "target"
     },
     {
-      "text": "Take 5 sips if you've ever been compared to a fictional character and didn't hate it",
+      "text": "Take 5 penalties if you've ever been compared to a fictional character and didn't hate it",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, give your best villain speech. If it doesn't go hard, take 4 sips",
+      "text": "{player1}, give your best villain speech. If it doesn't go hard, take 4 penalties",
       "category": "creative",
       "chaos": 5,
       "type": "perform",
       "timer": 30
     },
     {
-      "text": "If you have notes app apology energy, take 4 sips",
+      "text": "If you have notes app apology energy, take 4 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, what would your red flag Tinder bio say? Take a sip for every laugh",
+      "text": "{player1}, what would your red flag Tinder bio say? Take a penalty for every laugh",
       "category": "creative",
       "chaos": 5,
       "type": "perform"
     },
     {
-      "text": "Take 3 sips if you've ever caught feelings from a Spotify Blend",
+      "text": "Take 3 penalties if you've ever caught feelings from a Spotify Blend",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, you have 10 seconds to make {player2} break their poker face. Fail = 4 sips",
+      "text": "{player1}, you have 10 seconds to make {player2} break their poker face. Fail = 4 penalties",
       "category": "dares",
       "chaos": 4,
       "type": "challenge",
       "timer": 10
     },
     {
-      "text": "If you've ever double-texted after getting left on read, take 4 sips (we've all been there)",
+      "text": "If you've ever double-texted after getting left on read, take 4 penalties (we've all been there)",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "Mini-game: DEBATE TIME! {player1} and {player2} get 30 seconds each. Topic: Oat milk vs almond milk. Loser (group votes) takes 5 sips!",
+      "text": "Mini-game: DEBATE TIME! {player1} and {player2} get 30 seconds each. Topic: Oat milk vs almond milk. Loser (group votes) takes 5 penalties!",
       "category": "drinking",
       "chaos": 5,
       "type": "versus",
       "timer": 30
     },
     {
-      "text": "{player1}, show your last online purchase or take 5 sips",
+      "text": "{player1}, show your last online purchase or take 5 penalties",
       "category": "dares",
       "chaos": 4,
       "type": "choice"
     },
     {
-      "text": "Everyone who has been called 'chaotic neutral', take 3 sips together",
+      "text": "Everyone who has been called 'chaotic neutral', take 3 penalties together",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, what's a hill you'll die on? Group votes if it's valid. Invalid = 5 sips",
+      "text": "{player1}, what's a hill you'll die on? Group votes if it's valid. Invalid = 5 penalties",
       "category": "hot_takes",
       "chaos": 5,
       "type": "vote"
     },
     {
-      "text": "Take 2 sips if you've ever pretended to know a song when the aux was passed",
+      "text": "Take 2 penalties if you've ever pretended to know a song when the aux was passed",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, you have immunity. Give out 10 sips however you want. Choose violence",
+      "text": "{player1}, you have immunity. Give out 10 penalties however you want. Choose violence",
       "category": "drinking",
       "chaos": 7,
       "type": "power"
     },
     {
-      "text": "If you've ever DMed a brand, take 3 sips",
+      "text": "If you've ever DMed a brand, take 3 penalties",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, hot take: is ghosting ever okay? Wrong answer (group decides) = 4 sips",
+      "text": "{player1}, hot take: is ghosting ever okay? Wrong answer (group decides) = 4 penalties",
       "category": "hot_takes",
       "chaos": 5,
       "type": "vote"
     },
     {
-      "text": "Take 4 sips if you've ever been in your 'I don't need anyone' era",
+      "text": "Take 4 penalties if you've ever been in your 'I don't need anyone' era",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, show your most used emoji. If it's a red flag, take 4 sips",
+      "text": "{player1}, show your most used emoji. If it's a red flag, take 4 penalties",
       "category": "dares",
       "chaos": 4,
       "type": "reveal"
     },
     {
-      "text": "Mini-game: SIMON SAYS! {player1} is Simon for 3 rounds. Mess up = 4 sips each time!",
+      "text": "Mini-game: SIMON SAYS! {player1} is Simon for 3 rounds. Mess up = 4 penalties each time!",
       "category": "physical",
       "chaos": 4,
       "type": "game"
     },
     {
-      "text": "If you've ever stalked an ex's new partner, take 5 sips (no judgment)",
+      "text": "If you've ever stalked an ex's new partner, take 5 penalties (no judgment)",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "{player1}, what's your most controversial food take? One person must disagree or you take 3 sips",
+      "text": "{player1}, what's your most controversial food take? One person must disagree or you take 3 penalties",
       "category": "hot_takes",
       "chaos": 4,
       "type": "opinion"
     },
     {
-      "text": "Take 2 sips if you've ever replied to an Instagram story as a flirting technique",
+      "text": "Take 2 penalties if you've ever replied to an Instagram story as a flirting technique",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, compliment battle with {player2}! First to run out of compliments takes 5 sips",
+      "text": "{player1}, compliment battle with {player2}! First to run out of compliments takes 5 penalties",
       "category": "social",
       "chaos": 4,
       "type": "versus"
     },
     {
-      "text": "Everyone who still has a gym membership they don't use, take 3 sips",
+      "text": "Everyone who still has a gym membership they don't use, take 3 penalties",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, is 'lol' dead? Take 3 sips for every person who still uses it",
+      "text": "{player1}, is 'lol' dead? Take 3 penalties for every person who still uses it",
       "category": "drinking",
       "chaos": 3,
       "type": "vote"
     },
     {
-      "text": "Take 4 sips if you've perfected the art of the soft launch",
+      "text": "Take 4 penalties if you've perfected the art of the soft launch",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, without using your hands, describe your dream vacation. Fail = 5 sips",
+      "text": "{player1}, without using your hands, describe your dream vacation. Fail = 5 penalties",
       "category": "dares",
       "chaos": 4,
       "type": "perform",
       "timer": 30
     },
     {
-      "text": "If you've ever called yourself 'a bit of a perfectionist' in an interview, take 3 sips",
+      "text": "If you've ever called yourself 'a bit of a perfectionist' in an interview, take 3 penalties",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, who here gives 'only child energy'? They take 3 sips",
+      "text": "{player1}, who here gives 'only child energy'? They take 3 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "target"
     },
     {
-      "text": "Take 5 sips if you've ever cried in an Uber",
+      "text": "Take 5 penalties if you've ever cried in an Uber",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "Mini-game: CELEBRITY HEADS! {player1} thinks of a celeb. 20 questions, yes/no only. Give up = everyone takes 4 sips",
+      "text": "Mini-game: CELEBRITY HEADS! {player1} thinks of a celeb. 20 questions, yes/no only. Give up = everyone takes 4 penalties",
       "category": "drinking",
       "chaos": 5,
       "type": "game"
     },
     {
-      "text": "{player1}, give your best 'I'm not like other people' speech. Take a sip for every eye roll",
+      "text": "{player1}, give your best 'I'm not like other people' speech. Take a penalty for every eye roll",
       "category": "creative",
       "chaos": 5,
       "type": "perform"
     },
     {
-      "text": "Take 2 sips if you've ever blamed something on 'the algorithm'",
+      "text": "Take 2 penalties if you've ever blamed something on 'the algorithm'",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "{player1}, who here has the most chaotic energy? They distribute 6 sips",
+      "text": "{player1}, who here has the most chaotic energy? They distribute 6 penalties",
       "category": "drinking",
       "chaos": 5,
       "type": "target"
     },
 
     {
-      "text": "Drink if you've ever sent a voice memo longer than 2 minutes",
+      "text": "Forfeit if you've ever sent a voice memo longer than 2 minutes",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "{player1}, show the group chat you've muted. 3 sips if it's this one",
+      "text": "{player1}, show the group chat you've muted. 3 penalties if it's this one",
       "category": "dares",
       "chaos": 4,
       "type": "choice"
     },
     {
-      "text": "Drink if you've posted and deleted in the last month",
+      "text": "Forfeit if you've posted and deleted in the last month",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -1754,7 +1754,7 @@
       "type": "opinion"
     },
     {
-      "text": "Drink if you have a screenshot in your camera roll that could end a friendship",
+      "text": "Forfeit if you have a screenshot in your camera roll that could end a friendship",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
@@ -1767,7 +1767,7 @@
       "timer": 60
     },
     {
-      "text": "Drink if you've ever 'liked' a message instead of actually responding",
+      "text": "Forfeit if you've ever 'liked' a message instead of actually responding",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -1779,31 +1779,31 @@
       "type": "target"
     },
     {
-      "text": "Drink if you've said 'let's definitely do this again' knowing full well you won't",
+      "text": "Forfeit if you've said 'let's definitely do this again' knowing full well you won't",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, rate your own vibe tonight 1-10. Group votes. Difference = sips",
+      "text": "{player1}, rate your own vibe tonight 1-10. Group votes. Difference = penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Drink if you've ever blamed traffic when you just left late",
+      "text": "Forfeit if you've ever blamed traffic when you just left late",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "{player1}, what's the most chaotic thing you've done this month? Group rates chaos level, drink that many",
+      "text": "{player1}, what's the most chaotic thing you've done this month? Group rates chaos level, forfeit that many",
       "category": "confessions",
       "chaos": 5,
       "type": "confession"
     },
     {
-      "text": "Everyone who's ever left someone on delivered for 'strategy' takes 3 sips",
+      "text": "Everyone who's ever left someone on delivered for 'strategy' takes 3 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -1815,19 +1815,19 @@
       "type": "target"
     },
     {
-      "text": "Drink if your notes app would be concerning if leaked",
+      "text": "Forfeit if your notes app would be concerning if leaked",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, without looking, how many unread emails do you have? Closest guess drinks",
+      "text": "{player1}, without looking, how many unread emails do you have? Closest guess forfeits",
       "category": "social",
       "chaos": 3,
       "type": "game"
     },
     {
-      "text": "Drink if you've ever orbited someone's social media without actually talking to them",
+      "text": "Forfeit if you've ever orbited someone's social media without actually talking to them",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -1839,7 +1839,7 @@
       "type": "choice"
     },
     {
-      "text": "Drink if you've been in a 'soft launch' that went nowhere",
+      "text": "Forfeit if you've been in a 'soft launch' that went nowhere",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -1851,32 +1851,32 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever said 'I never check this app' while definitely checking that app",
+      "text": "Forfeit if you've ever said 'I never check this app' while definitely checking that app",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1} and {player2}, who has more followers? Loser drinks the difference in thousands",
+      "text": "{player1} and {player2}, who has more followers? Loser forfeits the difference in thousands",
       "category": "drinking",
       "chaos": 4,
       "type": "versus"
     },
     {
-      "text": "Drink if you've ever unfollowed someone then followed back hoping they wouldn't notice",
+      "text": "Forfeit if you've ever unfollowed someone then followed back hoping they wouldn't notice",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, convince the group why you'd survive a horror movie. Unconvinced = 4 sips",
+      "text": "{player1}, convince the group why you'd survive a horror movie. Unconvinced = 4 penalties",
       "category": "creative",
       "chaos": 4,
       "type": "perform",
       "timer": 30
     },
     {
-      "text": "Drink if you've ever pretended to text to avoid talking to someone",
+      "text": "Forfeit if you've ever pretended to text to avoid talking to someone",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -1888,7 +1888,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've stress-purchased something you've never used",
+      "text": "Forfeit if you've stress-purchased something you've never used",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -1900,7 +1900,7 @@
       "type": "ranking"
     },
     {
-      "text": "Drink if you have a carefully curated 'casual' playlist",
+      "text": "Forfeit if you have a carefully curated 'casual' playlist",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -1912,7 +1912,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever rehearsed a conversation that never happened",
+      "text": "Forfeit if you've ever rehearsed a conversation that never happened",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -1924,19 +1924,19 @@
       "type": "opinion"
     },
     {
-      "text": "Drink if you've ever lied about having read a book",
+      "text": "Forfeit if you've ever lied about having read a book",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, impersonate how {player2} texts. They rate accuracy, drink the difference from 10",
+      "text": "{player1}, impersonate how {player2} texts. They rate accuracy, forfeit the difference from 10",
       "category": "creative",
       "chaos": 5,
       "type": "perform"
     },
     {
-      "text": "Drink if you've ever said 'I'm not really a phone person' while on your phone",
+      "text": "Forfeit if you've ever said 'I'm not really a phone person' while on your phone",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -1948,19 +1948,19 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've checked your own profile to see what others see",
+      "text": "Forfeit if you've checked your own profile to see what others see",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "{player1}, who here would you call if you needed to hide a body? That person takes a pride sip",
+      "text": "{player1}, who here would you call if you needed to hide a body? That person takes a pride penalty",
       "category": "social",
       "chaos": 4,
       "type": "target"
     },
     {
-      "text": "Drink if you have strong opinions about Oxford commas",
+      "text": "Forfeit if you have strong opinions about Oxford commas",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -1973,7 +1973,7 @@
       "timer": 20
     },
     {
-      "text": "Drink if you've ever rage-quit following someone",
+      "text": "Forfeit if you've ever rage-quit following someone",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -1985,7 +1985,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you have a folder of saved posts you'll never look at again",
+      "text": "Forfeit if you have a folder of saved posts you'll never look at again",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -1997,19 +1997,19 @@
       "type": "versus"
     },
     {
-      "text": "Drink if you've ever aggressively typed then deleted everything",
+      "text": "Forfeit if you've ever aggressively typed then deleted everything",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, describe your ideal Sunday. Group votes if it sounds boring, boring = 4 sips",
+      "text": "{player1}, describe your ideal Sunday. Group votes if it sounds boring, boring = 4 penalties",
       "category": "social",
       "chaos": 3,
       "type": "vote"
     },
     {
-      "text": "Drink if you've sent a risky text then immediately put your phone face down",
+      "text": "Forfeit if you've sent a risky text then immediately put your phone face down",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -2021,19 +2021,19 @@
       "type": "opinion"
     },
     {
-      "text": "Drink if you know your love language but have never told anyone",
+      "text": "Forfeit if you know your love language but have never told anyone",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, give an acceptance speech for 'most likely to text back within 2 seconds'. If you're not that person, 4 sips",
+      "text": "{player1}, give an acceptance speech for 'most likely to text back within 2 seconds'. If you're not that person, 4 penalties",
       "category": "creative",
       "chaos": 4,
       "type": "perform"
     },
     {
-      "text": "Drink if you've ever pretended to be busy when you were absolutely not",
+      "text": "Forfeit if you've ever pretended to be busy when you were absolutely not",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -2045,7 +2045,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever written a caption, deleted it, and just posted with no caption",
+      "text": "Forfeit if you've ever written a caption, deleted it, and just posted with no caption",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2063,7 +2063,7 @@
       "type": "vote"
     },
     {
-      "text": "Drink if you've ever called something 'mid' while secretly enjoying it",
+      "text": "Forfeit if you've ever called something 'mid' while secretly enjoying it",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2075,19 +2075,19 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever pretended you already knew something someone was explaining",
+      "text": "Forfeit if you've ever pretended you already knew something someone was explaining",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, give {player2} a compliment you've thought but never said. Both take a sip after",
+      "text": "{player1}, give {player2} a compliment you've thought but never said. Both take a penalty after",
       "category": "social",
       "chaos": 4,
       "type": "target"
     },
     {
-      "text": "Drink if you've ever stalked your own profile after making a change",
+      "text": "Forfeit if you've ever stalked your own profile after making a change",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -2099,7 +2099,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever said 'I'm not on social media that much' while lying",
+      "text": "Forfeit if you've ever said 'I'm not on social media that much' while lying",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2111,7 +2111,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever opened someone's story multiple times to show interest",
+      "text": "Forfeit if you've ever opened someone's story multiple times to show interest",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -2123,7 +2123,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you can name your ex's current partner",
+      "text": "Forfeit if you can name your ex's current partner",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
@@ -2135,7 +2135,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever typed 'haha' when you didn't actually laugh",
+      "text": "Forfeit if you've ever typed 'haha' when you didn't actually laugh",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -2147,7 +2147,7 @@
       "type": "versus"
     },
     {
-      "text": "Drink if you have notifications turned off for most apps",
+      "text": "Forfeit if you have notifications turned off for most apps",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -2159,7 +2159,7 @@
       "type": "target"
     },
     {
-      "text": "Drink if you've ever felt personally attacked by an algorithm",
+      "text": "Forfeit if you've ever felt personally attacked by an algorithm",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2171,7 +2171,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever screenshot a message to send to someone else",
+      "text": "Forfeit if you've ever screenshot a message to send to someone else",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -2183,7 +2183,7 @@
       "type": "perform"
     },
     {
-      "text": "Drink if you've ever liked your own post for 'engagement'",
+      "text": "Forfeit if you've ever liked your own post for 'engagement'",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2195,7 +2195,7 @@
       "type": "confession"
     },
     {
-      "text": "Everyone who's ever been called 'too much' drinks with pride",
+      "text": "Everyone who's ever been called 'too much' forfeits with pride",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2207,7 +2207,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever muted a group chat that you're actively participating in",
+      "text": "Forfeit if you've ever muted a group chat that you're actively participating in",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2219,7 +2219,7 @@
       "type": "ranking"
     },
     {
-      "text": "Drink if you've ever sent 'wya' knowing exactly where someone is",
+      "text": "Forfeit if you've ever sent 'wya' knowing exactly where someone is",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2231,19 +2231,19 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever archived instead of deleted",
+      "text": "Forfeit if you've ever archived instead of deleted",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, who here would survive the longest without their phone? That person gives out 5 sips",
+      "text": "{player1}, who here would survive the longest without their phone? That person gives out 5 penalties",
       "category": "social",
       "chaos": 4,
       "type": "target"
     },
     {
-      "text": "Drink if you've ever looked up a word while pretending you already knew it",
+      "text": "Forfeit if you've ever looked up a word while pretending you already knew it",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -2255,20 +2255,20 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've left someone on read as a power move",
+      "text": "Forfeit if you've left someone on read as a power move",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, pitch a reality show starring this group. Best pitch wins, everyone else drinks",
+      "text": "{player1}, pitch a reality show starring this group. Best pitch wins, everyone else forfeits",
       "category": "creative",
       "chaos": 5,
       "type": "perform",
       "timer": 45
     },
     {
-      "text": "Drink if you own something you bought because of an influencer",
+      "text": "Forfeit if you own something you bought because of an influencer",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2280,7 +2280,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever panic-closed an app when someone walked by",
+      "text": "Forfeit if you've ever panic-closed an app when someone walked by",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2292,7 +2292,7 @@
       "type": "target"
     },
     {
-      "text": "Drink if you've ever said 'I'll think about it' with zero intention of thinking about it",
+      "text": "Forfeit if you've ever said 'I'll think about it' with zero intention of thinking about it",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2304,19 +2304,19 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever deep-liked to see if someone would notice",
+      "text": "Forfeit if you've ever deep-liked to see if someone would notice",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, describe your texting style in three words. Group validates or you drink 3",
+      "text": "{player1}, describe your texting style in three words. Group validates or you forfeit 3",
       "category": "social",
       "chaos": 3,
       "type": "vote"
     },
     {
-      "text": "Drink if you have a comfort show you've seen more than 3 times",
+      "text": "Forfeit if you have a comfort show you've seen more than 3 times",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -2328,7 +2328,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've looked through someone's entire profile before meeting them",
+      "text": "Forfeit if you've looked through someone's entire profile before meeting them",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -2340,7 +2340,7 @@
       "type": "opinion"
     },
     {
-      "text": "Drink if you have at least 3 unfinished hobbies",
+      "text": "Forfeit if you have at least 3 unfinished hobbies",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2352,7 +2352,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever intentionally not finished a story to seem mysterious",
+      "text": "Forfeit if you've ever intentionally not finished a story to seem mysterious",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -2364,20 +2364,20 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever pretended not to see a message so you could respond later",
+      "text": "Forfeit if you've ever pretended not to see a message so you could respond later",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1} picks a vibe. Everyone has 10 seconds to strike a pose matching it. Worst one drinks 4",
+      "text": "{player1} picks a vibe. Everyone has 10 seconds to strike a pose matching it. Worst one forfeits 4",
       "category": "physical",
       "chaos": 5,
       "type": "game",
       "timer": 10
     },
     {
-      "text": "Drink if you've ever claimed to be 'five minutes away' while still home",
+      "text": "Forfeit if you've ever claimed to be 'five minutes away' while still home",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2389,19 +2389,19 @@
       "type": "confession"
     },
     {
-      "text": "Drink if your most played song would be embarrassing if people knew",
+      "text": "Forfeit if your most played song would be embarrassing if people knew",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, who here do you think secretly judges everyone? That person drinks with a smirk",
+      "text": "{player1}, who here do you think secretly judges everyone? That person forfeits with a smirk",
       "category": "social",
       "chaos": 5,
       "type": "target"
     },
     {
-      "text": "Drink if you've ever said 'no worries' when there were definitely worries",
+      "text": "Forfeit if you've ever said 'no worries' when there were definitely worries",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -2413,20 +2413,20 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've typed out your feelings and then just sent 'ok'",
+      "text": "Forfeit if you've typed out your feelings and then just sent 'ok'",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, convince us you're not a robot. Failing = 5 sips",
+      "text": "{player1}, convince us you're not a robot. Failing = 5 penalties",
       "category": "creative",
       "chaos": 4,
       "type": "perform",
       "timer": 20
     },
     {
-      "text": "Drink if you've ever fact-checked something mid-conversation",
+      "text": "Forfeit if you've ever fact-checked something mid-conversation",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
@@ -2438,19 +2438,19 @@
       "type": "confession"
     },
     {
-      "text": "Everyone who has beef with someone not in this room takes 3 solidarity sips",
+      "text": "Everyone who has beef with someone not in this room takes 3 solidarity penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, describe your ideal night out in one sentence. If it sounds boring, 4 sips",
+      "text": "{player1}, describe your ideal night out in one sentence. If it sounds boring, 4 penalties",
       "category": "social",
       "chaos": 3,
       "type": "vote"
     },
     {
-      "text": "Drink if you've ever avoided someone you owe money",
+      "text": "Forfeit if you've ever avoided someone you owe money",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -2462,7 +2462,7 @@
       "type": "opinion"
     },
     {
-      "text": "Drink if you've creeped on your own profile through someone else's eyes",
+      "text": "Forfeit if you've creeped on your own profile through someone else's eyes",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2474,19 +2474,19 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've rehearsed a story before telling it",
+      "text": "Forfeit if you've rehearsed a story before telling it",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, who in this room would thrive in chaos? They become drink distributor for the next round",
+      "text": "{player1}, who in this room would thrive in chaos? They become forfeit distributor for the next round",
       "category": "social",
       "chaos": 5,
       "type": "target"
     },
     {
-      "text": "Drink if you've ever claimed you 'don't really watch TV'",
+      "text": "Forfeit if you've ever claimed you 'don't really watch TV'",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2498,7 +2498,7 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever made plans hoping they'd cancel",
+      "text": "Forfeit if you've ever made plans hoping they'd cancel",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
@@ -2510,7 +2510,7 @@
       "type": "perform"
     },
     {
-      "text": "Drink if you've ever sent a screenshot to the wrong person",
+      "text": "Forfeit if you've ever sent a screenshot to the wrong person",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
@@ -2522,20 +2522,20 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you have a note on your phone that would concern a therapist",
+      "text": "Forfeit if you have a note on your phone that would concern a therapist",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, give a TED talk titled 'Why I'm Right About Everything'. 30 seconds. Unconvincing = 4 sips",
+      "text": "{player1}, give a TED talk titled 'Why I'm Right About Everything'. 30 seconds. Unconvincing = 4 penalties",
       "category": "creative",
       "chaos": 5,
       "type": "perform",
       "timer": 30
     },
     {
-      "text": "Drink if you've ever faked being knowledgeable about something for too long to admit it now",
+      "text": "Forfeit if you've ever faked being knowledgeable about something for too long to admit it now",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -2547,25 +2547,25 @@
       "type": "confession"
     },
     {
-      "text": "Drink if you've ever typed 'lmao' with a completely straight face",
+      "text": "Forfeit if you've ever typed 'lmao' with a completely straight face",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "{player1}, who here would you trust with a secret? Who wouldn't you? Both drink",
+      "text": "{player1}, who here would you trust with a secret? Who wouldn't you? Both forfeit",
       "category": "social",
       "chaos": 6,
       "type": "target"
     },
     {
-      "text": "Drink if you've ever replied 'yeah haha' when you had no idea what they said",
+      "text": "Forfeit if you've ever replied 'yeah haha' when you had no idea what they said",
       "category": "drinking",
       "chaos": 2,
       "type": "group"
     },
     {
-      "text": "{player1}, name three green flags about yourself. Group decides if they're valid. Invalid ones = sips each",
+      "text": "{player1}, name three green flags about yourself. Group decides if they're valid. Invalid ones = penalties each",
       "category": "social",
       "chaos": 5,
       "type": "vote"
@@ -2585,13 +2585,13 @@
       "type": "target"
     },
     {
-      "text": "{player1}, give {player2} a 30-second shoulder massage or drink 3 times",
+      "text": "{player1}, give {player2} a 30-second shoulder massage or forfeit 3 times",
       "category": "dares",
       "chaos": 5,
       "type": "choice"
     },
     {
-      "text": "Everyone who's kissed someone in this room drinks!",
+      "text": "Everyone who's kissed someone in this room forfeits!",
       "category": "drinking",
       "chaos": 6,
       "type": "group"
@@ -2603,7 +2603,7 @@
       "type": "confession"
     },
     {
-      "text": "{player1}, rank everyone here by attractiveness or finish your drink",
+      "text": "{player1}, rank everyone here by attractiveness or take a big penalty",
       "category": "confessions",
       "chaos": 8,
       "type": "ranking"
@@ -2633,7 +2633,7 @@
       "type": "reveal"
     },
     {
-      "text": "Everyone who's sent a risky text in the last week drinks!",
+      "text": "Everyone who's sent a risky text in the last week forfeits!",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
@@ -2663,13 +2663,13 @@
       "type": "story"
     },
     {
-      "text": "Truth or drink! {player1}, what's your body count?",
+      "text": "Truth or forfeit! {player1}, what's your body count?",
       "category": "confessions",
       "chaos": 8,
       "type": "choice"
     },
     {
-      "text": "{player1}, whisper something to {player2}. They decide if you drink based on what you said",
+      "text": "{player1}, whisper something to {player2}. They decide if you forfeit based on what you said",
       "category": "chaos",
       "chaos": 6,
       "type": "secret"
@@ -2723,19 +2723,19 @@
       "type": "target"
     },
     {
-      "text": "Most likely to! Who's most likely to slide into a celebrity's DMs? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to slide into a celebrity's DMs? Most votes forfeits!",
       "category": "social",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to get married first? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to get married first? Most votes forfeits!",
       "category": "social",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Most likely to! Who's most likely to have a secret admirer? Most votes drinks!",
+      "text": "Most likely to! Who's most likely to have a secret admirer? Most votes forfeits!",
       "category": "social",
       "chaos": 4,
       "type": "vote"
@@ -2753,7 +2753,7 @@
       "type": "perform"
     },
     {
-      "text": "Take 4 sips if you've ever unmatched someone for bad texting game",
+      "text": "Take 4 penalties if you've ever unmatched someone for bad texting game",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -2765,50 +2765,50 @@
       "type": "vote"
     },
     {
-      "text": "{player1}, lock eyes with {player2} for 30 seconds without laughing. First to break takes 5 sips",
+      "text": "{player1}, lock eyes with {player2} for 30 seconds without laughing. First to break takes 5 penalties",
       "category": "dares",
       "chaos": 5,
       "type": "versus",
       "timer": 30
     },
     {
-      "text": "If you've ever gone back to an ex, take 4 sips",
+      "text": "If you've ever gone back to an ex, take 4 penalties",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "{player1}, what feature do you notice first on someone? Take a sip for every person who guessed wrong",
+      "text": "{player1}, what feature do you notice first on someone? Take a penalty for every person who guessed wrong",
       "category": "confessions",
       "chaos": 4,
       "type": "game"
     },
     {
-      "text": "Take 3 sips if you've ever pretended not to see someone you matched with IRL",
+      "text": "Take 3 penalties if you've ever pretended not to see someone you matched with IRL",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, rate your own rizz from 1-10. Group votes. Difference = sips",
+      "text": "{player1}, rate your own rizz from 1-10. Group votes. Difference = penalties",
       "category": "drinking",
       "chaos": 5,
       "type": "vote"
     },
     {
-      "text": "If you've ever sent a 'u up?' text, take 5 sips",
+      "text": "If you've ever sent a 'u up?' text, take 5 penalties",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "{player1}, describe your ideal type in emojis only. {player2} translates. Wrong = both drink 3",
+      "text": "{player1}, describe your ideal type in emojis only. {player2} translates. Wrong = both forfeit 3",
       "category": "creative",
       "chaos": 5,
       "type": "versus"
     },
     {
-      "text": "Take 3 sips if you've ever stalked someone before a first date",
+      "text": "Take 3 penalties if you've ever stalked someone before a first date",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -2820,25 +2820,25 @@
       "type": "perform"
     },
     {
-      "text": "Hot seat! Everyone asks {player1} one spicy question. Skip any = 3 sips each",
+      "text": "Hot seat! Everyone asks {player1} one spicy question. Skip any = 3 penalties each",
       "category": "confessions",
       "chaos": 7,
       "type": "rapid"
     },
     {
-      "text": "Take 4 sips if you have a 'type' but never admit it",
+      "text": "Take 4 penalties if you have a 'type' but never admit it",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, rank everyone's flirting skills. Lowest ranked takes 4 sips",
+      "text": "{player1}, rank everyone's flirting skills. Lowest ranked takes 4 penalties",
       "category": "confessions",
       "chaos": 6,
       "type": "ranking"
     },
     {
-      "text": "If you've ever said 'I'm just not looking for anything serious right now' while lying, take 5 sips",
+      "text": "If you've ever said 'I'm just not looking for anything serious right now' while lying, take 5 penalties",
       "category": "drinking",
       "chaos": 6,
       "type": "group"
@@ -2850,73 +2850,73 @@
       "type": "perform"
     },
     {
-      "text": "Take 3 sips if you've ever had a crush on a friend's sibling",
+      "text": "Take 3 penalties if you've ever had a crush on a friend's sibling",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "{player1}, who here would you wingman for? That person gives out 3 sips",
+      "text": "{player1}, who here would you wingman for? That person gives out 3 penalties",
       "category": "social",
       "chaos": 4,
       "type": "target"
     },
     {
-      "text": "If you've ever been someone's 2am thought, take 3 sips with confidence",
+      "text": "If you've ever been someone's 2am thought, take 3 penalties with confidence",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1} and {player2}, trade phone backgrounds for the next 3 rounds or both drink 5",
+      "text": "{player1} and {player2}, trade phone backgrounds for the next 3 rounds or both forfeit 5",
       "category": "dares",
       "chaos": 5,
       "type": "choice"
     },
     {
-      "text": "Take 4 sips if you know your attachment style and have mentioned it on a date",
+      "text": "Take 4 penalties if you know your attachment style and have mentioned it on a date",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, what's your red flag that you're fully aware of? Take a sip for every 'same'",
+      "text": "{player1}, what's your red flag that you're fully aware of? Take a penalty for every 'same'",
       "category": "confessions",
       "chaos": 5,
       "type": "confession"
     },
     {
-      "text": "If you've ever liked someone's photo from 47 weeks ago, take 5 sips (and finish if they noticed)",
+      "text": "If you've ever liked someone's photo from 47 weeks ago, take 5 penalties (and finish if they noticed)",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "{player1}, send a fire emoji to the 7th person in your DMs or take 5 sips",
+      "text": "{player1}, send a fire emoji to the 7th person in your DMs or take 5 penalties",
       "category": "dares",
       "chaos": 6,
       "type": "choice"
     },
     {
-      "text": "Most likely to! Who's most likely to double text? Point! Most votes takes 4 sips",
+      "text": "Most likely to! Who's most likely to double text? Point! Most votes takes 4 penalties",
       "category": "social",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Take 3 sips if you've ever practiced a text before sending it",
+      "text": "Take 3 penalties if you've ever practiced a text before sending it",
       "category": "drinking",
       "chaos": 3,
       "type": "group"
     },
     {
-      "text": "{player1}, give a toast to situationships. Everyone drinks at the end",
+      "text": "{player1}, give a toast to situationships. Everyone forfeits at the end",
       "category": "drinking",
       "chaos": 5,
       "type": "perform"
     },
     {
-      "text": "If you've manifested a relationship, take 4 sips",
+      "text": "If you've manifested a relationship, take 4 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
@@ -2928,7 +2928,7 @@
       "type": "game"
     },
     {
-      "text": "Take 3 sips if you're currently texting someone you shouldn't be",
+      "text": "Take 3 penalties if you're currently texting someone you shouldn't be",
       "category": "drinking",
       "chaos": 6,
       "type": "group"
@@ -2940,43 +2940,43 @@
       "type": "target"
     },
     {
-      "text": "If you've ever had a 'what are we' conversation, take 4 sips",
+      "text": "If you've ever had a 'what are we' conversation, take 4 penalties",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "{player1}, whisper something to {player2}. They rate it 1-10. Under 5 = you drink that many",
+      "text": "{player1}, whisper something to {player2}. They rate it 1-10. Under 5 = you forfeit that many",
       "category": "dares",
       "chaos": 6,
       "type": "secret"
     },
     {
-      "text": "Most likely to! Who's most likely to get married first? Most votes takes 3 sips",
+      "text": "Most likely to! Who's most likely to get married first? Most votes takes 3 penalties",
       "category": "social",
       "chaos": 4,
       "type": "vote"
     },
     {
-      "text": "Take 5 sips if you've ever cried over someone who didn't deserve it",
+      "text": "Take 5 penalties if you've ever cried over someone who didn't deserve it",
       "category": "drinking",
       "chaos": 5,
       "type": "group"
     },
     {
-      "text": "{player1}, what's the biggest ick you've ever ignored? Take a sip for every cringe",
+      "text": "{player1}, what's the biggest ick you've ever ignored? Take a penalty for every cringe",
       "category": "confessions",
       "chaos": 5,
       "type": "confession"
     },
     {
-      "text": "If you've ever lied about where you met someone, take 3 sips",
+      "text": "If you've ever lied about where you met someone, take 3 penalties",
       "category": "drinking",
       "chaos": 4,
       "type": "group"
     },
     {
-      "text": "{player1}, you have 20 seconds to rizz up {player2}. Group scores. Under 5 = drink the difference",
+      "text": "{player1}, you have 20 seconds to rizz up {player2}. Group scores. Under 5 = forfeit the difference",
       "category": "dares",
       "chaos": 6,
       "type": "challenge",

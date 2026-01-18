@@ -2,8 +2,9 @@
   "expo": {
     "name": "Gambit",
     "slug": "gambit",
-    "version": "1.0.5",
+    "version": "1.0.0",
     "orientation": "portrait",
+    "newArchEnabled": true,
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -14,32 +15,38 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.maxwellyoung.socialchaos",
-      "buildNumber": "5"
+      "buildNumber": "2"
     },
+    "scheme": "socialchaos",
     "android": {
       "package": "com.maxwellyoung.socialchaos",
-      "versionCode": 5,
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
-        "backgroundColor": "#050505"
+        "backgroundColor": "#2D1B4E"
       }
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-web-browser"
+    ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
+      "router": {
+        "origin": false
+      },
       "eas": {
-        "projectId": "e6174ea5-eeff-4f99-8854-c98cffaf4d89"
+        "projectId": "12cac593-c00c-46f3-80f4-28dbab5d1dca"
       }
     },
-    "assetBundlePatterns": ["**/*", "assets/images/*", "assets/fonts/*"],
-    "fonts": [
-      "./assets/fonts/Inter-Black.otf",
-      "./assets/fonts/Inter-Bold.otf",
-      "./assets/fonts/Inter-Medium.otf",
-      "./assets/fonts/Inter-Regular.otf",
-      "./assets/fonts/Inter-SemiBold.otf"
-    ]
+    "assetBundlePatterns": [
+      "**/*",
+      "assets/images/*",
+      "assets/fonts/*"
+    ],
+    "owner": "maxwellyoung"
   }
 }

@@ -1,5 +1,14 @@
-import React, { useEffect, useMemo } from "react";
-import { StyleSheet, View, Platform, Dimensions } from "react-native";
+import React, { useEffect } from "react";
+import { StyleSheet, View, Dimensions } from "react-native";
+import {
+  Canvas,
+  LinearGradient,
+  Rect,
+  vec,
+  Blur,
+  Circle,
+  Group,
+} from "@shopify/react-native-skia";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,241 +16,239 @@ import Animated, {
   withSequence,
   withTiming,
   Easing,
-  interpolate,
 } from "react-native-reanimated";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-const isWeb = Platform.OS === "web";
-
-interface BlobConfig {
-  color: string;
-  size: number;
-  x: number;
-  y: number;
-  duration: number;
-  delay: number;
-}
 
 interface FluidGradientProps {
   colors?: string[];
   speed?: number;
   blur?: number;
   style?: any;
+  width?: number;
+  height?: number;
 }
 
-const FluidBlob = ({ config, blur }: { config: BlobConfig; blur: number }) => {
-  const progress = useSharedValue(0);
-  const scale = useSharedValue(1);
-  const rotation = useSharedValue(0);
+/**
+ * FluidGradient - Animated fluid gradient background using Skia
+ * Creates beautiful mesh-like gradient with soft, flowing blobs
+ */
+export function FluidGradient({
+  colors = ["#8B5CF6", "#EC4899", "#3B82F6"],
+  speed = 1,
+  style,
+  width = SCREEN_WIDTH,
+  height = SCREEN_HEIGHT,
+}: FluidGradientProps) {
+  // Animation values for blob positions
+  const blob1X = useSharedValue(width * 0.2);
+  const blob1Y = useSharedValue(height * 0.3);
+  const blob2X = useSharedValue(width * 0.7);
+  const blob2Y = useSharedValue(height * 0.6);
+  const blob3X = useSharedValue(width * 0.4);
+  const blob3Y = useSharedValue(height * 0.8);
+
+  const baseDuration = 8000 / speed;
 
   useEffect(() => {
-    // Organic movement pattern
-    progress.value = withRepeat(
+    // Blob 1: Slow drift upper-left area
+    blob1X.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: config.duration, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0, { duration: config.duration, easing: Easing.inOut(Easing.ease) })
+        withTiming(width * 0.15, { duration: baseDuration, easing: Easing.inOut(Easing.ease) }),
+        withTiming(width * 0.35, { duration: baseDuration * 1.2, easing: Easing.inOut(Easing.ease) }),
+        withTiming(width * 0.2, { duration: baseDuration * 0.8, easing: Easing.inOut(Easing.ease) }),
       ),
       -1,
-      false
+      true
     );
-
-    // Breathing scale effect
-    scale.value = withRepeat(
+    blob1Y.value = withRepeat(
       withSequence(
-        withTiming(1.3, { duration: config.duration * 0.7, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0.8, { duration: config.duration * 0.7, easing: Easing.inOut(Easing.ease) })
+        withTiming(height * 0.25, { duration: baseDuration * 1.1, easing: Easing.inOut(Easing.ease) }),
+        withTiming(height * 0.4, { duration: baseDuration, easing: Easing.inOut(Easing.ease) }),
+        withTiming(height * 0.3, { duration: baseDuration * 0.9, easing: Easing.inOut(Easing.ease) }),
       ),
       -1,
       true
     );
 
-    // Slow rotation
-    rotation.value = withRepeat(
-      withTiming(360, { duration: config.duration * 3, easing: Easing.linear }),
+    // Blob 2: Medium drift center-right
+    blob2X.value = withRepeat(
+      withSequence(
+        withTiming(width * 0.75, { duration: baseDuration * 0.9, easing: Easing.inOut(Easing.ease) }),
+        withTiming(width * 0.55, { duration: baseDuration * 1.1, easing: Easing.inOut(Easing.ease) }),
+        withTiming(width * 0.7, { duration: baseDuration, easing: Easing.inOut(Easing.ease) }),
+      ),
       -1,
-      false
+      true
     );
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    // Create organic, fluid movement paths
-    const moveX = interpolate(
-      progress.value,
-      [0, 0.25, 0.5, 0.75, 1],
-      [0, 80, 40, -60, 0]
-    );
-    const moveY = interpolate(
-      progress.value,
-      [0, 0.33, 0.66, 1],
-      [0, -70, 50, 0]
+    blob2Y.value = withRepeat(
+      withSequence(
+        withTiming(height * 0.5, { duration: baseDuration, easing: Easing.inOut(Easing.ease) }),
+        withTiming(height * 0.7, { duration: baseDuration * 1.2, easing: Easing.inOut(Easing.ease) }),
+        withTiming(height * 0.6, { duration: baseDuration * 0.8, easing: Easing.inOut(Easing.ease) }),
+      ),
+      -1,
+      true
     );
 
-    return {
-      transform: [
-        { translateX: config.x + moveX },
-        { translateY: config.y + moveY },
-        { scale: scale.value },
-        { rotate: `${rotation.value}deg` },
-      ],
-      opacity: 0.7,
-    };
-  });
+    // Blob 3: Slower drift bottom area
+    blob3X.value = withRepeat(
+      withSequence(
+        withTiming(width * 0.3, { duration: baseDuration * 1.3, easing: Easing.inOut(Easing.ease) }),
+        withTiming(width * 0.5, { duration: baseDuration * 1.1, easing: Easing.inOut(Easing.ease) }),
+        withTiming(width * 0.4, { duration: baseDuration, easing: Easing.inOut(Easing.ease) }),
+      ),
+      -1,
+      true
+    );
+    blob3Y.value = withRepeat(
+      withSequence(
+        withTiming(height * 0.75, { duration: baseDuration * 1.2, easing: Easing.inOut(Easing.ease) }),
+        withTiming(height * 0.85, { duration: baseDuration, easing: Easing.inOut(Easing.ease) }),
+        withTiming(height * 0.8, { duration: baseDuration * 0.9, easing: Easing.inOut(Easing.ease) }),
+      ),
+      -1,
+      true
+    );
+  }, [baseDuration, height, width]);
 
-  const blobStyle = useMemo(() => ({
-    position: "absolute" as const,
-    width: config.size,
-    height: config.size,
-    borderRadius: config.size / 2,
-    backgroundColor: config.color,
-    ...(isWeb && {
-      filter: `blur(${blur}px)`,
-      mixBlendMode: "screen" as const,
-    }),
-  }), [config, blur]);
+  // Calculate blob sizes based on dimensions
+  const blobSize1 = Math.min(width, height) * 0.6;
+  const blobSize2 = Math.min(width, height) * 0.5;
+  const blobSize3 = Math.min(width, height) * 0.45;
 
-  return <Animated.View style={[blobStyle, animatedStyle]} />;
-};
-
-export function FluidGradient({
-  colors = ["#8B5CF6", "#EC4899", "#3B82F6", "#10B981", "#F59E0B"],
-  speed = 1,
-  blur = 100,
-  style,
-}: FluidGradientProps) {
-  // Generate blob configurations based on colors
-  const blobs = useMemo((): BlobConfig[] => {
-    return colors.map((color, index) => {
-      const angle = (index / colors.length) * Math.PI * 2;
-      const radius = Math.min(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.3;
-
-      return {
-        color,
-        size: 250 + Math.random() * 200,
-        x: SCREEN_WIDTH / 2 + Math.cos(angle) * radius - 200,
-        y: SCREEN_HEIGHT / 3 + Math.sin(angle) * radius - 150,
-        duration: (8000 + Math.random() * 4000) / speed,
-        delay: index * 500,
-      };
-    });
-  }, [colors, speed]);
-
-  // Add extra blobs for more fluid effect
-  const extraBlobs = useMemo((): BlobConfig[] => {
-    return colors.slice(0, 3).map((color, index) => ({
-      color,
-      size: 180 + Math.random() * 150,
-      x: Math.random() * SCREEN_WIDTH - 100,
-      y: Math.random() * SCREEN_HEIGHT * 0.6,
-      duration: (10000 + Math.random() * 5000) / speed,
-      delay: 1000 + index * 700,
-    }));
-  }, [colors, speed]);
-
-  const allBlobs = [...blobs, ...extraBlobs];
+  // Add alpha to colors for transparency
+  const gradientColors = [
+    colors[0] + "80", // 50% opacity
+    colors[1] + "70", // ~44% opacity
+    colors[2] + "60", // ~38% opacity
+  ];
 
   return (
-    <View style={[styles.container, style]}>
-      {/* Dark base */}
-      <View style={styles.darkBase} />
+    <View style={[styles.container, style, { width, height }]} pointerEvents="none">
+      <Canvas style={styles.canvas}>
+        {/* Dark base gradient */}
+        <Rect x={0} y={0} width={width} height={height}>
+          <LinearGradient
+            start={vec(0, 0)}
+            end={vec(width, height)}
+            colors={["#050505", "#0a0a0a"]}
+          />
+        </Rect>
 
-      {/* Gradient blobs */}
-      <View style={styles.blobContainer}>
-        {allBlobs.map((blob, index) => (
-          <FluidBlob key={index} config={blob} blur={blur} />
-        ))}
-      </View>
+        {/* Blurred gradient blobs */}
+        <Group>
+          <Blur blur={80} />
 
-      {/* Overlay for depth */}
-      <View style={styles.overlay} />
+          {/* Blob 1 - Primary color (purple) */}
+          <Circle
+            cx={width * 0.25}
+            cy={height * 0.3}
+            r={blobSize1}
+            color={gradientColors[0]}
+          />
 
-      {/* Noise texture overlay for grain effect */}
-      {isWeb && <View style={styles.noiseOverlay} />}
+          {/* Blob 2 - Secondary color (pink) */}
+          <Circle
+            cx={width * 0.7}
+            cy={height * 0.6}
+            r={blobSize2}
+            color={gradientColors[1]}
+          />
+
+          {/* Blob 3 - Tertiary color (blue) */}
+          <Circle
+            cx={width * 0.4}
+            cy={height * 0.8}
+            r={blobSize3}
+            color={gradientColors[2]}
+          />
+        </Group>
+      </Canvas>
     </View>
   );
 }
 
-// Simpler version for lower-end devices
-export function FluidGradientSimple({
-  colors = ["#8B5CF6", "#EC4899", "#3B82F6"],
+/**
+ * AnimatedFluidGradient - Version with additional overall movement
+ */
+export function AnimatedFluidGradient({
+  width = SCREEN_WIDTH,
+  height = SCREEN_HEIGHT,
+  speed = 1,
+  colors,
   style,
-}: {
-  colors?: string[];
-  style?: any;
-}) {
-  const rotation = useSharedValue(0);
+}: FluidGradientProps) {
+  // Animation for subtle overall movement
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(1);
 
   useEffect(() => {
-    rotation.value = withRepeat(
-      withTiming(360, { duration: 20000, easing: Easing.linear }),
+    const duration = 12000 / speed;
+
+    translateX.value = withRepeat(
+      withSequence(
+        withTiming(10, { duration, easing: Easing.inOut(Easing.ease) }),
+        withTiming(-10, { duration, easing: Easing.inOut(Easing.ease) }),
+      ),
       -1,
-      false
+      true
     );
-  }, []);
+
+    translateY.value = withRepeat(
+      withSequence(
+        withTiming(8, { duration: duration * 1.2, easing: Easing.inOut(Easing.ease) }),
+        withTiming(-8, { duration: duration * 1.2, easing: Easing.inOut(Easing.ease) }),
+      ),
+      -1,
+      true
+    );
+
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1.02, { duration: duration * 1.5, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: duration * 1.5, easing: Easing.inOut(Easing.ease) }),
+      ),
+      -1,
+      true
+    );
+  }, [speed]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value },
+    ],
   }));
 
   return (
-    <View style={[styles.container, style]}>
-      <View style={styles.darkBase} />
-      <Animated.View style={[styles.simpleGradient, animatedStyle]}>
-        {colors.map((color, i) => (
-          <View
-            key={i}
-            style={[
-              styles.simpleBlob,
-              {
-                backgroundColor: color,
-                left: `${20 + i * 25}%`,
-                top: `${15 + i * 20}%`,
-                width: 300 - i * 30,
-                height: 300 - i * 30,
-              },
-            ]}
-          />
-        ))}
-      </Animated.View>
-      <View style={styles.overlay} />
-    </View>
+    <Animated.View style={[styles.animatedContainer, animatedStyle, style]} pointerEvents="none">
+      <FluidGradient width={width + 40} height={height + 40} speed={speed} colors={colors} />
+    </Animated.View>
   );
+}
+
+// Alias for compatibility
+export function FluidGradientSimple(props: FluidGradientProps) {
+  return <FluidGradient {...props} />;
 }
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    position: "absolute",
+    top: 0,
+    left: 0,
     overflow: "hidden",
     backgroundColor: "#050505",
   },
-  darkBase: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#050505",
+  canvas: {
+    flex: 1,
   },
-  blobContainer: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-  },
-  noiseOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    opacity: 0.03,
-    ...(isWeb && {
-      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-    }),
-  },
-  simpleGradient: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  simpleBlob: {
+  animatedContainer: {
     position: "absolute",
-    borderRadius: 999,
-    opacity: 0.4,
-    ...(isWeb && {
-      filter: "blur(80px)",
-    }),
+    top: -20,
+    left: -20,
   },
 });

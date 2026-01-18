@@ -17,6 +17,7 @@ import {
   Platform,
   ScrollView,
   Share,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SlideDownPanel } from "./SlideDownPanel";
@@ -62,6 +63,7 @@ const STORAGE_KEYS = {
   SKIPPED_PROMPTS: "gambit_skipped_prompts",
   FAVORITE_PROMPTS: "gambit_favorite_prompts",
   CUSTOM_PROMPTS: "gambit_custom_prompts",
+  ADULT_MODE: "gambit_adult_mode",
 };
 
 // Types
@@ -115,14 +117,14 @@ const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.25;
 const MAX_WIDTH = 500;
 
 const CATEGORIES: Record<CategoryKey, { name: string; emoji: string; color: string; gradient: [string, string] }> = {
-  drinking: { name: "Drinking", emoji: "🍻", color: "#F59E0B", gradient: ["#F59E0B", "#D97706"] },
-  dares: { name: "Dares", emoji: "🎯", color: "#EF4444", gradient: ["#EF4444", "#DC2626"] },
   confessions: { name: "Confessions", emoji: "🤫", color: "#A855F7", gradient: ["#A855F7", "#9333EA"] },
   hot_takes: { name: "Hot Takes", emoji: "🔥", color: "#F97316", gradient: ["#F97316", "#EA580C"] },
-  physical: { name: "Physical", emoji: "💪", color: "#10B981", gradient: ["#10B981", "#059669"] },
+  dares: { name: "Dares", emoji: "🎯", color: "#EF4444", gradient: ["#EF4444", "#DC2626"] },
   social: { name: "Social", emoji: "💬", color: "#3B82F6", gradient: ["#3B82F6", "#2563EB"] },
+  physical: { name: "Physical", emoji: "💪", color: "#10B981", gradient: ["#10B981", "#059669"] },
   creative: { name: "Creative", emoji: "🎨", color: "#EC4899", gradient: ["#EC4899", "#DB2777"] },
   chaos: { name: "Chaos", emoji: "🌪️", color: "#8B5CF6", gradient: ["#8B5CF6", "#7C3AED"] },
+  drinking: { name: "Forfeits", emoji: "🎲", color: "#F59E0B", gradient: ["#F59E0B", "#D97706"] },
 };
 
 // Haptic helper
@@ -286,7 +288,6 @@ export function PersonalizedPartyGame() {
   const [newPlayerName, setNewPlayerName] = useState("");
   const [isAddPlayerVisible, setIsAddPlayerVisible] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [gameStats] = useState({ activeNow: Math.floor(Math.random() * 50) + 60 });
 
   // Skip/Favorites system
   const [skippedPrompts, setSkippedPrompts] = useState<Set<string>>(new Set());
@@ -294,7 +295,12 @@ export function PersonalizedPartyGame() {
   const [customPrompts, setCustomPrompts] = useState<Prompt[]>([]);
   const [showCustomPromptModal, setShowCustomPromptModal] = useState(false);
   const [newCustomPrompt, setNewCustomPrompt] = useState("");
-  const [selectedCustomCategory, setSelectedCustomCategory] = useState<CategoryKey>("drinking");
+  const [selectedCustomCategory, setSelectedCustomCategory] = useState<CategoryKey>("social");
+
+  // 21+ Adult Mode - unlocks Forfeits category (hidden, tap logo 5x to unlock)
+  const [isAdultMode, setIsAdultMode] = useState(false);
+  const secretTapCount = useRef(0);
+  const secretTapTimer = useRef<NodeJS.Timeout | null>(null);
 
   const [gameState, setGameState] = useState<GameState>({
     screen: "setup",
@@ -304,7 +310,7 @@ export function PersonalizedPartyGame() {
     currentPromptIndex: 0,
     isSexyMode: false,
     chaosLevel: 5,
-    selectedCategories: ["drinking", "social", "dares"],
+    selectedCategories: ["confessions", "hot_takes", "social"],
     timerActive: false,
     timerSeconds: 0,
     gameMode: "classic",
@@ -318,14 +324,16 @@ export function PersonalizedPartyGame() {
   useEffect(() => {
     const loadSavedData = async () => {
       try {
-        const [skipped, favorites, custom] = await Promise.all([
+        const [skipped, favorites, custom, adultMode] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.SKIPPED_PROMPTS),
           AsyncStorage.getItem(STORAGE_KEYS.FAVORITE_PROMPTS),
           AsyncStorage.getItem(STORAGE_KEYS.CUSTOM_PROMPTS),
+          AsyncStorage.getItem(STORAGE_KEYS.ADULT_MODE),
         ]);
         if (skipped) setSkippedPrompts(new Set(JSON.parse(skipped)));
         if (favorites) setFavoritePrompts(new Set(JSON.parse(favorites)));
         if (custom) setCustomPrompts(JSON.parse(custom));
+        if (adultMode) setIsAdultMode(JSON.parse(adultMode));
       } catch (e) {
         console.log("Error loading saved data:", e);
       }
@@ -354,6 +362,40 @@ export function PersonalizedPartyGame() {
     setFavoritePrompts(newFavorites);
     await AsyncStorage.setItem(STORAGE_KEYS.FAVORITE_PROMPTS, JSON.stringify([...newFavorites]));
   }, [favoritePrompts]);
+
+  const handleSecretTap = useCallback(() => {
+    // Clear existing timer
+    if (secretTapTimer.current) {
+      clearTimeout(secretTapTimer.current);
+    }
+
+    secretTapCount.current += 1;
+
+    if (secretTapCount.current >= 5) {
+      // Unlock/toggle adult mode
+      triggerHaptic("success");
+      const newValue = !isAdultMode;
+      setIsAdultMode(newValue);
+      AsyncStorage.setItem(STORAGE_KEYS.ADULT_MODE, JSON.stringify(newValue));
+      secretTapCount.current = 0;
+
+      // Remove drinking from selected categories if turning off
+      if (!newValue) {
+        setGameState(prev => ({
+          ...prev,
+          selectedCategories: prev.selectedCategories.filter(c => c !== "drinking"),
+        }));
+      }
+    } else {
+      // Small haptic for each tap
+      triggerHaptic("light");
+    }
+
+    // Reset counter after 2 seconds of no taps
+    secretTapTimer.current = setTimeout(() => {
+      secretTapCount.current = 0;
+    }, 2000);
+  }, [isAdultMode]);
 
   const addCustomPrompt = useCallback(async () => {
     if (!newCustomPrompt.trim()) return;
@@ -580,13 +622,13 @@ export function PersonalizedPartyGame() {
     }
 
     if (drunkest && drunkest.drinks > 0) {
-      message += `🍺 Most Hydrated: ${drunkest.name} (${drunkest.drinks} drinks)\n`;
+      message += `🎭 Most Penalized: ${drunkest.name} (${drunkest.drinks} penalties)\n`;
     }
 
     message += `\n📊 Final Standings:\n`;
     sortedPlayers.forEach((p, i) => {
       message += `${i + 1}. ${p.avatar} ${p.name}: ${p.score}pts`;
-      if (p.drinks > 0) message += ` (🍺${p.drinks})`;
+      if (p.drinks > 0) message += ` (🎭${p.drinks})`;
       message += `\n`;
     });
 
@@ -655,17 +697,23 @@ export function PersonalizedPartyGame() {
         blur={100}
       />
 
-      <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false} contentContainerStyle={styles.setupContent}>
-        <Animated.View entering={FadeInDown.duration(600).springify()} style={styles.hero}>
+      <ScrollView 
+        style={styles.scrollContent} 
+        showsVerticalScrollIndicator={false} 
+        contentContainerStyle={[styles.setupContent, Platform.OS === "web" && { flexGrow: 1, paddingBottom: 80 }]}
+      >
+        <Animated.View entering={FadeInDown.duration(500)} style={styles.hero}>
+          <TouchableOpacity onPress={handleSecretTap} activeOpacity={1} style={styles.logoContainer}>
+            <Image
+              source={require("../assets/images/icon.png")}
+              style={styles.appIcon}
+            />
+          </TouchableOpacity>
           <Text style={styles.heroTitle}>GAMBIT</Text>
-          <Text style={styles.heroSub}>Party chaos, perfected</Text>
+          <Text style={styles.heroSub}>Social games, perfected</Text>
         </Animated.View>
 
-        <Animated.View entering={FadeInUp.delay(50).duration(400)} style={styles.liveStats}>
-          <View style={styles.liveDot} />
-          <Text style={styles.liveText}>{gameStats.activeNow} playing now</Text>
-        </Animated.View>
-
+        
         <Animated.View entering={FadeInUp.delay(100).duration(500)} style={styles.card}>
           <TouchableOpacity style={styles.cardTouchable} onPress={() => setIsAddPlayerVisible(true)} activeOpacity={0.8}>
             <View style={styles.cardRow}>
@@ -699,7 +747,7 @@ export function PersonalizedPartyGame() {
           </TouchableOpacity>
         </Animated.View>
 
-        <Animated.View entering={FadeInUp.delay(300).duration(500)} style={styles.sliderCard}>
+        <Animated.View entering={FadeInUp.delay(250).duration(500)} style={styles.sliderCard}>
           <View style={styles.sliderHeader}>
             <Text style={styles.sliderLabel}>Chaos Level</Text>
             <View style={styles.chaosValueBadge}><Text style={styles.chaosValue}>{gameState.chaosLevel}</Text></View>
@@ -721,7 +769,7 @@ export function PersonalizedPartyGame() {
           </View>
         </Animated.View>
 
-        <Animated.View style={errorStyle} entering={FadeInUp.delay(400).duration(500)}>
+        <Animated.View style={errorStyle} entering={FadeInUp.delay(350).duration(500)}>
           <TouchableOpacity
             style={styles.startButton}
             onPress={() => players.length >= 2 ? setGameState(prev => ({ ...prev, screen: "categories" })) : startGame()}
@@ -734,7 +782,7 @@ export function PersonalizedPartyGame() {
           </TouchableOpacity>
         </Animated.View>
 
-        <Animated.View entering={FadeIn.delay(600).duration(400)} style={styles.footer}>
+        <Animated.View entering={FadeIn.delay(500).duration(400)} style={styles.footer}>
           <TouchableOpacity onPress={() => router.push("/privacy")} activeOpacity={0.7}>
             <Text style={styles.footerLink}>Privacy</Text>
           </TouchableOpacity>
@@ -765,15 +813,17 @@ export function PersonalizedPartyGame() {
         </View>
 
         <Animated.View entering={FadeInDown.duration(500)}>
-          <Text style={styles.catTitle}>Pick Your Poison</Text>
+          <Text style={styles.catTitle}>Choose Your Vibe</Text>
         </Animated.View>
 
         <View style={styles.catGrid}>
-          {(Object.keys(CATEGORIES) as CategoryKey[]).map((key, i) => {
+          {(Object.keys(CATEGORIES) as CategoryKey[])
+            .filter(key => key !== "drinking" || isAdultMode)
+            .map((key, i) => {
             const cat = CATEGORIES[key];
             const selected = gameState.selectedCategories.includes(key);
             return (
-              <Animated.View key={key} entering={ZoomIn.delay(100 + i * 40).springify()}>
+              <Animated.View key={key} entering={ZoomIn.delay(80 + i * 30).duration(250)}>
                 <TouchableOpacity style={[styles.catCard, selected && { borderColor: cat.color }]} onPress={() => toggleCategory(key)} activeOpacity={0.85}>
                   {selected && <LinearGradient colors={[cat.gradient[0] + "30", cat.gradient[1] + "10"]} style={StyleSheet.absoluteFill} />}
                   <Text style={styles.catEmoji}>{cat.emoji}</Text>
@@ -864,7 +914,7 @@ export function PersonalizedPartyGame() {
                   <Text style={styles.scoringName}>{p.name}</Text>
                   <View style={styles.scoringStats}>
                     <Text style={styles.scoringScore}>+{p.score}</Text>
-                    {p.drinks > 0 && <Text style={styles.scoringDrinks}>🍺{p.drinks}</Text>}
+                    {p.drinks > 0 && <Text style={styles.scoringDrinks}>🎭{p.drinks}</Text>}
                   </View>
                 </TouchableOpacity>
               ))}
@@ -887,7 +937,7 @@ export function PersonalizedPartyGame() {
   const renderRoundEnd = () => (
     <View style={styles.screen}>
       <LinearGradient colors={["#8B5CF620", "#000"]} style={StyleSheet.absoluteFill} />
-      <Animated.View style={styles.roundEndContent} entering={ZoomIn.springify()}>
+      <Animated.View style={styles.roundEndContent} entering={ZoomIn.duration(300)}>
         <Animated.Text entering={BounceIn.delay(200)} style={styles.roundEndEmoji}>🎉</Animated.Text>
         <Text style={styles.roundEndTitle}>Round {gameState.round} Done!</Text>
         <Text style={styles.roundEndSub}>{gameState.totalRounds - gameState.round} more to go</Text>
@@ -912,10 +962,10 @@ export function PersonalizedPartyGame() {
       <View style={styles.screen}>
         <LinearGradient colors={["#FFD70020", "#000"]} style={StyleSheet.absoluteFill} />
         <ScrollView contentContainerStyle={styles.resultsContent}>
-          <Animated.Text entering={FadeInDown.springify()} style={styles.resultsTitle}>Game Over</Animated.Text>
+          <Animated.Text entering={FadeInDown.duration(400)} style={styles.resultsTitle}>Game Over</Animated.Text>
 
           {winner && winner.score > 0 && (
-            <Animated.View entering={ZoomIn.delay(200).springify()} style={styles.winnerCard}>
+            <Animated.View entering={ZoomIn.delay(150).duration(300)} style={styles.winnerCard}>
               <Animated.Text entering={BounceIn.delay(400)} style={styles.winnerEmoji}>👑</Animated.Text>
               <Text style={styles.winnerLabel}>CHAMPION</Text>
               <Text style={styles.winnerName}>{winner.avatar} {winner.name}</Text>
@@ -924,23 +974,23 @@ export function PersonalizedPartyGame() {
           )}
 
           {drunkest && drunkest.drinks > 0 && (
-            <Animated.View entering={ZoomIn.delay(350).springify()} style={[styles.winnerCard, styles.drunkestCard]}>
-              <Text style={styles.drunkestEmoji}>🍺</Text>
-              <Text style={styles.drunkestLabel}>MOST HYDRATED</Text>
+            <Animated.View entering={ZoomIn.delay(280).duration(300)} style={[styles.winnerCard, styles.drunkestCard]}>
+              <Text style={styles.drunkestEmoji}>🎭</Text>
+              <Text style={styles.drunkestLabel}>MOST PENALIZED</Text>
               <Text style={styles.drunkestName}>{drunkest.avatar} {drunkest.name}</Text>
-              <Text style={styles.drunkestScore}>{drunkest.drinks} drinks</Text>
+              <Text style={styles.drunkestScore}>{drunkest.drinks} penalties</Text>
             </Animated.View>
           )}
 
           <View style={styles.resultsList}>
             {sortedPlayers.map((p, i) => (
-              <Animated.View key={i} entering={SlideInRight.delay(400 + i * 80).springify()} style={styles.resultRow}>
+              <Animated.View key={i} entering={SlideInRight.delay(300 + i * 60).duration(250)} style={styles.resultRow}>
                 <Text style={[styles.resultRank, i === 0 && styles.resultRankFirst]}>{i + 1}</Text>
                 <Text style={styles.resultAvatar}>{p.avatar}</Text>
                 <Text style={styles.resultName}>{p.name}</Text>
                 <View style={styles.resultStats}>
                   <Text style={styles.resultScore}>{p.score}pts</Text>
-                  {p.drinks > 0 && <Text style={styles.resultDrinks}>🍺{p.drinks}</Text>}
+                  {p.drinks > 0 && <Text style={styles.resultDrinks}>🎭{p.drinks}</Text>}
                 </View>
               </Animated.View>
             ))}
@@ -1006,7 +1056,7 @@ export function PersonalizedPartyGame() {
           data={players}
           keyExtractor={(_, i) => i.toString()}
           renderItem={({ item, index }) => (
-            <Animated.View entering={FadeInUp.delay(index * 40).duration(200).springify()} exiting={SlideOutLeft.duration(150)} layout={Layout.springify()} style={styles.dialogPlayer}>
+            <Animated.View entering={FadeInUp.delay(index * 30).duration(180)} exiting={SlideOutLeft.duration(120)} layout={Layout.duration(200)} style={styles.dialogPlayer}>
               <View style={styles.playerAvatarWrap}><Text style={styles.playerAvatar}>{item.avatar}</Text></View>
               <Text style={styles.dialogPlayerText}>{item.name}</Text>
               <TouchableOpacity style={styles.removeBtn} onPress={() => removePlayer(index)} activeOpacity={0.7}>
@@ -1040,10 +1090,12 @@ const styles = StyleSheet.create({
   liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#10B981", marginRight: 8 },
   liveText: { fontSize: 13, color: "rgba(255,255,255,0.6)", fontWeight: "600" },
 
-  setupContent: { padding: 20, paddingBottom: 40 },
-  hero: { alignItems: "center", marginTop: 40, marginBottom: 20 },
-  heroTitle: { fontSize: 64, fontWeight: "900", color: "#FFF", letterSpacing: 8 },
-  heroSub: { fontSize: 16, color: "rgba(255,255,255,0.5)", marginTop: 8, letterSpacing: 2 },
+  setupContent: { padding: 20, paddingBottom: Platform.OS === "web" ? 80 : 40 },
+  hero: { alignItems: "center", marginTop: 20, marginBottom: 20 },
+  logoContainer: { marginBottom: 16 },
+  appIcon: { width: 100, height: 100, borderRadius: 24 },
+  heroTitle: { fontSize: 48, fontWeight: "900", color: "#FFF", letterSpacing: 6 },
+  heroSub: { fontSize: 15, color: "rgba(255,255,255,0.5)", marginTop: 6, letterSpacing: 1.5 },
 
   card: { backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 20, marginBottom: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
   cardTouchable: { padding: 20 },
@@ -1063,6 +1115,8 @@ const styles = StyleSheet.create({
   modeText: { fontSize: 17, fontWeight: "600", color: "#FFF", flex: 1 },
   modeIndicator: { width: 48, height: 28, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.1)" },
   modeIndicatorActive: { backgroundColor: "#EC4899" },
+  adultModeCardActive: { backgroundColor: "rgba(245,158,11,0.1)", borderColor: "rgba(245,158,11,0.3)" },
+  adultModeIndicatorActive: { backgroundColor: "#F59E0B" },
 
   sliderCard: { backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 20, padding: 20, marginBottom: 24, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
   sliderHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },

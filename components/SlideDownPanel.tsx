@@ -4,10 +4,9 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  interpolate,
-  Extrapolate,
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface SlideDownPanelProps {
   isVisible: boolean;
@@ -23,23 +22,18 @@ export function SlideDownPanel({
   onClose,
   children,
 }: SlideDownPanelProps) {
+  const insets = useSafeAreaInsets();
+
+  // Subtle, refined animation - no bounce, just smooth
   const slideStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateY: withSpring(isVisible ? 0 : -600, {
-          damping: 28,
-          stiffness: 280,
-          mass: 0.8,
-        }),
-      },
-      {
-        scale: withSpring(isVisible ? 1 : 0.9, {
-          damping: 28,
-          stiffness: 280,
+        translateY: withTiming(isVisible ? 0 : -600, {
+          duration: 280,
         }),
       },
     ],
-    opacity: withTiming(isVisible ? 1 : 0, { duration: 150 }),
+    opacity: withTiming(isVisible ? 1 : 0, { duration: 200 }),
   }));
 
   const backdropStyle = useAnimatedStyle(() => ({
@@ -54,7 +48,7 @@ export function SlideDownPanel({
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
       </Animated.View>
       <Animated.View style={[styles.panelWrapper, slideStyle]}>
-        <View style={styles.panel}>
+        <View style={[styles.panel, { paddingTop: Math.max(insets.top, 12) + 8 }]}>
           {/* Gradient border effect */}
           <LinearGradient
             colors={["rgba(139,92,246,0.3)", "rgba(236,72,153,0.1)", "transparent"]}
