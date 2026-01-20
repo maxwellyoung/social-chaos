@@ -56,7 +56,12 @@ import * as Haptics from "expo-haptics";
 import { FluidGradient } from "./FluidGradient";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { playTap, playSwipe, playSuccess, playPop, playTick, playWhoosh } from "../utils/sounds";
 import promptData from "../assets/prompts/prompts.json";
+import { Paywall } from "./Paywall";
+import { initializePurchases, getActiveEntitlements } from "../lib/purchases";
+import { getUnlockedPremiumPrompts, Prompt as PremiumPrompt } from "../lib/premiumContent";
+import { useReducedMotionWeb } from "../hooks/useReducedMotion";
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -129,7 +134,18 @@ const CATEGORIES: Record<CategoryKey, { name: string; emoji: string; color: stri
 
 // Haptic helper
 const triggerHaptic = (type: "light" | "medium" | "heavy" | "success" | "error") => {
-  if (Platform.OS === "web") return;
+  // Play sound on web (and optionally native for consistency)
+  if (Platform.OS === "web") {
+    switch (type) {
+      case "light": playTap(); break;
+      case "medium": playPop(); break;
+      case "heavy": playPop(); break;
+      case "success": playSuccess(); break;
+      case "error": break; // Skip error sound
+    }
+    return;
+  }
+  // Native haptics
   switch (type) {
     case "light": Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); break;
     case "medium": Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); break;
@@ -165,12 +181,22 @@ const Particle = ({ delay, startX }: { delay: number; startX: number }) => {
   return <Animated.Text style={[style, { fontSize: 20, color: colors[Math.floor(Math.random() * colors.length)] }]}>✦</Animated.Text>;
 };
 
-const Confetti = ({ count = 40 }: { count?: number }) => {
+const Confetti = ({ count = 40, reduceMotion = false }: { count?: number; reduceMotion?: boolean }) => {
+  // Skip rendering confetti entirely when reduce motion is enabled
+  if (reduceMotion) {
+    return null;
+  }
+
   const particles = useMemo(() => Array.from({ length: count }, (_, i) => ({
     id: i, delay: Math.random() * 400, startX: Math.random() * SCREEN_WIDTH,
   })), [count]);
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    <View
+      style={StyleSheet.absoluteFill}
+      pointerEvents="none"
+      accessibilityElementsHidden={true}
+      importantForAccessibility="no-hide-descendants"
+    >
       {particles.map((p) => <Particle key={p.id} delay={p.delay} startX={p.startX} />)}
     </View>
   );
@@ -225,6 +251,7 @@ const SwipeableCard = ({
     .onEnd((e) => {
       if (Math.abs(e.translationX) > SWIPE_THRESHOLD) {
         const dir = e.translationX > 0 ? 1 : -1;
+        if (Platform.OS === "web") runOnJS(playSwipe)(dir > 0 ? "right" : "left");
         translateX.value = withTiming(dir * SCREEN_WIDTH * 1.5, { duration: 300 });
         rotation.value = withTiming(dir * 30, { duration: 300 });
         opacity.value = withTiming(0, { duration: 200 }, () => {
@@ -264,26 +291,52 @@ const SwipeableCard = ({
           {isTop && (
             <View style={styles.cardActions}>
               {onFavorite && (
-                <TouchableOpacity onPress={onFavorite} style={styles.cardActionBtn}>
+                <TouchableOpacity
+                  onPress={onFavorite}
+                  style={styles.cardActionBtn}
+                  accessibilityRole="button"
+                  accessibilityLabel={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                  accessibilityHint={isFavorite ? "Double tap to remove this prompt from your favorites" : "Double tap to save this prompt to your favorites"}
+                >
                   <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={20} color={isFavorite ? "#EC4899" : "rgba(255,255,255,0.5)"} />
                 </TouchableOpacity>
               )}
               {onSkip && (
-                <TouchableOpacity onPress={onSkip} style={styles.cardActionBtn}>
+                <TouchableOpacity
+                  onPress={onSkip}
+                  style={styles.cardActionBtn}
+                  accessibilityRole="button"
+                  accessibilityLabel="Skip this prompt forever"
+                  accessibilityHint="Double tap to permanently hide this prompt from future games"
+                >
                   <Ionicons name="close-circle-outline" size={20} color="rgba(255,255,255,0.5)" />
                 </TouchableOpacity>
               )}
             </View>
           )}
         </View>
-        <Text style={styles.promptText}>{card.text}</Text>
-        <Text style={styles.swipeHint}>← Swipe →</Text>
+        <Text
+          style={styles.promptText}
+          accessibilityRole="text"
+          accessibilityLabel={`Game prompt: ${card.text}`}
+        >
+          {card.text}
+        </Text>
+        <Text
+          style={styles.swipeHint}
+          accessibilityLabel="Swipe left or right to go to next prompt"
+        >
+          Swipe
+        </Text>
       </Animated.View>
     </GestureDetector>
   );
 };
 
 export function PersonalizedPartyGame() {
+  // Accessibility - check if user prefers reduced motion
+  const reduceMotion = useReducedMotionWeb();
+
   const [players, setPlayers] = useState<Player[]>([]);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [isAddPlayerVisible, setIsAddPlayerVisible] = useState(false);
@@ -301,6 +354,11 @@ export function PersonalizedPartyGame() {
   const [isAdultMode, setIsAdultMode] = useState(false);
   const secretTapCount = useRef(0);
   const secretTapTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // IAP / Paywall state
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [purchasedEntitlements, setPurchasedEntitlements] = useState<string[]>([]);
+  const [premiumPrompts, setPremiumPrompts] = useState<Prompt[]>([]);
 
   const [gameState, setGameState] = useState<GameState>({
     screen: "setup",
@@ -339,6 +397,22 @@ export function PersonalizedPartyGame() {
       }
     };
     loadSavedData();
+  }, []);
+
+  // Initialize RevenueCat purchases and load premium content
+  useEffect(() => {
+    const initPurchases = async () => {
+      await initializePurchases();
+      const entitlements = await getActiveEntitlements();
+      setPurchasedEntitlements(entitlements);
+
+      // Load premium prompts if user has any entitlements
+      if (entitlements.length > 0) {
+        const unlocked = await getUnlockedPremiumPrompts();
+        setPremiumPrompts(unlocked as Prompt[]);
+      }
+    };
+    initPurchases();
   }, []);
 
   // Save functions
@@ -449,7 +523,8 @@ export function PersonalizedPartyGame() {
 
   const getFilteredPrompts = useCallback((): Prompt[] => {
     const basePrompts = gameState.isSexyMode ? [...promptData.prompts, ...promptData.sexy] : promptData.prompts;
-    const allPrompts = [...basePrompts, ...customPrompts];
+    // Include premium prompts if user has purchased them
+    const allPrompts = [...basePrompts, ...customPrompts, ...premiumPrompts];
     const chaosMin = Math.max(1, gameState.chaosLevel - 3);
     const chaosMax = Math.min(10, gameState.chaosLevel + 3);
     return allPrompts.filter((p: Prompt) =>
@@ -458,7 +533,7 @@ export function PersonalizedPartyGame() {
       gameState.selectedCategories.includes(p.category as CategoryKey) &&
       !skippedPrompts.has(p.text)
     );
-  }, [gameState.isSexyMode, gameState.chaosLevel, gameState.selectedCategories, customPrompts, skippedPrompts]);
+  }, [gameState.isSexyMode, gameState.chaosLevel, gameState.selectedCategories, customPrompts, skippedPrompts, premiumPrompts]);
 
   const replacePlaceholders = useCallback((text: string): string => {
     if (players.length === 0) return text;
@@ -691,11 +766,6 @@ export function PersonalizedPartyGame() {
   // Render Setup
   const renderSetup = () => (
     <View style={styles.screen}>
-      <FluidGradient
-        colors={["#8B5CF6", "#EC4899", "#3B82F6"]}
-        speed={0.6}
-        blur={100}
-      />
 
       <ScrollView 
         style={styles.scrollContent} 
@@ -715,14 +785,21 @@ export function PersonalizedPartyGame() {
 
         
         <Animated.View entering={FadeInUp.delay(100).duration(500)} style={styles.card}>
-          <TouchableOpacity style={styles.cardTouchable} onPress={() => setIsAddPlayerVisible(true)} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={styles.cardTouchable}
+            onPress={() => setIsAddPlayerVisible(true)}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={`${players.length} player${players.length !== 1 ? "s" : ""} added. Tap to manage players`}
+            accessibilityHint="Double tap to open player management panel"
+          >
             <View style={styles.cardRow}>
-              <Text style={styles.cardEmoji}>👥</Text>
+              <Text style={styles.cardEmoji} accessibilityElementsHidden={true}>👥</Text>
               <View style={styles.cardTextWrap}>
                 <Text style={styles.cardTitle}>{players.length} Player{players.length !== 1 ? "s" : ""}</Text>
                 <Text style={styles.cardSubtitle}>Tap to add more</Text>
               </View>
-              <Ionicons name="chevron-forward" size={24} color="rgba(255,255,255,0.4)" />
+              <Ionicons name="chevron-forward" size={24} color="rgba(255,255,255,0.4)" accessibilityElementsHidden={true} />
             </View>
             {players.length > 0 && (
               <View style={styles.playerChips}>
@@ -740,17 +817,21 @@ export function PersonalizedPartyGame() {
             style={[styles.modeCard, gameState.isSexyMode && styles.modeCardActive]}
             onPress={() => { triggerHaptic("light"); setGameState(prev => ({ ...prev, isSexyMode: !prev.isSexyMode })); }}
             activeOpacity={0.8}
+            accessibilityRole="switch"
+            accessibilityState={{ checked: gameState.isSexyMode }}
+            accessibilityLabel={gameState.isSexyMode ? "Spicy Mode enabled" : "Party Mode enabled"}
+            accessibilityHint="Double tap to toggle between Party Mode and Spicy Mode"
           >
-            <Text style={styles.modeEmoji}>{gameState.isSexyMode ? "🌶️" : "🎉"}</Text>
+            <Text style={styles.modeEmoji} accessibilityElementsHidden={true}>{gameState.isSexyMode ? "🌶️" : "🎉"}</Text>
             <Text style={styles.modeText}>{gameState.isSexyMode ? "Spicy Mode" : "Party Mode"}</Text>
-            <View style={[styles.modeIndicator, gameState.isSexyMode && styles.modeIndicatorActive]} />
+            <View style={[styles.modeIndicator, gameState.isSexyMode && styles.modeIndicatorActive]} accessibilityElementsHidden={true} />
           </TouchableOpacity>
         </Animated.View>
 
         <Animated.View entering={FadeInUp.delay(250).duration(500)} style={styles.sliderCard}>
           <View style={styles.sliderHeader}>
-            <Text style={styles.sliderLabel}>Chaos Level</Text>
-            <View style={styles.chaosValueBadge}><Text style={styles.chaosValue}>{gameState.chaosLevel}</Text></View>
+            <Text style={styles.sliderLabel} accessibilityRole="header">Chaos Level</Text>
+            <View style={styles.chaosValueBadge} accessibilityElementsHidden={true}><Text style={styles.chaosValue}>{gameState.chaosLevel}</Text></View>
           </View>
           <Slider
             style={styles.slider}
@@ -758,12 +839,15 @@ export function PersonalizedPartyGame() {
             maximumValue={10}
             step={1}
             value={gameState.chaosLevel}
-            onValueChange={(v) => setGameState(prev => ({ ...prev, chaosLevel: v }))}
+            onValueChange={(v) => { playTick(); setGameState(prev => ({ ...prev, chaosLevel: v })); }}
             minimumTrackTintColor="#8B5CF6"
             maximumTrackTintColor="rgba(255,255,255,0.1)"
             thumbTintColor="#FFF"
+            accessibilityRole="adjustable"
+            accessibilityLabel={`Chaos level ${gameState.chaosLevel} of 10`}
+            accessibilityHint="Swipe up or down to adjust the intensity of game prompts"
           />
-          <View style={styles.sliderLabels}>
+          <View style={styles.sliderLabels} accessibilityElementsHidden={true}>
             <Text style={styles.sliderLabelText}>Chill</Text>
             <Text style={styles.sliderLabelText}>Unhinged</Text>
           </View>
@@ -772,14 +856,42 @@ export function PersonalizedPartyGame() {
         <Animated.View style={errorStyle} entering={FadeInUp.delay(350).duration(500)}>
           <TouchableOpacity
             style={styles.startButton}
-            onPress={() => players.length >= 2 ? setGameState(prev => ({ ...prev, screen: "categories" })) : startGame()}
+            onPress={() => { playWhoosh(); players.length >= 2 ? setGameState(prev => ({ ...prev, screen: "categories" })) : startGame(); }}
             activeOpacity={0.9}
+            accessibilityRole="button"
+            accessibilityLabel={players.length < 2 ? `Add ${2 - players.length} more player${2 - players.length !== 1 ? "s" : ""} to continue` : "Choose Categories"}
+            accessibilityHint={players.length < 2 ? "You need at least 2 players to start the game" : "Double tap to select game categories"}
           >
             <LinearGradient colors={["#8B5CF6", "#7C3AED"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.startButtonGradient}>
               <Text style={styles.startButtonText}>{players.length < 2 ? `Add ${2 - players.length} More` : "Choose Categories"}</Text>
-              <Ionicons name="arrow-forward" size={20} color="#FFF" style={{ marginLeft: 8 }} />
+              <Ionicons name="arrow-forward" size={20} color="#FFF" style={{ marginLeft: 8 }} accessibilityElementsHidden={true} />
             </LinearGradient>
           </TouchableOpacity>
+        </Animated.View>
+
+        {/* Get More Prompts Button */}
+        <Animated.View entering={FadeInUp.delay(400).duration(500)} style={styles.getMoreContainer}>
+          <TouchableOpacity
+            style={styles.getMoreButton}
+            onPress={() => { triggerHaptic("light"); setShowPaywall(true); }}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Get More Prompts"
+            accessibilityHint="Double tap to view premium prompt packs available for purchase"
+          >
+            <LinearGradient
+              colors={["#F59E0B", "#D97706"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.getMoreGradient}
+            >
+              <Ionicons name="sparkles" size={18} color="#FFF" accessibilityElementsHidden={true} />
+              <Text style={styles.getMoreText}>Get More Prompts</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          {purchasedEntitlements.length > 0 && (
+            <Text style={styles.premiumBadge} accessibilityLabel="Premium subscription is active">Premium Active</Text>
+          )}
         </Animated.View>
 
         <Animated.View entering={FadeIn.delay(500).duration(400)} style={styles.footer}>
@@ -798,25 +910,25 @@ export function PersonalizedPartyGame() {
   // Render Categories
   const renderCategories = () => (
     <View style={styles.screen}>
-      <FluidGradient
-        colors={["#8B5CF6", "#EC4899", "#F59E0B"]}
-        speed={0.5}
-        blur={100}
-      />
 
       <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.catHeader}>
-          <TouchableOpacity onPress={() => setGameState(prev => ({ ...prev, screen: "setup" }))} style={styles.backBtn}>
+          <TouchableOpacity
+            onPress={() => setGameState(prev => ({ ...prev, screen: "setup" }))}
+            style={styles.backBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Go back to setup"
+          >
             <Ionicons name="arrow-back" size={24} color="#FFF" />
           </TouchableOpacity>
-          <Text style={styles.catCount}>{gameState.selectedCategories.length} selected</Text>
+          <Text style={styles.catCount} accessibilityLabel={`${gameState.selectedCategories.length} categories selected`}>{gameState.selectedCategories.length} selected</Text>
         </View>
 
         <Animated.View entering={FadeInDown.duration(500)}>
-          <Text style={styles.catTitle}>Choose Your Vibe</Text>
+          <Text style={styles.catTitle} accessibilityRole="header">Choose Your Vibe</Text>
         </Animated.View>
 
-        <View style={styles.catGrid}>
+        <View style={styles.catGrid} accessibilityRole="radiogroup" accessibilityLabel="Category selection">
           {(Object.keys(CATEGORIES) as CategoryKey[])
             .filter(key => key !== "drinking" || isAdultMode)
             .map((key, i) => {
@@ -824,11 +936,19 @@ export function PersonalizedPartyGame() {
             const selected = gameState.selectedCategories.includes(key);
             return (
               <Animated.View key={key} entering={ZoomIn.delay(80 + i * 30).duration(250)}>
-                <TouchableOpacity style={[styles.catCard, selected && { borderColor: cat.color }]} onPress={() => toggleCategory(key)} activeOpacity={0.85}>
+                <TouchableOpacity
+                  style={[styles.catCard, selected && { borderColor: cat.color }]}
+                  onPress={() => toggleCategory(key)}
+                  activeOpacity={0.85}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: selected }}
+                  accessibilityLabel={`${cat.name} category`}
+                  accessibilityHint={selected ? "Double tap to deselect" : "Double tap to select"}
+                >
                   {selected && <LinearGradient colors={[cat.gradient[0] + "30", cat.gradient[1] + "10"]} style={StyleSheet.absoluteFill} />}
-                  <Text style={styles.catEmoji}>{cat.emoji}</Text>
+                  <Text style={styles.catEmoji} accessibilityElementsHidden={true}>{cat.emoji}</Text>
                   <Text style={[styles.catName, selected && { color: cat.color }]}>{cat.name}</Text>
-                  {selected && <View style={[styles.catCheck, { backgroundColor: cat.color }]}><Ionicons name="checkmark" size={12} color="#FFF" /></View>}
+                  {selected && <View style={[styles.catCheck, { backgroundColor: cat.color }]} accessibilityElementsHidden={true}><Ionicons name="checkmark" size={12} color="#FFF" /></View>}
                 </TouchableOpacity>
               </Animated.View>
             );
@@ -836,10 +956,17 @@ export function PersonalizedPartyGame() {
         </View>
 
         <Animated.View entering={FadeInUp.delay(500).duration(500)} style={styles.catStartWrap}>
-          <TouchableOpacity style={styles.startButton} onPress={startGame} activeOpacity={0.9}>
+          <TouchableOpacity
+            style={styles.startButton}
+            onPress={startGame}
+            activeOpacity={0.9}
+            accessibilityRole="button"
+            accessibilityLabel="Start the game"
+            accessibilityHint="Double tap to begin playing with selected categories"
+          >
             <LinearGradient colors={["#8B5CF6", "#7C3AED"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.startButtonGradient}>
               <Text style={styles.startButtonText}>Let's Go</Text>
-              <Ionicons name="flash" size={20} color="#FFF" style={{ marginLeft: 8 }} />
+              <Ionicons name="flash" size={20} color="#FFF" style={{ marginLeft: 8 }} accessibilityElementsHidden={true} />
             </LinearGradient>
           </TouchableOpacity>
         </Animated.View>
@@ -859,16 +986,32 @@ export function PersonalizedPartyGame() {
         <LinearGradient colors={[catColor + "15", "#000"]} style={StyleSheet.absoluteFill} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 0.5 }} />
 
         <View style={styles.playHeader}>
-          <TouchableOpacity onPress={resetGame} style={styles.playBackBtn}><Ionicons name="close" size={20} color="#FFF" /></TouchableOpacity>
-          <View style={styles.playRoundBadge}><Text style={styles.playRoundText}>Round {gameState.round}</Text></View>
-          <TouchableOpacity onPress={sharePrompt} style={styles.shareBtn}><Ionicons name="share-outline" size={20} color="#FFF" /></TouchableOpacity>
+          <TouchableOpacity
+            onPress={resetGame}
+            style={styles.playBackBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Exit game"
+            accessibilityHint="Double tap to return to the main menu"
+          >
+            <Ionicons name="close" size={20} color="#FFF" />
+          </TouchableOpacity>
+          <View style={styles.playRoundBadge} accessibilityLabel={`Round ${gameState.round}`}><Text style={styles.playRoundText}>Round {gameState.round}</Text></View>
+          <TouchableOpacity
+            onPress={sharePrompt}
+            style={styles.shareBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Share prompt"
+            accessibilityHint="Double tap to share the current prompt"
+          >
+            <Ionicons name="share-outline" size={20} color="#FFF" />
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.progressWrap}>
-          <View style={styles.progressTrack}>
+        <View style={styles.progressWrap} accessibilityLabel={`Progress: prompt ${current + 1} of ${total}`}>
+          <View style={styles.progressTrack} accessibilityElementsHidden={true}>
             <View style={[styles.progressFill, { width: `${progress * 100}%`, backgroundColor: catColor }]} />
           </View>
-          <Text style={styles.playCount}>{current + 1}/{total}</Text>
+          <Text style={styles.playCount} accessibilityElementsHidden={true}>{current + 1}/{total}</Text>
         </View>
 
         <View style={styles.cardsArea}>
@@ -889,9 +1032,14 @@ export function PersonalizedPartyGame() {
           })}
 
           {gameState.timerActive && (
-            <View style={styles.timerOverlay}>
+            <View
+              style={styles.timerOverlay}
+              accessibilityRole="timer"
+              accessibilityLabel={`${gameState.timerSeconds} seconds remaining`}
+              accessibilityLiveRegion="polite"
+            >
               <Animated.Text style={[styles.timerNum, timerTextStyle, { color: timerColor }]}>{gameState.timerSeconds}</Animated.Text>
-              <View style={styles.timerTrack}>
+              <View style={styles.timerTrack} accessibilityElementsHidden={true}>
                 <Animated.View style={[styles.timerFill, timerBarStyle, { backgroundColor: timerColor }]} />
               </View>
             </View>
@@ -900,8 +1048,8 @@ export function PersonalizedPartyGame() {
 
         {/* Scoring buttons */}
         {gameState.showScoring && players.length > 0 && (
-          <View style={styles.scoringSection}>
-            <Text style={styles.scoringLabel}>Award points</Text>
+          <View style={styles.scoringSection} accessible={true} accessibilityLabel="Award points to players">
+            <Text style={styles.scoringLabel} accessibilityRole="header">Award points</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scoringPlayers}>
               {players.map((p, i) => (
                 <TouchableOpacity
@@ -909,12 +1057,15 @@ export function PersonalizedPartyGame() {
                   style={styles.scoringPlayer}
                   onPress={() => awardPoints(i, 1)}
                   onLongPress={() => addDrink(i)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${p.name}, ${p.score} points${p.drinks > 0 ? `, ${p.drinks} penalties` : ""}`}
+                  accessibilityHint="Tap to award a point, long press to add a penalty"
                 >
-                  <Text style={styles.scoringAvatar}>{p.avatar}</Text>
+                  <Text style={styles.scoringAvatar} accessibilityElementsHidden={true}>{p.avatar}</Text>
                   <Text style={styles.scoringName}>{p.name}</Text>
-                  <View style={styles.scoringStats}>
+                  <View style={styles.scoringStats} accessibilityElementsHidden={true}>
                     <Text style={styles.scoringScore}>+{p.score}</Text>
-                    {p.drinks > 0 && <Text style={styles.scoringDrinks}>🎭{p.drinks}</Text>}
+                    {p.drinks > 0 && <Text style={styles.scoringDrinks}>{p.drinks}</Text>}
                   </View>
                 </TouchableOpacity>
               ))}
@@ -923,7 +1074,14 @@ export function PersonalizedPartyGame() {
         )}
 
         <View style={styles.playFooter}>
-          <TouchableOpacity style={styles.nextBtn} onPress={handleNextButton} activeOpacity={0.9}>
+          <TouchableOpacity
+            style={styles.nextBtn}
+            onPress={handleNextButton}
+            activeOpacity={0.9}
+            accessibilityRole="button"
+            accessibilityLabel="Next prompt"
+            accessibilityHint="Double tap to move to the next game prompt"
+          >
             <LinearGradient colors={catGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.nextBtnGradient}>
               <Text style={styles.nextBtnText}>Next</Text>
             </LinearGradient>
@@ -935,20 +1093,27 @@ export function PersonalizedPartyGame() {
 
   // Render Round End
   const renderRoundEnd = () => (
-    <View style={styles.screen}>
+    <View style={styles.screen} accessibilityRole="alert" accessibilityLabel={`Round ${gameState.round} complete`}>
       <LinearGradient colors={["#8B5CF620", "#000"]} style={StyleSheet.absoluteFill} />
       <Animated.View style={styles.roundEndContent} entering={ZoomIn.duration(300)}>
-        <Animated.Text entering={BounceIn.delay(200)} style={styles.roundEndEmoji}>🎉</Animated.Text>
-        <Text style={styles.roundEndTitle}>Round {gameState.round} Done!</Text>
+        <Animated.Text entering={BounceIn.delay(200)} style={styles.roundEndEmoji} accessibilityElementsHidden={true}>🎉</Animated.Text>
+        <Text style={styles.roundEndTitle} accessibilityRole="header">Round {gameState.round} Done!</Text>
         <Text style={styles.roundEndSub}>{gameState.totalRounds - gameState.round} more to go</Text>
-        <TouchableOpacity style={styles.continueBtn} onPress={continueToNextRound} activeOpacity={0.9}>
+        <TouchableOpacity
+          style={styles.continueBtn}
+          onPress={continueToNextRound}
+          activeOpacity={0.9}
+          accessibilityRole="button"
+          accessibilityLabel={`Continue to round ${gameState.round + 1}`}
+          accessibilityHint="Double tap to start the next round"
+        >
           <LinearGradient colors={["#8B5CF6", "#7C3AED"]} style={styles.continueBtnGradient}>
             <Text style={styles.continueBtnText}>Round {gameState.round + 1}</Text>
             <Ionicons name="arrow-forward" size={20} color="#FFF" />
           </LinearGradient>
         </TouchableOpacity>
       </Animated.View>
-      {showConfetti && <Confetti count={50} />}
+      {showConfetti && <Confetti count={50} reduceMotion={reduceMotion} />}
     </View>
   );
 
@@ -962,11 +1127,22 @@ export function PersonalizedPartyGame() {
       <View style={styles.screen}>
         <LinearGradient colors={["#FFD70020", "#000"]} style={StyleSheet.absoluteFill} />
         <ScrollView contentContainerStyle={styles.resultsContent}>
-          <Animated.Text entering={FadeInDown.duration(400)} style={styles.resultsTitle}>Game Over</Animated.Text>
+          <Animated.Text
+            entering={FadeInDown.duration(400)}
+            style={styles.resultsTitle}
+            accessibilityRole="header"
+          >
+            Game Over
+          </Animated.Text>
 
           {winner && winner.score > 0 && (
-            <Animated.View entering={ZoomIn.delay(150).duration(300)} style={styles.winnerCard}>
-              <Animated.Text entering={BounceIn.delay(400)} style={styles.winnerEmoji}>👑</Animated.Text>
+            <Animated.View
+              entering={ZoomIn.delay(150).duration(300)}
+              style={styles.winnerCard}
+              accessibilityRole="text"
+              accessibilityLabel={`Champion: ${winner.name} with ${winner.score} points`}
+            >
+              <Animated.Text entering={BounceIn.delay(400)} style={styles.winnerEmoji} accessibilityElementsHidden={true}>👑</Animated.Text>
               <Text style={styles.winnerLabel}>CHAMPION</Text>
               <Text style={styles.winnerName}>{winner.avatar} {winner.name}</Text>
               <Text style={styles.winnerScore}>{winner.score} points</Text>
@@ -974,48 +1150,92 @@ export function PersonalizedPartyGame() {
           )}
 
           {drunkest && drunkest.drinks > 0 && (
-            <Animated.View entering={ZoomIn.delay(280).duration(300)} style={[styles.winnerCard, styles.drunkestCard]}>
-              <Text style={styles.drunkestEmoji}>🎭</Text>
+            <Animated.View
+              entering={ZoomIn.delay(280).duration(300)}
+              style={[styles.winnerCard, styles.drunkestCard]}
+              accessibilityRole="text"
+              accessibilityLabel={`Most penalized: ${drunkest.name} with ${drunkest.drinks} penalties`}
+            >
+              <Text style={styles.drunkestEmoji} accessibilityElementsHidden={true}>🎭</Text>
               <Text style={styles.drunkestLabel}>MOST PENALIZED</Text>
               <Text style={styles.drunkestName}>{drunkest.avatar} {drunkest.name}</Text>
               <Text style={styles.drunkestScore}>{drunkest.drinks} penalties</Text>
             </Animated.View>
           )}
 
-          <View style={styles.resultsList}>
+          <View style={styles.resultsList} accessible={true} accessibilityLabel="Final standings">
             {sortedPlayers.map((p, i) => (
-              <Animated.View key={i} entering={SlideInRight.delay(300 + i * 60).duration(250)} style={styles.resultRow}>
+              <Animated.View
+                key={i}
+                entering={SlideInRight.delay(300 + i * 60).duration(250)}
+                style={styles.resultRow}
+                accessible={true}
+                accessibilityLabel={`${i === 0 ? "First" : `Number ${i + 1}`}: ${p.name}, ${p.score} points${p.drinks > 0 ? `, ${p.drinks} penalties` : ""}`}
+              >
                 <Text style={[styles.resultRank, i === 0 && styles.resultRankFirst]}>{i + 1}</Text>
-                <Text style={styles.resultAvatar}>{p.avatar}</Text>
+                <Text style={styles.resultAvatar} accessibilityElementsHidden={true}>{p.avatar}</Text>
                 <Text style={styles.resultName}>{p.name}</Text>
-                <View style={styles.resultStats}>
+                <View style={styles.resultStats} accessibilityElementsHidden={true}>
                   <Text style={styles.resultScore}>{p.score}pts</Text>
-                  {p.drinks > 0 && <Text style={styles.resultDrinks}>🎭{p.drinks}</Text>}
+                  {p.drinks > 0 && <Text style={styles.resultDrinks}>{p.drinks}</Text>}
                 </View>
               </Animated.View>
             ))}
           </View>
 
           <View style={styles.resultsButtons}>
-            <TouchableOpacity style={styles.shareResultsBtn} onPress={shareResults} activeOpacity={0.8}>
-              <Ionicons name="share-outline" size={22} color="#FFF" />
+            <TouchableOpacity
+              style={styles.shareResultsBtn}
+              onPress={shareResults}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Share Results"
+              accessibilityHint="Double tap to share game results with others"
+            >
+              <Ionicons name="share-outline" size={22} color="#FFF" accessibilityElementsHidden={true} />
               <Text style={styles.shareResultsText}>Share Results</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.playAgainBtn} onPress={resetGame} activeOpacity={0.9}>
+            <TouchableOpacity
+              style={styles.playAgainBtn}
+              onPress={resetGame}
+              activeOpacity={0.9}
+              accessibilityRole="button"
+              accessibilityLabel="Play Again"
+              accessibilityHint="Double tap to start a new game"
+            >
               <LinearGradient colors={["#8B5CF6", "#7C3AED"]} style={styles.playAgainGradient}>
                 <Text style={styles.playAgainText}>Play Again</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
         </ScrollView>
-        {showConfetti && <Confetti count={60} />}
+        {showConfetti && <Confetti count={60} reduceMotion={reduceMotion} />}
       </View>
     );
   };
 
+  // Get gradient colors based on current screen
+  const getGradientColors = () => {
+    switch (gameState.screen) {
+      case "setup": return ["#8B5CF6", "#EC4899", "#3B82F6"];
+      case "categories": return ["#8B5CF6", "#EC4899", "#F59E0B"];
+      case "playing": return [catColor, "#EC4899", "#3B82F6"];
+      case "results": return ["#FFD700", "#EC4899", "#8B5CF6"];
+      default: return ["#8B5CF6", "#EC4899", "#3B82F6"];
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
+      {/* Full-width background gradient */}
+      <FluidGradient
+        colors={getGradientColors()}
+        speed={0.6}
+        blur={100}
+        style={styles.fullWidthGradient}
+      />
+
       <View style={styles.inner}>
         {gameState.screen === "setup" && renderSetup()}
         {gameState.screen === "categories" && renderCategories()}
@@ -1026,13 +1246,13 @@ export function PersonalizedPartyGame() {
 
       <SlideDownPanel isVisible={isAddPlayerVisible} onClose={() => setIsAddPlayerVisible(false)}>
         <View style={styles.dialogHeader}>
-          <Text style={styles.dialogTitle}>Add Players</Text>
-          <Text style={styles.dialogSubtitle}>{players.length} player{players.length !== 1 ? "s" : ""} added</Text>
+          <Text style={styles.dialogTitle} accessibilityRole="header">Add Players</Text>
+          <Text style={styles.dialogSubtitle} accessibilityLabel={`${players.length} player${players.length !== 1 ? "s" : ""} added`}>{players.length} player{players.length !== 1 ? "s" : ""} added</Text>
         </View>
 
         <View style={styles.inputRow}>
           <View style={styles.inputWrap}>
-            <Ionicons name="person-outline" size={18} color="rgba(255,255,255,0.4)" style={styles.inputIcon} />
+            <Ionicons name="person-outline" size={18} color="rgba(255,255,255,0.4)" style={styles.inputIcon} accessibilityElementsHidden={true} />
             <TextInput
               style={styles.input}
               value={newPlayerName}
@@ -1043,9 +1263,18 @@ export function PersonalizedPartyGame() {
               onSubmitEditing={addPlayer}
               autoCorrect={false}
               autoCapitalize="words"
+              accessibilityLabel="Player name"
+              accessibilityHint="Enter a player name and tap Add or press return"
             />
           </View>
-          <TouchableOpacity style={styles.addBtn} onPress={addPlayer} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={addPlayer}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Add player"
+            accessibilityHint="Double tap to add this player to the game"
+          >
             <LinearGradient colors={["#8B5CF6", "#7C3AED"]} style={styles.addBtnGradient}>
               <Ionicons name="add" size={24} color="#FFF" />
             </LinearGradient>
@@ -1056,10 +1285,24 @@ export function PersonalizedPartyGame() {
           data={players}
           keyExtractor={(_, i) => i.toString()}
           renderItem={({ item, index }) => (
-            <Animated.View entering={FadeInUp.delay(index * 30).duration(180)} exiting={SlideOutLeft.duration(120)} layout={Layout.duration(200)} style={styles.dialogPlayer}>
-              <View style={styles.playerAvatarWrap}><Text style={styles.playerAvatar}>{item.avatar}</Text></View>
+            <Animated.View
+              entering={FadeInUp.delay(index * 30).duration(180)}
+              exiting={SlideOutLeft.duration(120)}
+              layout={Layout.duration(200)}
+              style={styles.dialogPlayer}
+              accessible={true}
+              accessibilityLabel={`${item.name}`}
+            >
+              <View style={styles.playerAvatarWrap}><Text style={styles.playerAvatar} accessibilityElementsHidden={true}>{item.avatar}</Text></View>
               <Text style={styles.dialogPlayerText}>{item.name}</Text>
-              <TouchableOpacity style={styles.removeBtn} onPress={() => removePlayer(index)} activeOpacity={0.7}>
+              <TouchableOpacity
+                style={styles.removeBtn}
+                onPress={() => removePlayer(index)}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={`Remove ${item.name}`}
+                accessibilityHint="Double tap to remove this player"
+              >
                 <Ionicons name="close" size={16} color="rgba(255,255,255,0.6)" />
               </TouchableOpacity>
             </Animated.View>
@@ -1067,23 +1310,49 @@ export function PersonalizedPartyGame() {
           style={styles.dialogList}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={<View style={styles.emptyList}><Text style={styles.emptyListText}>No players yet</Text></View>}
+          accessibilityRole="list"
+          accessibilityLabel="Player list"
         />
 
-        <TouchableOpacity style={styles.doneBtn} onPress={() => setIsAddPlayerVisible(false)} activeOpacity={0.9}>
+        <TouchableOpacity
+          style={styles.doneBtn}
+          onPress={() => setIsAddPlayerVisible(false)}
+          activeOpacity={0.9}
+          accessibilityRole="button"
+          accessibilityLabel="Done"
+          accessibilityHint="Double tap to close the player panel"
+        >
           <LinearGradient colors={["#8B5CF6", "#7C3AED"]} style={styles.doneBtnGradient}>
             <Text style={styles.doneBtnText}>Done</Text>
-            <Ionicons name="checkmark" size={20} color="#FFF" />
+            <Ionicons name="checkmark" size={20} color="#FFF" accessibilityElementsHidden={true} />
           </LinearGradient>
         </TouchableOpacity>
       </SlideDownPanel>
+
+      {/* Paywall Modal */}
+      {showPaywall && (
+        <View style={StyleSheet.absoluteFill}>
+          <Paywall
+            onClose={() => setShowPaywall(false)}
+            onPurchaseSuccess={async (entitlements) => {
+              setPurchasedEntitlements(entitlements);
+              triggerHaptic("success");
+              // Reload premium prompts after successful purchase
+              const unlocked = await getUnlockedPremiumPrompts();
+              setPremiumPrompts(unlocked as Prompt[]);
+            }}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#000" },
-  inner: { flex: 1, maxWidth: Platform.OS === "web" ? MAX_WIDTH : "100%", width: "100%", alignSelf: "center" },
-  screen: { flex: 1, backgroundColor: "#000" },
+  fullWidthGradient: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, width: "100%", height: "100%" },
+  inner: { flex: 1, maxWidth: Platform.OS === "web" ? MAX_WIDTH : "100%", width: "100%", alignSelf: "center", zIndex: 1 },
+  screen: { flex: 1, backgroundColor: "transparent" },
   scrollContent: { flex: 1 },
 
   liveStats: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 24 },
@@ -1239,6 +1508,12 @@ const styles = StyleSheet.create({
   doneBtn: { borderRadius: 16, overflow: "hidden" },
   doneBtnGradient: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 16, gap: 8 },
   doneBtnText: { fontSize: 16, fontWeight: "700", color: "#FFF" },
+
+  getMoreContainer: { alignItems: "center", marginTop: 8, marginBottom: 8 },
+  getMoreButton: { borderRadius: 16, overflow: "hidden" },
+  getMoreGradient: { flexDirection: "row", alignItems: "center", paddingVertical: 14, paddingHorizontal: 24, gap: 8 },
+  getMoreText: { fontSize: 15, fontWeight: "600", color: "#FFF" },
+  premiumBadge: { marginTop: 8, fontSize: 12, color: "#10B981", fontWeight: "600" },
 
   footer: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 24, gap: 12 },
   footerLink: { fontSize: 13, color: "rgba(255,255,255,0.4)", fontWeight: "500" },

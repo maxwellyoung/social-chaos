@@ -5,11 +5,28 @@ interface ButtonProps {
   title: string;
   onPress: () => void;
   variant?: "default" | "accent";
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  disabled?: boolean;
 }
 
-export function Button({ title, onPress, variant = "default" }: ButtonProps) {
+export function Button({
+  title,
+  onPress,
+  variant = "default",
+  accessibilityLabel,
+  accessibilityHint,
+  disabled = false,
+}: ButtonProps) {
   return (
-    <Pressable onPress={onPress}>
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel || title}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled }}
+    >
       {variant === "accent" ? (
         <View style={styles.buttonWrapper}>
           <LinearGradient

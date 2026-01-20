@@ -40,7 +40,8 @@
       "Bash(node -e:*)",
       "Bash(npx expo start:*)",
       "Bash(vercel --version:*)",
-      "Bash(vercel --prod:*)"
+      "Bash(vercel --prod:*)",
+      "Bash(sips -z 48 48:*)"
     ]
   }
 }
