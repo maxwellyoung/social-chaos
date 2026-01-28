@@ -1,4 +1,4 @@
-import { ENTITLEMENTS, hasEntitlement, getActiveEntitlements } from "./purchases";
+import { hasEntitlement, hasGambitPro, getActiveEntitlements, ENTITLEMENT_ID } from "./purchases";
 import partyPack from "../assets/prompts/premium-party.json";
 import spicyPack from "../assets/prompts/premium-spicy.json";
 import chaosPack from "../assets/prompts/premium-chaos.json";
@@ -20,48 +20,37 @@ interface PremiumPack {
   prompts: Prompt[];
 }
 
+// All premium packs are now unlocked with Gambit Pro
 const PREMIUM_PACKS: Record<string, PremiumPack> = {
-  [ENTITLEMENTS.PARTY_PACK]: partyPack as PremiumPack,
-  [ENTITLEMENTS.SPICY_PACK]: spicyPack as PremiumPack,
-  [ENTITLEMENTS.CHAOS_PACK]: chaosPack as PremiumPack,
+  party_pack: partyPack as PremiumPack,
+  spicy_pack: spicyPack as PremiumPack,
+  chaos_pack: chaosPack as PremiumPack,
 };
 
 /**
  * Get all unlocked premium prompts based on user's entitlements
+ * With Gambit Pro, all packs are unlocked
  */
 export async function getUnlockedPremiumPrompts(): Promise<Prompt[]> {
-  const activeEntitlements = await getActiveEntitlements();
-  const prompts: Prompt[] = [];
+  const isPro = await hasGambitPro();
 
-  for (const entitlement of activeEntitlements) {
-    const pack = PREMIUM_PACKS[entitlement];
-    if (pack) {
-      const packPrompts = pack.prompts.map((p) => ({
-        ...p,
-        isPremium: true,
-        packId: pack.packId,
-      }));
-      prompts.push(...packPrompts);
-    }
-
-    // Premium bundle unlocks all packs
-    if (entitlement === ENTITLEMENTS.PREMIUM) {
-      for (const packKey of Object.keys(PREMIUM_PACKS)) {
-        const bundlePack = PREMIUM_PACKS[packKey];
-        if (bundlePack) {
-          const bundlePrompts = bundlePack.prompts.map((p) => ({
-            ...p,
-            isPremium: true,
-            packId: bundlePack.packId,
-          }));
-          prompts.push(...bundlePrompts);
-        }
-      }
-      break; // Premium includes everything, no need to continue
-    }
+  if (!isPro) {
+    return []; // No premium prompts for free users
   }
 
-  // Remove duplicates (in case of overlapping entitlements)
+  // Pro users get all premium content
+  const prompts: Prompt[] = [];
+
+  for (const pack of Object.values(PREMIUM_PACKS)) {
+    const packPrompts = pack.prompts.map((p) => ({
+      ...p,
+      isPremium: true,
+      packId: pack.packId,
+    }));
+    prompts.push(...packPrompts);
+  }
+
+  // Remove duplicates
   const uniquePrompts = prompts.filter(
     (prompt, index, self) =>
       index === self.findIndex((p) => p.text === prompt.text)
@@ -72,13 +61,10 @@ export async function getUnlockedPremiumPrompts(): Promise<Prompt[]> {
 
 /**
  * Check if a specific pack is unlocked
+ * With Gambit Pro, all packs are unlocked together
  */
 export async function isPackUnlocked(packId: string): Promise<boolean> {
-  // Premium bundle unlocks everything
-  if (await hasEntitlement(ENTITLEMENTS.PREMIUM)) {
-    return true;
-  }
-  return hasEntitlement(packId);
+  return hasGambitPro();
 }
 
 /**

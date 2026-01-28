@@ -16,7 +16,7 @@ import {
   getOfferings,
   purchasePackage,
   restorePurchases,
-  ENTITLEMENTS,
+  ENTITLEMENT_ID,
 } from "../lib/purchases";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -25,69 +25,59 @@ interface PaywallProps {
   onPurchaseSuccess: (entitlements: string[]) => void;
 }
 
-interface PackInfo {
-  id: string;
-  name: string;
-  description: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  color: string;
-  features: string[];
-}
-
-const PACK_INFO: Record<string, PackInfo> = {
-  [ENTITLEMENTS.PARTY_PACK]: {
-    id: ENTITLEMENTS.PARTY_PACK,
-    name: "Party Pack",
-    description: "100+ exclusive party prompts",
-    icon: "sparkles",
-    color: "#FF6B6B",
-    features: [
-      "100+ new party prompts",
-      "Group challenges",
-      "Ice breakers",
-      "Party games",
-    ],
+// Package display configuration
+const PACKAGE_CONFIG: Record<
+  string,
+  {
+    name: string;
+    badge?: string;
+    icon: keyof typeof Ionicons.glyphMap;
+    color: string;
+  }
+> = {
+  "$rc_monthly": {
+    name: "Monthly",
+    icon: "calendar-outline",
+    color: "#818CF8",
   },
-  [ENTITLEMENTS.SPICY_PACK]: {
-    id: ENTITLEMENTS.SPICY_PACK,
-    name: "Spicy Pack",
-    description: "Turn up the heat",
-    icon: "flame",
-    color: "#FF8C42",
-    features: [
-      "50+ adult prompts",
-      "Drinking challenges",
-      "Truth or dare specials",
-      "21+ content",
-    ],
-  },
-  [ENTITLEMENTS.CHAOS_PACK]: {
-    id: ENTITLEMENTS.CHAOS_PACK,
-    name: "Chaos Pack",
-    description: "Maximum mayhem",
-    icon: "flash",
-    color: "#9B59B6",
-    features: [
-      "75+ extreme challenges",
-      "Wild dares",
-      "Chaos level 11+",
-      "No limits mode",
-    ],
-  },
-  [ENTITLEMENTS.PREMIUM]: {
-    id: ENTITLEMENTS.PREMIUM,
-    name: "Premium Bundle",
-    description: "All packs + future updates",
-    icon: "diamond",
+  "$rc_annual": {
+    name: "Yearly",
+    badge: "BEST VALUE",
+    icon: "star",
     color: "#F1C40F",
-    features: [
-      "All current packs included",
-      "All future packs FREE",
-      "Early access to new content",
-      "Best value!",
-    ],
+  },
+  "$rc_lifetime": {
+    name: "Lifetime",
+    badge: "ONE TIME",
+    icon: "diamond",
+    color: "#9B59B6",
+  },
+  // Custom package identifiers (fallbacks)
+  monthly: {
+    name: "Monthly",
+    icon: "calendar-outline",
+    color: "#818CF8",
+  },
+  yearly: {
+    name: "Yearly",
+    badge: "BEST VALUE",
+    icon: "star",
+    color: "#F1C40F",
+  },
+  lifetime: {
+    name: "Lifetime",
+    badge: "ONE TIME",
+    icon: "diamond",
+    color: "#9B59B6",
   },
 };
+
+const FEATURES = [
+  { icon: "infinite" as const, text: "Unlimited prompts", color: "#FF6B6B" },
+  { icon: "flame" as const, text: "All spicy & chaos content", color: "#FF8C42" },
+  { icon: "sparkles" as const, text: "New packs added weekly", color: "#9B59B6" },
+  { icon: "people" as const, text: "Unlimited players", color: "#00D9FF" },
+];
 
 export function Paywall({ onClose, onPurchaseSuccess }: PaywallProps) {
   const [offerings, setOfferings] = useState<PurchasesOffering | null>(null);
@@ -155,62 +145,54 @@ export function Paywall({ onClose, onPurchaseSuccess }: PaywallProps) {
     }
   };
 
-  const renderPackage = (pkg: PurchasesPackage) => {
-    const info = PACK_INFO[pkg.identifier] || {
+  const renderPackage = (pkg: PurchasesPackage, index: number) => {
+    const config = PACKAGE_CONFIG[pkg.identifier] || PACKAGE_CONFIG[pkg.packageType] || {
       name: pkg.product.title,
-      description: pkg.product.description,
       icon: "gift" as const,
-      color: "#666",
-      features: [],
+      color: "#818CF8",
     };
 
     const isLoading = purchasing === pkg.identifier;
-    const featuresText = info.features.join(", ");
+    const isYearly = pkg.identifier.includes("annual") || pkg.identifier.includes("yearly");
 
     return (
       <TouchableOpacity
         key={pkg.identifier}
-        style={[styles.packageCard, { borderColor: info.color + "40" }]}
+        style={[
+          styles.packageCard,
+          isYearly && styles.packageCardHighlighted,
+        ]}
         onPress={() => handlePurchase(pkg)}
         disabled={purchasing !== null}
         activeOpacity={0.8}
         accessibilityRole="button"
-        accessibilityLabel={`${info.name} - ${info.description}. Price: ${pkg.product.priceString}`}
-        accessibilityHint={`Double tap to purchase. Includes: ${featuresText}`}
-        accessibilityState={{ disabled: purchasing !== null, busy: isLoading }}
+        accessibilityLabel={`${config.name} - ${pkg.product.priceString}`}
       >
-        <LinearGradient
-          colors={[info.color + "20", "transparent"]}
-          style={styles.packageGradient}
-        />
-
-        <View style={styles.packageHeader}>
-          <View style={[styles.iconContainer, { backgroundColor: info.color }]} accessibilityElementsHidden={true}>
-            <Ionicons name={info.icon} size={24} color="#FFF" />
+        {config.badge && (
+          <View style={[styles.badge, { backgroundColor: config.color }]}>
+            <Text style={styles.badgeText}>{config.badge}</Text>
           </View>
-          <View style={styles.packageTitleContainer}>
-            <Text style={styles.packageName}>{info.name}</Text>
-            <Text style={styles.packageDescription}>{info.description}</Text>
+        )}
+
+        <View style={styles.packageContent}>
+          <View style={[styles.iconContainer, { backgroundColor: config.color + "20" }]}>
+            <Ionicons name={config.icon} size={24} color={config.color} />
           </View>
-        </View>
 
-        <View style={styles.featuresContainer} accessibilityElementsHidden={true}>
-          {info.features.map((feature, idx) => (
-            <View key={idx} style={styles.featureRow}>
-              <Ionicons name="checkmark-circle" size={16} color={info.color} />
-              <Text style={styles.featureText}>{feature}</Text>
-            </View>
-          ))}
-        </View>
-
-        <View style={[styles.priceButton, { backgroundColor: info.color }]} accessibilityElementsHidden={true}>
-          {isLoading ? (
-            <ActivityIndicator color="#FFF" size="small" />
-          ) : (
-            <Text style={styles.priceText}>
-              {pkg.product.priceString}
+          <View style={styles.packageInfo}>
+            <Text style={styles.packageName}>{config.name}</Text>
+            <Text style={styles.packageDescription}>
+              {pkg.product.description || `Unlock Gambit Pro`}
             </Text>
-          )}
+          </View>
+
+          <View style={styles.priceContainer}>
+            {isLoading ? (
+              <ActivityIndicator color="#FFF" size="small" />
+            ) : (
+              <Text style={styles.priceText}>{pkg.product.priceString}</Text>
+            )}
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -229,34 +211,46 @@ export function Paywall({ onClose, onPurchaseSuccess }: PaywallProps) {
           onPress={onClose}
           style={styles.closeButton}
           accessibilityRole="button"
-          accessibilityLabel="Close store"
-          accessibilityHint="Double tap to close the store and return to the game"
+          accessibilityLabel="Close"
         >
           <Ionicons name="close" size={28} color="#FFF" />
         </TouchableOpacity>
-        <Text style={styles.title} accessibilityRole="header">Unlock More Fun</Text>
-        <Text style={styles.subtitle}>
-          Get exclusive prompt packs to level up your game nights
+
+        <View style={styles.proIconContainer}>
+          <Ionicons name="diamond" size={48} color="#818CF8" />
+        </View>
+
+        <Text style={styles.title} accessibilityRole="header">
+          Unlock Gambit Pro
         </Text>
+        <Text style={styles.subtitle}>
+          Get the ultimate party game experience
+        </Text>
+      </View>
+
+      {/* Features */}
+      <View style={styles.featuresContainer}>
+        {FEATURES.map((feature, index) => (
+          <View key={index} style={styles.featureRow}>
+            <View style={[styles.featureIcon, { backgroundColor: feature.color + "20" }]}>
+              <Ionicons name={feature.icon} size={20} color={feature.color} />
+            </View>
+            <Text style={styles.featureText}>{feature.text}</Text>
+          </View>
+        ))}
       </View>
 
       {/* Content */}
       {loading ? (
-        <View style={styles.loadingContainer} accessibilityRole="progressbar" accessibilityLabel="Loading store">
-          <ActivityIndicator size="large" color="#FF6B6B" />
-          <Text style={styles.loadingText}>Loading store...</Text>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#818CF8" />
+          <Text style={styles.loadingText}>Loading options...</Text>
         </View>
       ) : error && !offerings ? (
-        <View style={styles.errorContainer} accessibilityRole="alert">
-          <Ionicons name="cloud-offline" size={48} color="#FF6B6B" accessibilityElementsHidden={true} />
+        <View style={styles.errorContainer}>
+          <Ionicons name="cloud-offline" size={48} color="#FF6B6B" />
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity
-            style={styles.retryButton}
-            onPress={loadOfferings}
-            accessibilityRole="button"
-            accessibilityLabel="Try again"
-            accessibilityHint="Double tap to reload the store"
-          >
+          <TouchableOpacity style={styles.retryButton} onPress={loadOfferings}>
             <Text style={styles.retryText}>Try Again</Text>
           </TouchableOpacity>
         </View>
@@ -269,7 +263,7 @@ export function Paywall({ onClose, onPurchaseSuccess }: PaywallProps) {
           {offerings?.availablePackages.map(renderPackage)}
 
           {error && (
-            <Text style={styles.inlineError} accessibilityRole="alert">{error}</Text>
+            <Text style={styles.inlineError}>{error}</Text>
           )}
 
           {/* Restore */}
@@ -277,10 +271,6 @@ export function Paywall({ onClose, onPurchaseSuccess }: PaywallProps) {
             style={styles.restoreButton}
             onPress={handleRestore}
             disabled={purchasing !== null}
-            accessibilityRole="button"
-            accessibilityLabel="Restore Purchases"
-            accessibilityHint="Double tap to restore previously purchased items"
-            accessibilityState={{ disabled: purchasing !== null, busy: purchasing === "restore" }}
           >
             {purchasing === "restore" ? (
               <ActivityIndicator color="#888" size="small" />
@@ -290,9 +280,11 @@ export function Paywall({ onClose, onPurchaseSuccess }: PaywallProps) {
           </TouchableOpacity>
 
           {/* Legal */}
-          <Text style={styles.legalText} accessibilityLabel="Legal notice">
-            Payment will be charged to your {Platform.OS === "ios" ? "Apple ID" : "Google Play"} account.
-            Purchases are non-refundable. By purchasing, you agree to our Terms of Service.
+          <Text style={styles.legalText}>
+            Payment will be charged to your{" "}
+            {Platform.OS === "ios" ? "Apple ID" : "Google Play"} account.
+            Subscriptions automatically renew unless cancelled at least 24
+            hours before the end of the current period.
           </Text>
         </ScrollView>
       )}
@@ -308,7 +300,8 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 60,
     paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingBottom: 16,
+    alignItems: "center",
   },
   closeButton: {
     position: "absolute",
@@ -317,16 +310,48 @@ const styles = StyleSheet.create({
     padding: 8,
     zIndex: 10,
   },
+  proIconContainer: {
+    width: 88,
+    height: 88,
+    borderRadius: 22,
+    backgroundColor: "#818CF820",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
+  },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: "800",
     color: "#FFF",
     marginBottom: 8,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
     color: "#AAA",
-    lineHeight: 22,
+    textAlign: "center",
+  },
+  featuresContainer: {
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+  },
+  featureRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  featureIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  featureText: {
+    fontSize: 15,
+    color: "#FFF",
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -354,7 +379,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingHorizontal: 32,
     paddingVertical: 12,
-    backgroundColor: "#FF6B6B",
+    backgroundColor: "#818CF8",
     borderRadius: 24,
   },
   retryText: {
@@ -372,22 +397,31 @@ const styles = StyleSheet.create({
   packageCard: {
     backgroundColor: "#1a1a2e",
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    overflow: "hidden",
+    borderColor: "#2a2a3e",
   },
-  packageGradient: {
+  packageCardHighlighted: {
+    borderColor: "#F1C40F",
+    borderWidth: 2,
+  },
+  badge: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 100,
+    top: -10,
+    right: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
-  packageHeader: {
+  badgeText: {
+    color: "#FFF",
+    fontSize: 10,
+    fontWeight: "700",
+  },
+  packageContent: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 16,
   },
   iconContainer: {
     width: 48,
@@ -396,41 +430,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  packageTitleContainer: {
-    marginLeft: 16,
+  packageInfo: {
     flex: 1,
+    marginLeft: 16,
   },
   packageName: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "700",
     color: "#FFF",
   },
   packageDescription: {
-    fontSize: 14,
-    color: "#AAA",
+    fontSize: 13,
+    color: "#888",
     marginTop: 2,
   },
-  featuresContainer: {
-    marginBottom: 16,
-  },
-  featureRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  featureText: {
-    marginLeft: 8,
-    color: "#DDD",
-    fontSize: 14,
-  },
-  priceButton: {
-    paddingVertical: 14,
+  priceContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: "#818CF8",
     borderRadius: 12,
+    minWidth: 80,
     alignItems: "center",
   },
   priceText: {
     color: "#FFF",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "700",
   },
   inlineError: {
