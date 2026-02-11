@@ -353,7 +353,7 @@ export function PersonalizedPartyGame() {
   // 21+ Adult Mode - unlocks Forfeits category (hidden, tap logo 5x to unlock)
   const [isAdultMode, setIsAdultMode] = useState(false);
   const secretTapCount = useRef(0);
-  const secretTapTimer = useRef<NodeJS.Timeout | null>(null);
+  const secretTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // IAP / Paywall state
   const [showPaywall, setShowPaywall] = useState(false);
@@ -506,7 +506,7 @@ export function PersonalizedPartyGame() {
   const shuffledPromptsRef = useRef<Prompt[]>([]);
   const promptIndexRef = useRef(0);
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const timerProgress = useSharedValue(1);
   const timerPulse = useSharedValue(1);
   const errorShakeX = useSharedValue(0);
