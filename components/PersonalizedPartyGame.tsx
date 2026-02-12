@@ -859,11 +859,11 @@ export function PersonalizedPartyGame() {
             onPress={() => { playWhoosh(); players.length >= 2 ? setGameState(prev => ({ ...prev, screen: "categories" })) : startGame(); }}
             activeOpacity={0.9}
             accessibilityRole="button"
-            accessibilityLabel={players.length < 2 ? `Add ${2 - players.length} more player${2 - players.length !== 1 ? "s" : ""} to continue` : "Choose Categories"}
+            accessibilityLabel={players.length === 0 ? "Add players to continue" : players.length < 2 ? `Add ${2 - players.length} more player to continue` : "Choose Categories"}
             accessibilityHint={players.length < 2 ? "You need at least 2 players to start the game" : "Double tap to select game categories"}
           >
             <LinearGradient colors={["#8B5CF6", "#7C3AED"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.startButtonGradient}>
-              <Text style={styles.startButtonText}>{players.length < 2 ? `Add ${2 - players.length} More` : "Choose Categories"}</Text>
+              <Text style={styles.startButtonText}>{players.length === 0 ? "Add Players" : players.length < 2 ? `Add ${2 - players.length} More` : "Choose Categories"}</Text>
               <Ionicons name="arrow-forward" size={20} color="#FFF" style={{ marginLeft: 8 }} accessibilityElementsHidden={true} />
             </LinearGradient>
           </TouchableOpacity>

@@ -1,0 +1,105 @@
+appId: com.maxwellyoung.socialchaos
+name: "Gambit App Store Screenshots"
+---
+
+# Fresh launch through Expo dev launcher
+- launchApp:
+    appId: com.maxwellyoung.socialchaos
+    clearState: true
+- waitForAnimationToEnd
+
+# Connect to Metro
+- tapOn:
+    text: "http://localhost:8081"
+    optional: true
+- waitForAnimationToEnd
+
+# Dismiss dev welcome, then close dev menu (do NOT toggle perf monitor)
+- tapOn:
+    text: "Continue"
+    optional: true
+- extendedWaitUntil:
+    visible:
+      text: "Close"
+    timeout: 5000
+    optional: true
+- tapOn:
+    text: "Close"
+    optional: true
+- waitForAnimationToEnd
+
+# Wait for home screen
+- extendedWaitUntil:
+    visible:
+      text: ".*players added.*"
+    timeout: 30000
+- waitForAnimationToEnd
+
+# Screenshot 1: Clean setup
+- takeScreenshot: "01_home_setup"
+
+# Open add players panel
+- tapOn:
+    text: ".*players added.*"
+- waitForAnimationToEnd
+
+# Add 3 players
+- tapOn:
+    text: "Player name"
+- inputText: "Jordan"
+- tapOn:
+    text: "Add player"
+- waitForAnimationToEnd
+
+- tapOn:
+    text: "Player name"
+- inputText: "Riley"
+- tapOn:
+    text: "Add player"
+- waitForAnimationToEnd
+
+- tapOn:
+    text: "Player name"
+- inputText: "Sam"
+- tapOn:
+    text: "Add player"
+- waitForAnimationToEnd
+
+# Screenshot 2: Player panel with players added (capture BEFORE closing)
+- takeScreenshot: "02_add_players"
+
+# Close panel
+- hideKeyboard
+- waitForAnimationToEnd
+- tapOn:
+    text: "Done"
+    optional: true
+- back
+- waitForAnimationToEnd
+
+# Screenshot 3: Setup with players
+- takeScreenshot: "03_setup_with_players"
+
+# Open categories
+- tapOn:
+    text: "Choose Categories"
+    optional: true
+- tapOn:
+    text: ".*ategories.*"
+    optional: true
+- waitForAnimationToEnd
+
+# Select a few categories for a better screenshot
+- tapOn:
+    text: "Confessions"
+    optional: true
+- tapOn:
+    text: "Hot Takes"
+    optional: true
+- tapOn:
+    text: "Social"
+    optional: true
+- waitForAnimationToEnd
+
+# Screenshot 4: Categories with selections
+- takeScreenshot: "04_categories"
