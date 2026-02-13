@@ -1,14 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Component, type ReactNode } from "react";
 import { StyleSheet, View, Dimensions } from "react-native";
-import {
-  Canvas,
-  LinearGradient,
-  Rect,
-  vec,
-  Blur,
-  Circle,
-  Group,
-} from "@shopify/react-native-skia";
+import { LinearGradient as ExpoLinearGradient } from "expo-linear-gradient";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -17,6 +9,30 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+
+// Skia can fail in Expo Go — lazy import with fallback
+let Canvas: any, SkiaLinearGradient: any, Rect: any, vec: any, Blur: any, Circle: any, Group: any;
+let skiaAvailable = false;
+try {
+  const skia = require("@shopify/react-native-skia");
+  Canvas = skia.Canvas;
+  SkiaLinearGradient = skia.LinearGradient;
+  Rect = skia.Rect;
+  vec = skia.vec;
+  Blur = skia.Blur;
+  Circle = skia.Circle;
+  Group = skia.Group;
+  skiaAvailable = true;
+} catch {
+  skiaAvailable = false;
+}
+
+// Error boundary to catch Skia runtime errors (arraybuffer init failures)
+class SkiaErrorBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  render() { return this.state.hasError ? this.props.fallback : this.props.children; }
+}
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -124,48 +140,63 @@ export function FluidGradient({
     colors[2] + "60", // ~38% opacity
   ];
 
-  return (
+  const fallback = (
     <View style={[styles.container, style, { width, height }]} pointerEvents="none">
-      <Canvas style={styles.canvas}>
-        {/* Dark base gradient */}
-        <Rect x={0} y={0} width={width} height={height}>
-          <LinearGradient
-            start={vec(0, 0)}
-            end={vec(width, height)}
-            colors={["#050505", "#0a0a0a"]}
-          />
-        </Rect>
-
-        {/* Blurred gradient blobs */}
-        <Group>
-          <Blur blur={80} />
-
-          {/* Blob 1 - Primary color (purple) */}
-          <Circle
-            cx={width * 0.25}
-            cy={height * 0.3}
-            r={blobSize1}
-            color={gradientColors[0]}
-          />
-
-          {/* Blob 2 - Secondary color (pink) */}
-          <Circle
-            cx={width * 0.7}
-            cy={height * 0.6}
-            r={blobSize2}
-            color={gradientColors[1]}
-          />
-
-          {/* Blob 3 - Tertiary color (blue) */}
-          <Circle
-            cx={width * 0.4}
-            cy={height * 0.8}
-            r={blobSize3}
-            color={gradientColors[2]}
-          />
-        </Group>
-      </Canvas>
+      <ExpoLinearGradient
+        colors={[colors[0] + "40", colors[1] + "30", "#050505"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={StyleSheet.absoluteFill}
+      />
     </View>
+  );
+
+  if (!skiaAvailable) return fallback;
+
+  return (
+    <SkiaErrorBoundary fallback={fallback}>
+      <View style={[styles.container, style, { width, height }]} pointerEvents="none">
+        <Canvas style={styles.canvas}>
+          {/* Dark base gradient */}
+          <Rect x={0} y={0} width={width} height={height}>
+            <SkiaLinearGradient
+              start={vec(0, 0)}
+              end={vec(width, height)}
+              colors={["#050505", "#0a0a0a"]}
+            />
+          </Rect>
+
+          {/* Blurred gradient blobs */}
+          <Group>
+            <Blur blur={80} />
+
+            {/* Blob 1 - Primary color (purple) */}
+            <Circle
+              cx={width * 0.25}
+              cy={height * 0.3}
+              r={blobSize1}
+              color={gradientColors[0]}
+            />
+
+            {/* Blob 2 - Secondary color (pink) */}
+            <Circle
+              cx={width * 0.7}
+              cy={height * 0.6}
+              r={blobSize2}
+              color={gradientColors[1]}
+            />
+
+            {/* Blob 3 - Tertiary color (blue) */}
+            <Circle
+              cx={width * 0.4}
+              cy={height * 0.8}
+              r={blobSize3}
+              color={gradientColors[2]}
+            />
+          </Group>
+        </Canvas>
+      </View>
+    </SkiaErrorBoundary>
   );
 }
 
