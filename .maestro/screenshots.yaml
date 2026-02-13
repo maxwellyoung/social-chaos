@@ -46,31 +46,59 @@ name: "Gambit App Store Screenshots"
 # Add 3 players
 - tapOn:
     text: "Player name"
+    optional: true
+- tapOn:
+    text: "Enter name..."
+    optional: true
 - inputText: "Jordan"
 - tapOn:
     text: "Add player"
+    optional: true
+- tapOn:
+    point: "95%,17%"
+    optional: true
 - waitForAnimationToEnd
 
 - tapOn:
     text: "Player name"
+    optional: true
+- tapOn:
+    text: "Enter name..."
+    optional: true
 - inputText: "Riley"
 - tapOn:
     text: "Add player"
+    optional: true
+- tapOn:
+    point: "95%,17%"
+    optional: true
 - waitForAnimationToEnd
 
 - tapOn:
     text: "Player name"
+    optional: true
+- tapOn:
+    text: "Enter name..."
+    optional: true
 - inputText: "Sam"
 - tapOn:
     text: "Add player"
+    optional: true
+- tapOn:
+    point: "95%,17%"
+    optional: true
 - waitForAnimationToEnd
 
-# Screenshot 2: Player panel with players added (capture BEFORE closing)
+# Dismiss keyboard by tapping on a player row, keeping panel open
+- tapOn:
+    text: "Jordan"
+    optional: true
+- waitForAnimationToEnd
+
+# Screenshot 2: Player panel with players (keyboard dismissed)
 - takeScreenshot: "02_add_players"
 
 # Close panel
-- hideKeyboard
-- waitForAnimationToEnd
 - tapOn:
     text: "Done"
     optional: true
@@ -89,17 +117,37 @@ name: "Gambit App Store Screenshots"
     optional: true
 - waitForAnimationToEnd
 
-# Select a few categories for a better screenshot
+# Wait for categories grid to fully render
+- extendedWaitUntil:
+    visible:
+      text: ".*Confessions.*"
+    timeout: 5000
+- waitForAnimationToEnd
+
+# Categories are pre-selected by default (confessions, hot_takes, social)
+# Do NOT tap them — that toggles them OFF
+
+# Screenshot 4: Categories with 3 pre-selected
+- takeScreenshot: "04_categories"
+
+# Scroll to see Let's Go button and start game
+- scroll
+- waitForAnimationToEnd
 - tapOn:
-    text: "Confessions"
+    text: "Start the game"
     optional: true
 - tapOn:
-    text: "Hot Takes"
-    optional: true
-- tapOn:
-    text: "Social"
+    text: ".*[Ll]et.*[Gg]o.*"
     optional: true
 - waitForAnimationToEnd
 
-# Screenshot 4: Categories with selections
-- takeScreenshot: "04_categories"
+# Wait for gameplay to load
+- extendedWaitUntil:
+    visible:
+      text: ".*wipe.*"
+    timeout: 10000
+    optional: true
+- waitForAnimationToEnd
+
+# Screenshot 5: Gameplay prompt card
+- takeScreenshot: "05_gameplay"
