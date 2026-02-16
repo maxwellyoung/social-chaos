@@ -8,10 +8,14 @@ import Purchases, {
 } from "react-native-purchases";
 import { Platform } from "react-native";
 
-// RevenueCat API Keys
+// RevenueCat API Keys — production keys from env vars, test fallback for dev
 const API_KEYS = {
-  ios: "test_CFQqHCyjZaZKeYAJDyjwvGfclwl",
-  android: "test_CFQqHCyjZaZKeYAJDyjwvGfclwl", // Same key for Android in test mode
+  ios:
+    process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ??
+    (__DEV__ ? "test_CFQqHCyjZaZKeYAJDyjwvGfclwl" : ""),
+  android:
+    process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY ??
+    (__DEV__ ? "test_CFQqHCyjZaZKeYAJDyjwvGfclwl" : ""),
 };
 
 // Entitlement identifier - must match RevenueCat dashboard
