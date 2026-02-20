@@ -7,6 +7,7 @@ import {
   Pressable,
   Platform,
   Linking,
+  TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -146,6 +147,20 @@ export default function Support() {
             maxwell@ninetynine.digital
           </Text>
         </Text>
+
+        {/* Account Deletion - Apple Guideline 5.1.1 */}
+        <View style={styles.deleteSection}>
+          <Text style={styles.sectionTitle}>Account</Text>
+          <TouchableOpacity
+            style={styles.deleteAccountButton}
+            onPress={() => router.push("/delete-account")}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="trash-outline" size={20} color="#EF4444" />
+            <Text style={styles.deleteAccountText}>Delete Account</Text>
+            <Ionicons name="chevron-forward" size={18} color="rgba(255,255,255,0.3)" />
+          </TouchableOpacity>
+        </View>
 
         {/* App Info */}
         <View style={styles.appInfo}>
@@ -300,6 +315,33 @@ const styles = StyleSheet.create({
   },
   link: {
     color: "#818CF8",
+  },
+  deleteSection: {
+    marginTop: 32,
+    marginBottom: 8,
+  },
+  deleteAccountButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    backgroundColor: "rgba(239,68,68,0.08)",
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(239,68,68,0.2)",
+    marginTop: 12,
+  },
+  deleteAccountText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#EF4444",
+    fontFamily: Platform.select({
+      ios: "Inter-Medium",
+      android: "Inter-Medium",
+      default: "Inter-Medium, system-ui, sans-serif",
+    }),
   },
   appInfo: {
     marginTop: 40,

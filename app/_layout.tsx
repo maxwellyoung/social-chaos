@@ -22,6 +22,7 @@ export default function RootLayout() {
             animation: "slide_from_bottom",
           }}
         />
+        <Stack.Screen name="delete-account" />
         <Stack.Screen
           name="customer-center"
           options={{
