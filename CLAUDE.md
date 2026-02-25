@@ -303,3 +303,23 @@ const MAX_WIDTH_PROMPT_WEB = 560;             // Max prompt card width for web
 ### Adding Platform-Specific Code
 - Use `Platform.select()` for style differences
 - Use `.web.ts` suffix for web-only implementations (see `useColorScheme.web.ts`)
+
+
+## Relevant Skills
+
+Installed agent skills for this project's stack:
+
+- **react-native-best-practices** — FPS, TTI, bundle size, memory, animations
+- **vercel-react-native-skills** — React Native + Expo performance patterns
+- **apple-hig-designer** — iOS HIG compliance for native feel
+- **app-icon** — Generate app icons with iOS 26 support
+- **expo-app-design:building-ui** — Navigation, styling, components, native tabs
+- **expo-app-design:data-fetching** — Network requests, caching, offline support
+- **expo-deployment:deployment** — App Store, Play Store, EAS builds
+- **typescript-advanced-types** — Advanced generics, conditional types, type safety
+- **ui-animation** — Motion, easing, springs, reduced-motion
+- **accessibility-compliance** — WCAG 2.2, VoiceOver, screen readers
+- **fixing-accessibility** — Diagnose and fix a11y issues
+- **supabase-postgres-best-practices** — Query optimization, schema design, RLS policies
+- **paywall-upgrade-cro** — In-app paywalls, upgrade screens, upsells
+- **using-git-worktrees** — Isolated feature branches for parallel work
