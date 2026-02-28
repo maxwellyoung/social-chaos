@@ -45,11 +45,11 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="twitter:image" content="https://playgambit.app/og-image.png" />
         <meta name="twitter:creator" content="@maxwellyoung_" />
 
-        {/* App Store Smart Banner */}
-        <meta name="apple-itunes-app" content="app-id=6737107968" />
-
         {/* Canonical URL */}
         <link rel="canonical" href="https://playgambit.app/" />
+
+        {/* PWA Manifest */}
+        <link rel="manifest" href="/manifest.json" />
 
         {/* Favicons */}
         <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icon.png" />
