@@ -27,10 +27,10 @@ export default function Root({ children }: PropsWithChildren) {
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://playgambit.app/" />
+        <meta property="og:url" content="https://gambit.ninetynine.digital/" />
         <meta property="og:title" content="Gambit - The Ultimate Party Game App" />
         <meta property="og:description" content="480+ curated prompts across 8 categories. Drinking games, dares, confessions, mini-games & more. The #1 party game for unforgettable nights." />
-        <meta property="og:image" content="https://playgambit.app/og-image.png" />
+        <meta property="og:image" content="https://gambit.ninetynine.digital/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Gambit - Party Chaos, Perfected" />
@@ -39,14 +39,14 @@ export default function Root({ children }: PropsWithChildren) {
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://playgambit.app/" />
+        <meta name="twitter:url" content="https://gambit.ninetynine.digital/" />
         <meta name="twitter:title" content="Gambit - The Ultimate Party Game App" />
         <meta name="twitter:description" content="480+ curated prompts across 8 categories. The #1 party game for unforgettable nights with friends." />
-        <meta name="twitter:image" content="https://playgambit.app/og-image.png" />
+        <meta name="twitter:image" content="https://gambit.ninetynine.digital/og-image.png" />
         <meta name="twitter:creator" content="@maxwellyoung_" />
 
         {/* Canonical URL */}
-        <link rel="canonical" href="https://playgambit.app/" />
+        <link rel="canonical" href="https://gambit.ninetynine.digital/" />
 
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
@@ -74,7 +74,7 @@ export default function Root({ children }: PropsWithChildren) {
               "@type": "WebSite",
               "name": "Gambit",
               "alternateName": "Gambit Party Game",
-              "url": "https://playgambit.app/",
+              "url": "https://gambit.ninetynine.digital/",
               "description": "The ultimate party game app with 480+ curated prompts across 8 categories.",
               "publisher": {
                 "@type": "Person",
@@ -108,7 +108,7 @@ export default function Root({ children }: PropsWithChildren) {
                 "worstRating": "1"
               },
               "description": "The #1 party game app with 480+ curated prompts across 8 categories including drinking games, dares, confessions, hot takes, mini-games, and more.",
-              "screenshot": "https://playgambit.app/screenshot.png",
+              "screenshot": "https://gambit.ninetynine.digital/screenshot.png",
               "featureList": "480+ Prompts, 8 Categories, 10 Chaos Levels, Mini-Games, Spicy Mode, Skip Forever, Favorites, Scoring System, Zero Ads",
               "softwareVersion": "1.0.5",
               "author": {
