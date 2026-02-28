@@ -2,6 +2,7 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 
 require 'json'
+require 'fileutils'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 
 def ccache_enabled?(podfile_properties)
@@ -59,5 +60,18 @@ target 'Gambit' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
+
+    # Workaround: react-native-skia 2.x ships xcframework slices as ios-arm64
+    # but some versions of CocoaPods generate scripts expecting ios-arm64_arm64e.
+    # Create a symlink so both names resolve correctly.
+    skia_xcf = File.join(__dir__, '../node_modules/@shopify/react-native-skia/libs/apple/libskia.xcframework')
+    if Dir.exist?(skia_xcf)
+      arm64_slice   = File.join(skia_xcf, 'ios-arm64')
+      arm64e_slice  = File.join(skia_xcf, 'ios-arm64_arm64e')
+      if Dir.exist?(arm64_slice) && !File.exist?(arm64e_slice)
+        FileUtils.ln_s(arm64_slice, arm64e_slice)
+        puts "react-native-skia: created ios-arm64_arm64e symlink -> ios-arm64"
+      end
+    end
   end
 end
