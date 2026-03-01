@@ -400,7 +400,26 @@ export function PersonalizedPartyGame() {
   }, []);
 
   // Initialize RevenueCat purchases and load premium content
+  // On web: skip IAP entirely — everything is free and unlocked
   useEffect(() => {
+    if (Platform.OS === 'web') {
+      // Web is always fully unlocked — no IAP, load premium packs directly
+      setPurchasedEntitlements(['gambit_pro']);
+      // Import premium packs directly to avoid RevenueCat on web
+      Promise.all([
+        import('../assets/prompts/premium-party.json'),
+        import('../assets/prompts/premium-spicy.json'),
+        import('../assets/prompts/premium-chaos.json'),
+      ]).then(([party, spicy, chaos]) => {
+        const all = [
+          ...(party.default?.prompts ?? []),
+          ...(spicy.default?.prompts ?? []),
+          ...(chaos.default?.prompts ?? []),
+        ].map((p: any) => ({ ...p, isPremium: true }));
+        setPremiumPrompts(all as Prompt[]);
+      }).catch(() => {});
+      return;
+    }
     const initPurchases = async () => {
       await initializePurchases();
       const entitlements = await getActiveEntitlements();
@@ -707,7 +726,7 @@ export function PersonalizedPartyGame() {
       message += `\n`;
     });
 
-    message += `\n🔥 Play Gambit: https://apps.apple.com/app/id6737107968`;
+    message += `\n🔥 Play Gambit: ${Platform.OS === 'web' ? 'https://gambit.ninetynine.digital' : 'https://apps.apple.com/app/id6737107968'}`;
 
     try {
       await Share.share({ message });
@@ -869,7 +888,8 @@ export function PersonalizedPartyGame() {
           </TouchableOpacity>
         </Animated.View>
 
-        {/* Get More Prompts Button */}
+        {/* Get More Prompts Button — native only, web is fully unlocked */}
+        {Platform.OS !== 'web' && (
         <Animated.View entering={FadeInUp.delay(400).duration(500)} style={styles.getMoreContainer}>
           <TouchableOpacity
             style={styles.getMoreButton}
@@ -893,6 +913,7 @@ export function PersonalizedPartyGame() {
             <Text style={styles.premiumBadge} accessibilityLabel="Premium subscription is active">Premium Active</Text>
           )}
         </Animated.View>
+        )}
 
         <Animated.View entering={FadeIn.delay(500).duration(400)} style={styles.footer}>
           <TouchableOpacity onPress={() => router.push("/privacy")} activeOpacity={0.7}>
@@ -1329,8 +1350,8 @@ export function PersonalizedPartyGame() {
         </TouchableOpacity>
       </SlideDownPanel>
 
-      {/* Paywall Modal */}
-      {showPaywall && (
+      {/* Paywall Modal — native only */}
+      {showPaywall && Platform.OS !== 'web' && (
         <View style={StyleSheet.absoluteFill}>
           <Paywall
             onClose={() => setShowPaywall(false)}
