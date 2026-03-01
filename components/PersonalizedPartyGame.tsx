@@ -60,6 +60,7 @@ import { playTap, playSwipe, playSuccess, playPop, playTick, playWhoosh } from "
 import promptData from "../assets/prompts/prompts.json";
 import { Paywall } from "./Paywall";
 import { initializePurchases, getActiveEntitlements } from "../lib/purchases";
+import { WebUpgradePrompt } from "./WebUpgradePrompt";
 import { getUnlockedPremiumPrompts, Prompt as PremiumPrompt } from "../lib/premiumContent";
 import { useReducedMotionWeb } from "../hooks/useReducedMotion";
 
@@ -359,6 +360,9 @@ export function PersonalizedPartyGame() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [purchasedEntitlements, setPurchasedEntitlements] = useState<string[]>([]);
   const [premiumPrompts, setPremiumPrompts] = useState<Prompt[]>([]);
+  // Web-only post-game upgrade prompt (shown once per session after first completed game)
+  const [showWebUpgrade, setShowWebUpgrade] = useState(false);
+  const hasShownWebUpgrade = React.useRef(false);
 
   const [gameState, setGameState] = useState<GameState>({
     screen: "setup",
@@ -632,6 +636,11 @@ export function PersonalizedPartyGame() {
       setShowConfetti(true);
       triggerHaptic("success");
       setGameState(prev => ({ ...prev, screen: "results" }));
+      // Web: show upgrade prompt once per session after first completed game
+      if (Platform.OS === 'web' && !hasShownWebUpgrade.current && !purchasedEntitlements.includes('Gambit Pro')) {
+        hasShownWebUpgrade.current = true;
+        setTimeout(() => setShowWebUpgrade(true), 2500);
+      }
       return;
     }
 
@@ -1349,6 +1358,17 @@ export function PersonalizedPartyGame() {
           </LinearGradient>
         </TouchableOpacity>
       </SlideDownPanel>
+
+      {/* Web upgrade prompt — post-game, non-blocking */}
+      {showWebUpgrade && Platform.OS === 'web' && (
+        <WebUpgradePrompt
+          onClose={() => setShowWebUpgrade(false)}
+          onSuccess={() => {
+            setShowWebUpgrade(false);
+            setPurchasedEntitlements(prev => [...prev, 'Gambit Pro']);
+          }}
+        />
+      )}
 
       {/* Paywall Modal — native only */}
       {showPaywall && Platform.OS !== 'web' && (
