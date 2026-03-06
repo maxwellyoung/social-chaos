@@ -139,7 +139,15 @@ export default function Support() {
           of the app after changes constitutes acceptance of the new terms.
         </Text>
 
-        <Text style={styles.subTitle}>10. Contact</Text>
+        <Text style={styles.subTitle}>10. Data Deletion</Text>
+        <Text style={styles.paragraph}>
+          You can delete all your data at any time using the "Delete My Data"
+          option on the home screen. This will permanently remove all locally
+          stored information from your device. Subscriptions are managed
+          separately through Apple and are not affected by data deletion.
+        </Text>
+
+        <Text style={styles.subTitle}>11. Contact</Text>
         <Text style={styles.paragraph}>
           For questions about these Terms, contact us at{" "}
           <Text style={styles.link} onPress={handleEmail}>
