@@ -932,6 +932,10 @@ export function PersonalizedPartyGame() {
           <TouchableOpacity onPress={() => router.push("/support")} activeOpacity={0.7}>
             <Text style={styles.footerLink}>Terms & Support</Text>
           </TouchableOpacity>
+          <Text style={styles.footerDot}>•</Text>
+          <TouchableOpacity onPress={() => router.push("/delete-data")} activeOpacity={0.7}>
+            <Text style={styles.footerLink}>Delete My Data</Text>
+          </TouchableOpacity>
         </Animated.View>
       </ScrollView>
     </View>

@@ -96,8 +96,11 @@ export default function PrivacyPolicy() {
 
         <Text style={styles.sectionTitle}>Your Rights</Text>
         <Text style={styles.paragraph}>
-          You can delete all locally stored data by uninstalling the app. You
-          can also clear app data through your device settings.
+          You have the right to delete all your data at any time. Use the
+          "Delete My Data" option on the home screen to permanently erase all
+          locally stored information, including player names, preferences, and
+          custom prompts. You can also clear app data through your device
+          settings or by uninstalling the app.
         </Text>
 
         <Text style={styles.sectionTitle}>Changes to This Policy</Text>
