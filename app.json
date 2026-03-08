@@ -15,7 +15,10 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.maxwellyoung.socialchaos",
-      "buildNumber": "2"
+      "buildNumber": "2",
+      "infoPlist": {
+        "NSPrivacyPolicyURL": "https://gambit.ninetynine.digital/privacy"
+      }
     },
     "scheme": "socialchaos",
     "android": {
