@@ -794,6 +794,16 @@ export function PersonalizedPartyGame() {
   // Render Setup
   const renderSetup = () => (
     <View style={styles.screen}>
+      {/* Settings gear */}
+      <TouchableOpacity
+        style={styles.settingsButton}
+        onPress={() => router.push("/settings")}
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel="Settings"
+      >
+        <Ionicons name="settings-outline" size={22} color="rgba(255,255,255,0.5)" />
+      </TouchableOpacity>
 
       <ScrollView 
         style={styles.scrollContent} 
@@ -1391,6 +1401,7 @@ export function PersonalizedPartyGame() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#000" },
+  settingsButton: { position: "absolute", top: 8, right: 16, zIndex: 10, width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.08)", alignItems: "center", justifyContent: "center" },
   fullWidthGradient: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, width: "100%", height: "100%" },
   inner: { flex: 1, maxWidth: Platform.OS === "web" ? MAX_WIDTH : "100%", width: "100%", alignSelf: "center", zIndex: 1 },
   screen: { flex: 1, backgroundColor: "transparent" },
