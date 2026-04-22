@@ -9,7 +9,13 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "fallow": "npx --yes fallow",
+    "fallow:dead-code": "npx --yes fallow dead-code",
+    "fallow:dupes": "npx --yes fallow dupes",
+    "fallow:health": "npx --yes fallow health",
+    "fallow:audit": "npx --yes fallow audit",
+    "fallow:fix:dry-run": "npx --yes fallow fix --dry-run"
   },
   "jest": {
     "preset": "jest-expo"
